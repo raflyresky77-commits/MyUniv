@@ -37,10 +37,10 @@
             <div class="grid grid-cols-1 lg:grid-cols-2">
 
                 {{-- LEFT: LOGIN FORM --}}
-                <section class="px-8 py-10 sm:px-12 lg:px-16 lg:py-14">
+                <section class="px-8 py-10 sm:px-12 lg:px-16 lg:py-14 flex flex-col justify-center">
 
                     {{-- Logo --}}
-                    <div class="flex items-center gap-3 mb-12">
+                    <div class="flex items-center gap-3 mb-10">
                         <div
                             class="w-12 h-12 rounded-[10px] border border-[#C9D7EE] flex items-center justify-center overflow-hidden bg-white p-1"
                         >
@@ -158,29 +158,8 @@
                         </button>
                     </form>
 
-                    {{-- Divider --}}
-                    <div class="flex items-center gap-4 my-5">
-                        <div class="h-px flex-1 bg-[#C9D7EE]"></div>
-
-                        <span class="text-xs text-[#6E7178]">
-                            atau
-                        </span>
-
-                        <div class="h-px flex-1 bg-[#C9D7EE]"></div>
-                    </div>
-
-                    {{-- Google --}}
-                    <button
-                        type="button"
-                        disabled
-                        class="w-full h-10 rounded-[6px] border border-[#C9D7EE] bg-white px-4 text-sm font-semibold text-[#6E7178] opacity-70 cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                        <span>G</span>
-                        Daftar dengan Google
-                    </button>
-
-                    {{-- Register --}}
-                    <p class="mt-4 text-center text-xs text-[#2F3136]">
+                    {{-- Register Link --}}
+                    <p class="mt-6 text-center text-xs text-[#2F3136]">
                         Belum punya akun?
                         <a
                             href="#"
@@ -197,26 +176,27 @@
                 <section
                     class="hidden lg:flex items-center justify-center bg-[#F4FAFF] px-10 py-12"
                 >
-
                     <div class="text-center flex flex-col items-center">
 
+                        {{-- Wrapper Maskot Lebih Proporsional & Bersih --}}
                         <div
-                            class="relative w-[330px] h-[330px] flex items-center justify-center"
+                            class="relative w-[300px] h-[300px] flex items-center justify-center p-4 bg-white/60 rounded-2xl border border-[#C9D7EE]/50 shadow-sm backdrop-blur-sm"
                         >
-                            {{-- GAMBAR MASCOT MAUNY --}}
                             <img
                                 src="{{ asset('images/3d1.png') }}"
                                 alt="Maskot Mauny"
-                                class="max-w-[240px] max-h-[260px] object-contain drop-shadow-md"
+                                class="w-full h-full object-contain drop-shadow-md"
                             >
                         </div>
 
-                        <p class="mt-3 text-xs text-[#6E7178]">
-                            Teman perjalananmu menuju masa depan.
+                        <h3 class="mt-5 text-base font-bold text-[#2F3136]">
+                            Mauny, Teman Setiamu
+                        </h3>
+                        <p class="mt-1 text-xs text-[#6E7178] max-w-[240px]">
+                            Teman perjalananmu menuju masa depan dan kampus impian.
                         </p>
 
                     </div>
-
                 </section>
 
             </div>
