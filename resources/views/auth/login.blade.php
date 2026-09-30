@@ -12,7 +12,7 @@
         body {
             background-color: #F4FAFF;
             background-image: radial-gradient(circle at 90% 10%, rgba(54, 80, 162, 0.12) 0%, transparent 40%),
-                              radial-gradient(circle at 10% 90%, rgba(255, 122, 89, 0.08) 0%, transparent 40%);
+                        radial-gradient(circle at 10% 90%, rgba(255, 122, 89, 0.08) 0%, transparent 40%);
         }
         /* Efek kurva gelombang khas */
         .wave-curve {
@@ -90,7 +90,7 @@
 
                     <div>
                         <label for="login" class="block mb-2 text-xs font-semibold text-[#F4FAFF] tracking-wide">
-                            Username
+                            Email
                         </label>
                         <input id="login" name="login" type="text" value="{{ old('login') }}" autocomplete="username" placeholder="Enter your username" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
                         @error('login')

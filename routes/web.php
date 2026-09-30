@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Student\dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,10 +34,15 @@ Route::post('/logout', [LoginController::class, 'logout'])
 | Student
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+
+// Route khusus Siswa (Authenticated & Role Siswa)
+Route::middleware(['auth', 'role:siswa'])->prefix('student')->name('student.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+// Atau jika menggunakan alias /dashboard langsung sesuai permintaan output:
+Route::middleware(['auth', 'role:siswa'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('student.dashboard');
 });
 
 /*
@@ -60,3 +66,4 @@ Route::middleware('auth')->prefix('counselor')->name('counselor.')->group(functi
         return view('counselor.dashboard');
     })->name('dashboard');
 });
+
