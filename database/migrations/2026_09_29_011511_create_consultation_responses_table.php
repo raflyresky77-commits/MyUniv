@@ -12,9 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('consultation_responses', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('consultation_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('teacher_id')->constrained('teacher_bk')->cascadeOnDelete();
+    $table->text('responses');
+    $table->text('recommendation')->nullable();
+    $table->timestamps();
+});
     }
 
     /**

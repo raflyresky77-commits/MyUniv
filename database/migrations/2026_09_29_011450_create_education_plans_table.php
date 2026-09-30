@@ -12,9 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('education_plans', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('target_major_id')->nullable()->constrained('majors')->nullOnDelete();
+    $table->foreignId('alternative_major_id')->nullable()->constrained('majors')->nullOnDelete();
+    $table->foreignId('target_university_id')->nullable()->constrained('universities')->nullOnDelete();
+    $table->foreignId('alternative_university_id')->nullable()->constrained('universities')->nullOnDelete();
+    $table->string('status')->default('pending'); // pending, in_progress, completed
+    $table->text('notes')->nullable();
+    $table->timestamps();
+});
     }
 
     /**

@@ -101,7 +101,7 @@
 
                     <div>
                         <label for="login" class="block mb-2 text-xs font-semibold text-[#F4FAFF] tracking-wide">
-                            Username / Email
+                             Email
                         </label>
                         <input id="login" name="login" type="text" value="{{ old('login') }}" autocomplete="username" placeholder="Enter your username or email" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
                         @error('login')

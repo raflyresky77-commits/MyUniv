@@ -12,9 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('assessment_results', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('assessment_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('category_id')->constrained('interest_categories')->cascadeOnDelete();
+    $table->integer('score')->default(0);
+    $table->decimal('percentage', 5, 2)->default(0);
+    $table->timestamps();
+
+    $table->unique(['student_id', 'assessment_id', 'category_id']);
+});
     }
 
     /**

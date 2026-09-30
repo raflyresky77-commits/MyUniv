@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('interest_categories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+            Schema::create('interest_categories', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->text('description')->nullable();
+    $table->string('color_code', 7)->nullable(); // #RRGGBB
+    $table->timestamps();
+});
     }
 
     /**

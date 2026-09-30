@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('university_majors', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('university_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('major_id')->constrained()->cascadeOnDelete();
+    $table->string('accreditation')->nullable(); // A, B, C, Unggul (buat filter FR-008)
+    $table->text('additional_info')->nullable();
+    $table->timestamps();
+
+    $table->unique(['university_id', 'major_id']);
+});
     }
 
     /**

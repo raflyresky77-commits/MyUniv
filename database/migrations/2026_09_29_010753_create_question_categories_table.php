@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('question_categories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->string('name'); // Minat & Bakat, Kemampuan, Kepribadian
+    $table->text('description')->nullable();
+    $table->timestamps();
+});
     }
 
     /**

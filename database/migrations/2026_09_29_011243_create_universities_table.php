@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('universities', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->string('name');
+    $table->string('type'); // PTN / PTS
+    $table->string('location')->nullable();
+    $table->string('website')->nullable();
+    $table->text('description')->nullable();
+    $table->string('thumbnail')->nullable();
+    $table->timestamps();
+});
     }
 
     /**

@@ -12,9 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('plan_checklists', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('plan_id')->constrained('education_plans')->cascadeOnDelete();
+    $table->string('title');
+    $table->boolean('is_completed')->default(false);
+    $table->date('deadline')->nullable();
+    $table->timestamps();
+});
     }
 
     /**

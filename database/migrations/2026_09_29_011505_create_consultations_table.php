@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('consultations', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('teacher_id')->constrained('teacher_bk')->cascadeOnDelete();
+    $table->string('method'); // online / offline
+    $table->string('topic');
+    $table->text('message')->nullable();
+    $table->string('status')->default('pending');
+    $table->timestamps();
+});
     }
 
     /**
