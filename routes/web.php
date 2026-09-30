@@ -37,12 +37,12 @@ Route::post('/logout', [LoginController::class, 'logout'])
 
 // Route khusus Siswa (Authenticated & Role Siswa)
 Route::middleware(['auth', 'role:siswa'])->prefix('student')->name('student.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [dashboard::class, 'index'])->name('dashboard');
 });
 
 // Atau jika menggunakan alias /dashboard langsung sesuai permintaan output:
 Route::middleware(['auth', 'role:siswa'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('student.dashboard');
+    Route::get('/dashboard', [dashboard::class, 'index'])->name('student.dashboard');
 });
 
 /*
