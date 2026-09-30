@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -11,17 +12,16 @@ use Illuminate\Support\Facades\Route;
 
 // Halaman Utama / Landing Page
 Route::get('/', function () {
-    return view('welcome'); // Pastikan file view-nyaresources/views/welcome.blade.php
+    return view('landing'); // Pastikan file view-nyaresources/views/landing.blade.php
 });
 
-// Guest Routes (Login, dll)
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginController::class, 'showLogin'])
-        ->name('login');
+// Route Register
+Route::get('/register', [RegisterController::class, 'create'])->name('register');
+Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 
-    Route::post('/login', [LoginController::class, 'login'])
-        ->name('login.store');
-});
+// Route Login (sesuaikan dengan controller login kamu nanti)
+Route::get('/login', [LoginController::class, 'create'])->name('login');
+Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 
 // Logout Route
 Route::post('/logout', [LoginController::class, 'logout'])
@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
 | Admin
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');

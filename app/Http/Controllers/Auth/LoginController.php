@@ -8,74 +8,39 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /**
-     * Menampilkan halaman login.
-     */
-    public function showLogin()
+    // Menampilkan halaman login
+    public function create()
     {
         return view('auth.login');
     }
 
-    /**
-     * Memproses login pengguna.
-     */
-    public function login(Request $request)
+    // Memproses data login
+    public function store(Request $request)
     {
         $credentials = $request->validate([
-            'login' => [
-                'required',
-                'string',
-            ],
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-            ],
-        ], [
-            'login.required' => 'Email atau username wajib diisi.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 8 karakter.',
+            'login' => ['required'],
+            'password' => ['required'],
         ]);
 
-        $field = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL)
-            ? 'email'
-            : 'username';
+        $field = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        $authCredentials = [
-            $field => $credentials['login'],
-            'password' => $credentials['password'],
-        ];
-
-        if (!Auth::attempt($authCredentials, $request->boolean('remember'))) {
-            return back()
-                ->withInput($request->only('login'))
-                ->withErrors([
-                    'login' => 'Email/username atau password tidak sesuai.',
-                ]);
+        if (Auth::attempt([$field => $credentials['login'], 'password' => $credentials['password']])) {
+            $request->session()->regenerate();
+            return redirect()->intended('/dashboard');
         }
 
-        $request->session()->regenerate();
-
-        $user = Auth::user();
-
-        return match ($user->role) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'counselor' => redirect()->route('counselor.dashboard'),
-            'student' => redirect()->route('dashboard'),
-            default => redirect()->route('dashboard'),
-        };
+        return back()->withErrors([
+            'login' => 'Username atau password yang Anda masukkan salah.',
+        ])->onlyInput('login');
     }
 
-    /**
-     * Logout pengguna.
-     */
+    // Logout session
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect('/login');
     }
 }

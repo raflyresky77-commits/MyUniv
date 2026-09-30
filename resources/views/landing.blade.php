@@ -43,33 +43,27 @@
 
     <!-- Custom Style & Clip Paths -->
     <style>
-        /* Clip path panah unik dari Code 1 */
         .arrow-card-outer {
             clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);
         }
-
         .arrow-card-inner {
             clip-path: polygon(0 0, 81.5% 0, 99.2% 50%, 81.5% 100%, 0 100%);
         }
-
         .clip-arrow-card {
             clip-path: polygon(0% 0%, 92% 0%, 100% 50%, 92% 100%, 0% 100%);
         }
-
         @media (max-width: 640px) {
             .arrow-card-outer, .arrow-card-inner, .clip-arrow-card {
-                clip-path: none; /* Fallback responsif untuk layar kecil agar layout tetap presisi */
+                clip-path: none;
                 border-radius: 1rem;
             }
         }
-
         .wavy-underline {
             text-decoration: underline;
             text-decoration-style: wavy;
             text-decoration-color: #FF7A59;
             text-underline-offset: 6px;
         }
-
         @keyframes floatMascot {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-12px) rotate(2deg); }
@@ -77,16 +71,20 @@
         .animate-float-mascot {
             animation: floatMascot 4s ease-in-out infinite;
         }
-
         @keyframes bgGlow {
             0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(1.08); }
+            50% { opacity: 0.9; transform: scale(1.1); }
         }
         .animate-bg-glow {
-            animation: bgGlow 6s ease-in-out infinite;
+            animation: bgGlow 7s ease-in-out infinite;
         }
-
-        /* Pentagon / Chevron Down Style untuk Alur Langkah */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-15px) translateX(10px); }
+        }
+        .animate-float-slow {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
         .step-chevron-card {
             clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
             background: #FFFFFF;
@@ -100,11 +98,17 @@
         }
     </style>
 </head>
-<body class="bg-softSky font-sans text-gray-800 antialiased overflow-x-hidden">
+<body class="bg-gradient-to-br from-[#F4FAFF] via-[#FFF5F2] to-[#EEF3FF] font-sans text-gray-800 antialiased overflow-x-hidden relative">
+
+    <!-- ELEMEN LUCU MENGAMBANG DI BACKGROUND -->
+    <div class="absolute top-20 left-10 text-coralOrange/30 text-3xl animate-float-slow pointer-events-none -z-10"><i class="fa-solid fa-star"></i></div>
+    <div class="absolute top-40 right-16 text-indigoPrimary/20 text-4xl animate-float-slow pointer-events-none -z-10" style="animation-delay: 1s;"><i class="fa-solid fa-graduation-cap"></i></div>
+    <div class="absolute top-96 left-5 text-amber-400/30 text-3xl animate-float-slow pointer-events-none -z-10" style="animation-delay: 2s;"><i class="fa-solid fa-sparkles"></i></div>
+    <div class="absolute bottom-1/3 right-10 text-coralOrange/20 text-5xl animate-float-slow pointer-events-none -z-10" style="animation-delay: 1.5s;">🐉</div>
 
     <!-- Header Navigation -->
     <header class="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-3">
-        <nav class="max-w-7xl mx-auto backdrop-blur-md bg-white/80 border border-white/50 shadow-sm rounded-2xl px-5 sm:px-6 py-3 flex items-center justify-between transition-all duration-300">
+        <nav class="max-w-7xl mx-auto backdrop-blur-md bg-white/80 border border-white/60 shadow-sm rounded-2xl px-5 sm:px-6 py-3 flex items-center justify-between transition-all duration-300">
             <!-- Brand Logo -->
             <a href="#beranda" class="group flex items-center gap-3">
                 <div class="relative w-10 h-10 bg-gradient-to-tr from-indigoPrimary to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigoPrimary/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 ease-out">
@@ -130,14 +134,14 @@
                 <a href="#faq" class="hover:text-indigoPrimary transition-colors">FAQ</a>
             </div>
 
-            <!-- Action CTA & Mobile Toggle -->
+        <!-- Action CTA & Mobile Toggle -->
             <div class="flex items-center gap-2 sm:gap-3">
-                <button onclick="openModal('masuk')" class="text-indigoPrimary hover:bg-indigoPrimary/10 border border-indigoPrimary/30 px-3.5 sm:px-4 py-2 rounded-xl font-bold transition-all text-xs sm:text-sm">
+                <a href="{{ route('login') }}" class="text-indigoPrimary hover:bg-indigoPrimary/10 border border-indigoPrimary/30 px-3.5 sm:px-4 py-2 rounded-xl font-bold transition-all text-xs sm:text-sm">
                     Masuk
-                </button>
-                <button onclick="openModal('daftar')" class="bg-coralOrange hover:bg-orange-600 text-white px-4 sm:px-5 py-2 rounded-xl font-bold shadow-md shadow-coralOrange/25 hover:shadow-lg transition-all transform hover:-translate-y-0.5 text-xs sm:text-sm">
+                </a>
+                <a href="{{ route('register') }}" class="bg-coralOrange hover:bg-orange-600 text-white px-4 sm:px-5 py-2 rounded-xl font-bold shadow-md shadow-coralOrange/25 hover:shadow-lg transition-all transform hover:-translate-y-0.5 text-xs sm:text-sm">
                     Daftar
-                </button>
+                </a>
                 <button onclick="toggleMobileMenu()" class="lg:hidden text-indigoPrimary text-2xl ml-2 focus:outline-none">
                     <i class="fa-solid fa-bars" id="menuIcon"></i>
                 </button>
@@ -157,15 +161,16 @@
     </header>
 
     <!-- Hero Section -->
-    <section id="beranda" class="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-indigoPrimary/15 to-coralOrange/15 rounded-full blur-3xl -z-10 animate-bg-glow"></div>
-        <div class="absolute top-12 right-10 w-72 h-72 bg-coralOrange/10 rounded-full blur-2xl -z-10"></div>
+    <section id="beranda" class="relative pt-36 pb-20 md:pt-48 md:pb-32 overflow-visible">
+        <!-- Background Glow Center -->
+        <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-indigoPrimary/20 via-coralOrange/15 to-pink-400/10 rounded-full blur-3xl -z-10 animate-bg-glow pointer-events-none"></div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid md:grid-cols-12 gap-12 items-center">
 
+                <!-- Bagian Kiri (Teks) -->
                 <div class="md:col-span-7 text-center md:text-left space-y-6">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-indigoPrimary/10 shadow-sm backdrop-blur-sm text-indigoPrimary text-xs sm:text-sm font-semibold">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 border border-coralOrange/20 shadow-sm backdrop-blur-sm text-indigoPrimary text-xs sm:text-sm font-semibold">
                         <span class="bg-coralOrange text-white text-xs px-2 py-0.5 rounded-full font-bold">NEW</span>
                         <span>Dampingi Perjalanan Kuliahmu Bersama Mauny 🐉</span>
                     </div>
@@ -175,7 +180,7 @@
                     </h1>
 
                     <p class="text-gray-600 text-base sm:text-lg max-w-2xl leading-relaxed">
-                        Jangan biarkan salah pilih jurusan mengganggu masa depanmu. Dengan analisis psikometri modern berbasis AI dan bimbingan interaktif Mauny, temukan alur studi yang paling pas untukmu!
+                        MyUniv membantu kamu mengenali potensi diri, menentukan jurusan kuliah yang tepat, dan merencanakan masa depan yang lebih jelas. Temukan pilihan yang sesuai dengan minat dan kemampuanmu.
                     </p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4">
@@ -199,9 +204,10 @@
                     </div>
                 </div>
 
-                <div class="md:col-span-5 relative flex flex-col items-center justify-center">
+                <!-- Bagian Kanan (Maskot & Blur Glow Card) -->
+                <div class="md:col-span-5 relative flex flex-col items-center justify-center pt-6 md:pt-0">
                     <div class="relative z-20 mb-3 animate-bounce sm:animate-none">
-                        <div class="bg-white border-2 border-indigoPrimary/20 rounded-2xl px-5 py-3 shadow-xl backdrop-blur-md relative max-w-xs text-center">
+                        <div class="bg-white/90 border-2 border-indigoPrimary/20 rounded-2xl px-5 py-3 shadow-xl backdrop-blur-md relative max-w-xs text-center">
                             <p class="text-xs sm:text-sm font-bold text-indigoPrimary">
                                 "Halo! Aku Mauny 🐉 Yuk temukan jurusan impianmu!"
                             </p>
@@ -210,13 +216,14 @@
                     </div>
 
                     <div class="relative group animate-float-mascot">
-                        <div class="absolute inset-0 bg-gradient-to-r from-coralOrange/30 to-indigoPrimary/30 rounded-3xl blur-2xl transform group-hover:scale-105 transition-transform"></div>
+                        <!-- Blur di belakang card maskot agar menyebar utuh -->
+                        <div class="absolute -inset-4 bg-gradient-to-r from-coralOrange/30 to-indigoPrimary/30 rounded-3xl blur-2xl transform group-hover:scale-105 transition-transform -z-10"></div>
 
-                        <div class="relative bg-white/60 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-white/80 shadow-2xl overflow-hidden max-w-xs sm:max-w-sm">
-                            <img src="image_88917e.jpg"
-                                 onerror="this.onerror=null; this.src='https://placehold.co/400x400/F4FAFF/3650A2?text=Mauny+Mascot'"
-                                 alt="Mauny Mascot"
-                                 class="w-full h-auto object-contain drop-shadow-md rounded-2xl transform hover:scale-105 transition-transform duration-300">
+                        <div class="relative bg-white/70 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-white/90 shadow-2xl overflow-hidden max-w-xs sm:max-w-sm">
+                            <img src="{{ asset('images/1.png') }}"
+                            onerror="this.onerror=null; this.src='https://placehold.co/400x400/F4FAFF/3650A2?text=Mauny+Mascot'"
+                            alt="Mauny Mascot"
+                            class="w-full h-auto object-contain drop-shadow-md rounded-2xl transform hover:scale-105 transition-transform duration-300">
 
                             <div class="mt-4 text-center">
                                 <span class="bg-indigoPrimary/10 text-indigoPrimary font-bold text-xs px-3 py-1 rounded-full">Maskot Resmi MyUniv</span>
@@ -231,88 +238,103 @@
         </div>
     </section>
 
-    <!-- LOGO SEKOLAH & MYUNIV -->
-    <section class="py-10 bg-white/60 border-y border-indigoPrimary/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-wrap items-center justify-center gap-10 sm:gap-16 opacity-80 pointer-events-none">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-indigoPrimary text-white rounded-2xl flex items-center justify-center font-bold text-2xl shadow-sm">
-                        <i class="fa-solid fa-school"></i>
-                    </div>
-                    <div class="text-left">
-                        <span class="block text-[10px] font-bold tracking-wider uppercase text-gray-400">Sekolah Mitra / Pengembang</span>
-                        <span class="font-extrabold text-gray-800 text-sm sm:text-base">SMK Budi Bakti Ciwidey</span>
-                    </div>
-                </div>
+    <!-- LOGO SEKOLAH & MYUNIV (GLASSMORPHISM STYLE) -->
+        <section class="py-10 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="backdrop-blur-md bg-white/40 border border-white/60 shadow-lg shadow-indigoPrimary/5 rounded-3xl py-6 px-8 flex flex-wrap items-center justify-center gap-10 sm:gap-16">
 
-                <div class="hidden sm:block w-px h-8 bg-gray-300"></div>
+                    <div class="flex items-center gap-3 transition-transform duration-300 hover:scale-105">
+                        <div class="w-12 h-12 bg-gradient-to-tr from-indigoPrimary to-indigo-600 text-white rounded-2xl flex items-center justify-center font-bold text-xl shadow-md shadow-indigoPrimary/20">
+                            <i class="fa-solid fa-school"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-[10px] font-bold tracking-wider uppercase text-gray-400">Sekolah Mitra / Pengembang</span>
+                            <span class="font-extrabold text-gray-800 text-sm sm:text-base">SMK Budi Bakti Ciwidey</span>
+                        </div>
+                    </div>
 
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-gradient-to-tr from-indigoPrimary to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-sm">
-                        <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                    <div class="hidden sm:block w-px h-8 bg-indigoPrimary/15"></div>
+
+                    <div class="flex items-center gap-3 transition-transform duration-300 hover:scale-105">
+                        <div class="w-12 h-12 bg-gradient-to-tr from-indigoPrimary to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-indigoPrimary/20">
+                            <i class="fa-solid fa-graduation-cap text-xl"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block text-[10px] font-bold tracking-wider uppercase text-gray-400">Platform Resmi</span>
+                            <span class="font-extrabold text-2xl text-indigoPrimary">MyUniv<span class="text-coralOrange">.</span></span>
+                        </div>
                     </div>
-                    <div class="text-left">
-                        <span class="block text-[10px] font-bold tracking-wider uppercase text-gray-400">Platform Resmi</span>
-                        <span class="font-extrabold text-2xl text-indigoPrimary">MyUniv<span class="text-coralOrange">.</span></span>
-                    </div>
+
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Kendala Dalam Memilih Jurusan -->
-    <section id="tentang" class="py-16 bg-white border-y border-gray-200 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-indigoPrimary">
-                    Sering Alami Kendala Ini Saat Pilih Jurusan?
-                </h2>
-                <p class="text-gray-500 mt-2 text-sm sm:text-base">
-                    Banyak siswa kelas XII yang terjebak dalam dilema penentuan pendidikan lanjutan.
-                </p>
+
+    <!-- Kendala Dalam Memilih Jurusan (Fixed Icon Cutoff) -->
+        <section id="tentang" class="py-20 bg-gradient-to-b from-[#F4FAFF] via-white to-[#F4FAFF] border-y border-indigoPrimary/10 relative overflow-hidden">
+
+            <!-- Pola Titik-Titik Halus (Dot Pattern) di Background -->
+            <div class="absolute inset-0 opacity-30 pointer-events-none -z-10" style="background-image: radial-gradient(#3650A2 1px, transparent 1px); background-size: 24px 24px;"></div>
+
+            <!-- Efek Cahaya Gradien Mengalir (Blob 1 - Kiri Atas) -->
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-tr from-coralOrange/15 to-amber-300/20 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse"></div>
+
+            <!-- Efek Cahaya Gradien Mengalir (Blob 2 - Kanan Bawah) -->
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-tr from-indigoPrimary/15 to-blue-400/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="bg-indigoPrimary/10 text-indigoPrimary text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Dilema Siswa</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-indigoPrimary mt-2">
+                        Sering Alami Kendala Ini Saat Pilih Jurusan?
+                    </h2>
+                    <p class="text-gray-500 mt-2 text-sm sm:text-base">
+                        Banyak siswa kelas XII yang terjebak dalam dilema penentuan pendidikan lanjutan.
+                    </p>
+                </div>
+
+                <!-- 4 Problem Box Grid dengan Perbaikan Padding & Icon Layout -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <div class="p-6 pt-8 rounded-2xl bg-white/90 backdrop-blur-xl border border-indigoPrimary/15 hover:border-indigoPrimary/40 transition-all text-center group shadow-lg shadow-indigoPrimary/5 hover:-translate-y-1 flex flex-col items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigoPrimary to-indigo-600 text-white flex items-center justify-center mb-5 text-xl shadow-md shadow-indigoPrimary/20 group-hover:scale-110 group-hover:rotate-6 transition-all">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h3 class="font-bold text-indigoPrimary mb-2 text-base">Minat dan bakat sering tidak seimbang</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">Suka suatu bidang tapi merasa ragu dengan potensi kemampuan akademiknya.</p>
+                    </div>
+
+                    <div class="p-6 pt-8 rounded-2xl bg-white/90 backdrop-blur-xl border border-indigoPrimary/15 hover:border-indigoPrimary/40 transition-all text-center group shadow-lg shadow-indigoPrimary/5 hover:-translate-y-1 flex flex-col items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-coralOrange to-orange-500 text-white flex items-center justify-center mb-5 text-xl shadow-md shadow-coralOrange/20 group-hover:scale-110 group-hover:rotate-6 transition-all">
+                            <i class="fa-solid fa-map-signs"></i>
+                        </div>
+                        <h3 class="font-bold text-indigoPrimary mb-2 text-base">Sulit menentukan masa depan kuliah</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">Bingung memilih antara PTN, PTS, atau pilihan kedinasan yang sesuai.</p>
+                    </div>
+
+                    <div class="p-6 pt-8 rounded-2xl bg-white/90 backdrop-blur-xl border border-indigoPrimary/15 hover:border-indigoPrimary/40 transition-all text-center group shadow-lg shadow-indigoPrimary/5 hover:-translate-y-1 flex flex-col items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigoPrimary to-indigo-600 text-white flex items-center justify-center mb-5 text-xl shadow-md shadow-indigoPrimary/20 group-hover:scale-110 group-hover:rotate-6 transition-all">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+                        <h3 class="font-bold text-indigoPrimary mb-2 text-base">Bingung memilih universitas yang tepat</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">Informasi kampus tersebar dan sulit membandingkan akreditasi prodi.</p>
+                    </div>
+
+                    <div class="p-6 pt-8 rounded-2xl bg-white/90 backdrop-blur-xl border border-indigoPrimary/15 hover:border-indigoPrimary/40 transition-all text-center group shadow-lg shadow-indigoPrimary/5 hover:-translate-y-1 flex flex-col items-center">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-coralOrange to-orange-500 text-white flex items-center justify-center mb-5 text-xl shadow-md shadow-coralOrange/20 group-hover:scale-110 group-hover:rotate-6 transition-all">
+                            <i class="fa-solid fa-user-ninja"></i>
+                        </div>
+                        <h3 class="font-bold text-indigoPrimary mb-2 text-base">Ikut-ikutan dengan pilihan teman</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed">Memilih jurusan tanpa menganalisis hasil tes peminatan pribadi.</p>
+                    </div>
+
+                </div>
             </div>
+        </section>
 
-            <!-- 4 Problem Box Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-                <div class="p-6 rounded-2xl bg-softSky border border-indigoPrimary/10 hover:border-indigoPrimary transition-all text-center group shadow-sm">
-                    <div class="w-12 h-12 rounded-full bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center mx-auto mb-4 text-xl group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-brain"></i>
-                    </div>
-                    <h3 class="font-bold text-indigoPrimary mb-2 text-base">Minat dan bakat sering tidak seimbang</h3>
-                    <p class="text-xs text-gray-500 leading-relaxed">Suka suatu bidang tapi merasa ragu dengan potensi kemampuan akademiknya.</p>
-                </div>
-
-                <div class="p-6 rounded-2xl bg-softSky border border-indigoPrimary/10 hover:border-indigoPrimary transition-all text-center group shadow-sm">
-                    <div class="w-12 h-12 rounded-full bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center mx-auto mb-4 text-xl group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-map-signs"></i>
-                    </div>
-                    <h3 class="font-bold text-indigoPrimary mb-2 text-base">Sulit menentukan masa depan kuliah</h3>
-                    <p class="text-xs text-gray-500 leading-relaxed">Bingung memilih antara PTN, PTS, atau pilihan kedinasan yang sesuai.</p>
-                </div>
-
-                <div class="p-6 rounded-2xl bg-softSky border border-indigoPrimary/10 hover:border-indigoPrimary transition-all text-center group shadow-sm">
-                    <div class="w-12 h-12 rounded-full bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center mx-auto mb-4 text-xl group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-building-columns"></i>
-                    </div>
-                    <h3 class="font-bold text-indigoPrimary mb-2 text-base">Bingung memilih universitas yang tepat</h3>
-                    <p class="text-xs text-gray-500 leading-relaxed">Informasi kampus tersebar dan sulit membandingkan akreditasi prodi.</p>
-                </div>
-
-                <div class="p-6 rounded-2xl bg-softSky border border-indigoPrimary/10 hover:border-indigoPrimary transition-all text-center group shadow-sm">
-                    <div class="w-12 h-12 rounded-full bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center mx-auto mb-4 text-xl group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-user-ninja"></i>
-                    </div>
-                    <h3 class="font-bold text-indigoPrimary mb-2 text-base">Ikut-ikutan dengan pilihan teman</h3>
-                    <p class="text-xs text-gray-500 leading-relaxed">Memilih jurusan tanpa menganalisis hasil tes peminatan pribadi.</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION: Layanan Utama Kami Bantu Menemukan Jurusan yang Tepat (DITEMPEL PERSIS DARI KODE 1) -->
+    <!-- SECTION: Layanan Utama Kami Bantu Menemukan Jurusan yang Tepat -->
     <section id="fitur" class="py-16 md:py-20 bg-brand-bgLight">
         <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 text-center">
 
@@ -410,28 +432,38 @@
         </div>
     </section>
 
-    <!-- Fitur Kuis Interaktif Cepat Minat & Bakat -->
-    <section id="kuis" class="py-16 sm:py-24 bg-gradient-to-tr from-indigoPrimary/5 via-softSky to-coralOrange/5 relative">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Fitur Kuis Interaktif Cepat Minat & Bakat (Vibrant Background) -->
+    <section id="kuis" class="py-16 sm:py-24 bg-gradient-to-br from-brand-indigo/10 via-brand-bgLight to-brand-coral/10 relative overflow-hidden border-y border-brand-indigo/15">
+
+        <!-- Pola Titik-Titik Halus (Dot Pattern) yang Kontras -->
+        <div class="absolute inset-0 opacity-40 pointer-events-none -z-10" style="background-image: radial-gradient(#3650A2 1.5px, transparent 1.5px); background-size: 28px 28px;"></div>
+
+        <!-- Efek Cahaya Gradien Mengalir / Blobs yang Lebih Menonjol -->
+        <div class="absolute -top-20 -left-20 w-96 h-96 bg-brand-coral/20 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse"></div>
+        <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-brand-indigo/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center max-w-2xl mx-auto mb-10">
-                <span class="text-coralOrange font-bold text-sm tracking-widest uppercase">Coba Tes Langsung</span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-indigoPrimary mt-2">
+                <span class="inline-block bg-brand-coral text-white font-bold text-xs tracking-wider uppercase px-4 py-1.5 rounded-full mb-3 shadow-md shadow-brand-coral/20">
+                    Coba Tes Langsung
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-brand-indigo mt-2">
                     Kuis Cepat Minat & Bakat
                 </h2>
-                <p class="text-gray-600 mt-2 text-sm sm:text-base">
+                <p class="text-brand-textGray mt-2 text-sm sm:text-base font-medium">
                     Jawab 3 pertanyaan singkat di bawah ini untuk melihat rekomendasi awal dari Mauny!
                 </p>
             </div>
 
-            <div class="bg-white rounded-3xl p-6 sm:p-10 border border-indigoPrimary/10 shadow-xl relative overflow-hidden">
+            <div class="bg-white/90 backdrop-blur-xl rounded-3xl p-6 sm:p-10 border border-white shadow-2xl shadow-brand-indigo/10 relative overflow-hidden">
                 <!-- Progress Bar Kuis -->
                 <div class="mb-8">
-                    <div class="flex justify-between text-xs font-bold text-indigoPrimary mb-2">
+                    <div class="flex justify-between text-xs font-bold text-brand-indigo mb-2">
                         <span id="quiz-progress-text">Pertanyaan 1 dari 3</span>
                         <span id="quiz-progress-percent">33%</span>
                     </div>
-                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-                        <div id="quiz-progress-bar" class="bg-gradient-to-r from-indigoPrimary to-coralOrange h-full transition-all duration-300" style="width: 33%"></div>
+                    <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden shadow-inner">
+                        <div id="quiz-progress-bar" class="bg-gradient-to-r from-brand-indigo to-brand-coral h-full transition-all duration-300" style="width: 33%"></div>
                     </div>
                 </div>
 
@@ -439,22 +471,22 @@
                 <div id="quiz-container">
                     <!-- Pertanyaan 1 -->
                     <div class="quiz-step" data-step="1">
-                        <h3 class="text-lg sm:text-xl font-bold text-indigoPrimary mb-4">1. Kegiatan apa yang paling kamu nikmati saat ada waktu luang?</h3>
+                        <h3 class="text-lg sm:text-xl font-bold text-brand-indigo mb-4">1. Kegiatan apa yang paling kamu nikmati saat ada waktu luang?</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <button onclick="nextQuizStep(1, 'tekno')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">A</span>
+                            <button onclick="nextQuizStep(1, 'tekno')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">A</span>
                                 <span>Mengkulik aplikasi, koding, atau gadget baru</span>
                             </button>
-                            <button onclick="nextQuizStep(1, 'desain')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">B</span>
+                            <button onclick="nextQuizStep(1, 'desain')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">B</span>
                                 <span>Menggambar, membuat konten, atau desain digital</span>
                             </button>
-                            <button onclick="nextQuizStep(1, 'bisnis')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">C</span>
+                            <button onclick="nextQuizStep(1, 'bisnis')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">C</span>
                                 <span>Merencanakan usaha kecil atau berjualan online</span>
                             </button>
-                            <button onclick="nextQuizStep(1, 'sosial')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">D</span>
+                            <button onclick="nextQuizStep(1, 'sosial')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">D</span>
                                 <span>Berdiskusi, mendengarkan curhat, atau organisasi</span>
                             </button>
                         </div>
@@ -462,22 +494,22 @@
 
                     <!-- Pertanyaan 2 -->
                     <div class="quiz-step hidden" data-step="2">
-                        <h3 class="text-lg sm:text-xl font-bold text-indigoPrimary mb-4">2. Lingkungan kerja seperti apa yang kamu cita-citakan?</h3>
+                        <h3 class="text-lg sm:text-xl font-bold text-brand-indigo mb-4">2. Lingkungan kerja seperti apa yang kamu cita-citakan?</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <button onclick="nextQuizStep(2, 'tekno')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">A</span>
+                            <button onclick="nextQuizStep(2, 'tekno')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">A</span>
                                 <span>Perusahaan teknologi modern / Software House</span>
                             </button>
-                            <button onclick="nextQuizStep(2, 'desain')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">B</span>
+                            <button onclick="nextQuizStep(2, 'desain')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">B</span>
                                 <span>Studio Kreatif, Agensi Desain, atau Media</span>
                             </button>
-                            <button onclick="nextQuizStep(2, 'bisnis')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">C</span>
+                            <button onclick="nextQuizStep(2, 'bisnis')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">C</span>
                                 <span>Kantor Korporasi, Startup, atau Bisnis Mandiri</span>
                             </button>
-                            <button onclick="nextQuizStep(2, 'sosial')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">D</span>
+                            <button onclick="nextQuizStep(2, 'sosial')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">D</span>
                                 <span>Lembaga Pendidikan, Konsultan, atau RS/Klinik</span>
                             </button>
                         </div>
@@ -485,22 +517,22 @@
 
                     <!-- Pertanyaan 3 -->
                     <div class="quiz-step hidden" data-step="3">
-                        <h3 class="text-lg sm:text-xl font-bold text-indigoPrimary mb-4">3. Apa mata pelajaran sekolah favoritmu?</h3>
+                        <h3 class="text-lg sm:text-xl font-bold text-brand-indigo mb-4">3. Apa mata pelajaran sekolah favoritmu?</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <button onclick="showQuizResult('tekno')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">A</span>
+                            <button onclick="showQuizResult('tekno')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">A</span>
                                 <span>Matematika, Informatika, atau Fisika</span>
                             </button>
-                            <button onclick="showQuizResult('desain')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">B</span>
+                            <button onclick="showQuizResult('desain')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">B</span>
                                 <span>Seni Budaya, Bahasa, atau Prakarya</span>
                             </button>
-                            <button onclick="showQuizResult('bisnis')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">C</span>
+                            <button onclick="showQuizResult('bisnis')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">C</span>
                                 <span>Ekonomi, Akuntansi, atau Kewirausahaan</span>
                             </button>
-                            <button onclick="showQuizResult('sosial')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-indigoPrimary hover:bg-softSky transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group">
-                                <span class="w-8 h-8 rounded-xl bg-indigoPrimary/10 text-indigoPrimary flex items-center justify-center font-bold text-xs group-hover:bg-indigoPrimary group-hover:text-white transition-colors">D</span>
+                            <button onclick="showQuizResult('sosial')" class="p-4 text-left rounded-2xl border border-gray-200 hover:border-brand-indigo hover:bg-brand-bgLight transition-all text-sm font-semibold text-gray-700 flex items-center gap-3 group shadow-sm">
+                                <span class="w-8 h-8 rounded-xl bg-brand-indigo/10 text-brand-indigo flex items-center justify-center font-bold text-xs group-hover:bg-brand-indigo group-hover:text-white transition-colors">D</span>
                                 <span>Sosiologi, Geografi, atau Bimbingan Konseling</span>
                             </button>
                         </div>
@@ -508,15 +540,15 @@
 
                     <!-- Hasil Kuis -->
                     <div id="quiz-result" class="hidden text-center space-y-6">
-                        <div class="w-20 h-20 bg-coralOrange/10 rounded-full flex items-center justify-center mx-auto text-coralOrange text-4xl">
+                        <div class="w-20 h-20 bg-brand-coral/10 rounded-full flex items-center justify-center mx-auto text-brand-coral text-4xl shadow-md">
                             🐉
                         </div>
-                        <h3 class="text-2xl font-extrabold text-indigoPrimary" id="result-title">Rekomendasi Awal Mauny:</h3>
-                        <p class="text-gray-600 text-sm max-w-lg mx-auto leading-relaxed" id="result-desc">
+                        <h3 class="text-2xl font-extrabold text-brand-indigo" id="result-title">Rekomendasi Awal Mauny:</h3>
+                        <p class="text-brand-textGray text-sm max-w-lg mx-auto leading-relaxed" id="result-desc">
                             Berdasarkan jawabanmu, kamu memiliki potensi kuat di bidang Teknologi Informasi dan Rekayasa Perangkat Lunak!
                         </p>
                         <div class="pt-2">
-                            <button onclick="resetQuiz()" class="bg-indigoPrimary hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-md">
+                            <button onclick="resetQuiz()" class="bg-brand-indigo hover:bg-indigo-900 text-white px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-lg shadow-brand-indigo/20">
                                 Ulangi Kuis
                             </button>
                         </div>
@@ -589,207 +621,400 @@
         </div>
     </section>
 
-    <!-- SECTION: Rekomendasi Universitas & Fitur Pencarian Interaktif -->
-    <section id="rekomendasi" class="py-16 sm:py-24 bg-softSky relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-10">
-                <span class="text-coralOrange font-bold text-sm tracking-widest uppercase">Pilihan Kampus & Jurusan</span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-indigoPrimary mt-2">
-                    Rekomendasi Universitas Sesuai Potensimu
-                </h2>
-                <p class="text-gray-600 mt-2 text-sm sm:text-base">
-                    Sistem pemetaan pintar MyUniv mencocokkan profil minat, bakat, dan akademismu dengan kampus impian.
-                </p>
-            </div>
+<!-- SECTION: Rekomendasi Universitas & Slider Top 10 PTN/PTS Jawa Barat -->
+    <section id="rekomendasi" class="py-16 sm:py-24 bg-brand-bgLight relative overflow-hidden">
+        <!-- Dekorasi Background Blur Blobs Halus -->
+        <div class="absolute top-10 left-1/4 w-96 h-96 bg-brand-indigo/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-brand-coral/5 rounded-full blur-3xl pointer-events-none"></div>
 
-            <!-- Fitur Search Bar Kampus -->
-            <div class="max-w-md mx-auto mb-12">
-                <div class="relative">
-                    <input type="text" id="searchCampus" onkeyup="filterCards()" placeholder="Cari jurusan atau nama kampus..." class="w-full px-5 py-3 pl-12 rounded-2xl border border-indigoPrimary/20 focus:outline-none focus:ring-2 focus:ring-indigoPrimary/50 text-sm shadow-sm bg-white">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                <div>
+                    <span class="inline-block bg-brand-pillBg text-brand-coral font-bold text-xs tracking-wider uppercase px-4 py-1.5 rounded-full mb-3 shadow-sm">
+                        Pilihan Kampus & Jurusan
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-brand-indigo mt-1">
+                        Top 10 PTN & PTS Unggulan di Jawa Barat
+                    </h2>
+                    <p class="text-brand-textGray mt-2 text-sm sm:text-base font-medium max-w-xl">
+                        Geser untuk menjelajahi rekomendasi kampus terbaik yang disesuaikan dengan hasil asesmen minat & bakatmu.
+                    </p>
                 </div>
             </div>
 
             <div class="grid lg:grid-cols-12 gap-8 items-start">
                 <!-- Sidebar Asesmen -->
-                <div class="lg:col-span-4 bg-white rounded-2xl p-6 border border-indigoPrimary/10 shadow-md relative overflow-hidden">
-                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-                        <div class="w-12 h-12 bg-indigoPrimary rounded-xl flex items-center justify-center text-white text-xl shadow-md">
+                <div class="lg:col-span-4 bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-7 border border-brand-indigo/10 shadow-xl shadow-brand-indigo/5 relative overflow-hidden">
+                    <div class="flex items-center gap-3.5 mb-6 pb-4 border-b border-gray-100">
+                        <div class="w-12 h-12 bg-brand-indigo rounded-2xl flex items-center justify-center text-white text-xl shadow-md shadow-brand-indigo/20">
                             <i class="fa-solid fa-id-card"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-indigoPrimary text-lg">Hasil Asesmenku</h3>
-                            <p class="text-xs text-gray-500">Ringkasan Psikotes & TKA</p>
+                            <h3 class="font-bold text-brand-indigo text-base sm:text-lg">Hasil Asesmenku</h3>
+                            <p class="text-xs text-brand-textGray font-medium">Ringkasan Psikotes & TKA</p>
                         </div>
                     </div>
 
                     <div class="space-y-4 text-sm">
                         <div>
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="text-indigoPrimary">Logika & Sains Data</span>
-                                <span class="text-coralOrange font-bold">92%</span>
+                            <div class="flex justify-between text-xs font-bold mb-1.5">
+                                <span class="text-brand-indigo">Logika & Sains Data</span>
+                                <span class="text-brand-coral font-extrabold">92%</span>
                             </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-indigoPrimary h-2 rounded-full" style="width: 92%"></div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="text-indigoPrimary">Desain & Kreativitas</span>
-                                <span class="text-coralOrange font-bold">88%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-coralOrange h-2 rounded-full" style="width: 88%"></div>
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-brand-indigo h-full rounded-full transition-all duration-500" style="width: 92%"></div>
                             </div>
                         </div>
 
                         <div>
-                            <div class="flex justify-between text-xs font-semibold mb-1">
-                                <span class="text-indigoPrimary">Manajemen & Komunikasi</span>
-                                <span class="text-coralOrange font-bold">75%</span>
+                            <div class="flex justify-between text-xs font-bold mb-1.5">
+                                <span class="text-brand-indigo">Desain & Kreativitas</span>
+                                <span class="text-brand-coral font-extrabold">88%</span>
                             </div>
-                            <div class="w-full bg-gray-100 rounded-full h-2">
-                                <div class="bg-indigoPrimary/70 h-2 rounded-full" style="width: 75%"></div>
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-brand-coral h-full rounded-full transition-all duration-500" style="width: 88%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold mb-1.5">
+                                <span class="text-brand-indigo">Manajemen & Komunikasi</span>
+                                <span class="text-brand-coral font-extrabold">75%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-brand-indigo/70 h-full rounded-full transition-all duration-500" style="width: 75%"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-6 pt-4 border-t border-gray-100">
-                        <span class="text-xs font-semibold text-gray-500 block mb-2">Karakter Utama:</span>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="bg-softSky text-indigoPrimary text-xs font-bold px-3 py-1 rounded-lg border border-indigoPrimary/20"><i class="fa-solid fa-bolt text-coralOrange mr-1"></i> Analitis</span>
-                            <span class="bg-softSky text-indigoPrimary text-xs font-bold px-3 py-1 rounded-lg border border-indigoPrimary/20"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Problem Solver</span>
-                            <span class="bg-softSky text-indigoPrimary text-xs font-bold px-3 py-1 rounded-lg border border-indigoPrimary/20"><i class="fa-solid fa-palette text-purple-500 mr-1"></i> Kreatif</span>
+                    <!-- Catatan Mauny -->
+                    <div class="mt-6 bg-gradient-to-br from-brand-indigo/5 to-brand-coral/5 rounded-2xl p-4 border border-brand-indigo/15 flex items-center gap-3.5 shadow-sm">
+                        <div class="w-11 h-11 rounded-2xl bg-white p-1 border border-brand-indigo/20 shrink-0 shadow-sm overflow-hidden">
+                            <img src="{{ asset('images/head.png') }}"
+                            onerror="this.onerror=null; this.src='https://placehold.co/100x100/F4FAFF/3650A2?text=Mauny'"
+                            alt="Mauny"
+                            class="w-full h-full rounded-full object-cover">
                         </div>
-                    </div>
-
-                    <div class="mt-6 bg-indigoPrimary/5 rounded-xl p-4 border border-indigoPrimary/15 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-white p-1 border border-indigoPrimary/20 shrink-0">
-                            <img src="image_88917e.jpg" onerror="this.onerror=null; this.src='https://placehold.co/100x100/F4FAFF/3650A2?text=Mauny'" alt="Mauny" class="w-full h-full rounded-full object-cover">
-                        </div>
-                        <p class="text-xs text-indigoPrimary leading-tight">
-                            <strong class="block text-coralOrange">Catatan Mauny:</strong>
-                            Potensimu tinggi di bidang teknologi & kreatif! Cek pilihan kampus di samping.
+                        <p class="text-xs text-brand-indigo leading-relaxed font-medium">
+                            <strong class="block text-brand-coral font-bold text-xs mb-0.5">Catatan Mauny:</strong>
+                            Semua kampus di samping lokasinya strategis di Jawa Barat. Yuk tentukan pilihanmu!
                         </p>
                     </div>
                 </div>
 
-                <!-- Campus Grid -->
-                <div class="lg:col-span-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="campusGrid">
+                <!-- Campus Horizontal Slider (Top 10 PTN/PTS Jabar) dengan padding agar shadow aman -->
+                <div class="lg:col-span-8 overflow-visible">
+                    <div id="campusSlider" class="flex gap-6 overflow-x-auto py-6 -my-6 px-2 -mx-2 scroll-smooth snap-x snap-mandatory no-scrollbar">
 
-                    <!-- Kampus 1 -->
-                    <div class="campus-card bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between group">
-                        <div>
-                            <div class="bg-gradient-to-r from-indigoPrimary to-indigo-700 p-4 text-white relative">
-                                <span class="absolute top-3 right-3 bg-coralOrange text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Top Match 96%</span>
-                                <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white mb-2">
-                                    <i class="fa-solid fa-building-columns text-lg"></i>
+                        <!-- Kampus 1: ITB -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=600&q=80" alt="ITB" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-coral text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 98%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-brand-indigo">ITB</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Institut Teknologi Bandung</h4>
+                                            <p class="text-[11px] text-gray-200">PTN • Bandung</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h4 class="font-extrabold text-base leading-snug campus-title">Universitas Indonesia / ITB</h4>
-                                <p class="text-xs text-indigo-100">PTN - Akreditasi Unggul</p>
-                            </div>
-                            <div class="p-5 space-y-3">
                                 <div>
-                                    <span class="text-xs text-gray-400 block font-medium">Rekomendasi Program Studi:</span>
-                                    <span class="font-bold text-indigoPrimary text-sm block mt-0.5 campus-major">Teknik Informatika / Data Science</span>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Teknik Informatika & STEI</span>
                                 </div>
-                                <div class="text-xs text-gray-600 space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-graduation-cap text-coralOrange"></i>
-                                        <span>Daya Tampung: 120 Kursi</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-briefcase text-indigoPrimary"></i>
-                                        <span>Prospek: Software Engineer, AI Specialist</span>
-                                    </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul / Internasional</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="p-5 pt-0">
-                            <a href="#detail" class="w-full bg-softSky hover:bg-indigoPrimary hover:text-white text-indigoPrimary text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 border border-indigoPrimary/10">
-                                <span>Lihat Detail Kampus</span>
-                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                            </a>
-                        </div>
-                    </div>
 
-                    <!-- Kampus 2 -->
-                    <div class="campus-card bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between group">
-                        <div>
-                            <div class="bg-gradient-to-r from-indigoPrimary to-indigo-700 p-4 text-white relative">
-                                <span class="absolute top-3 right-3 bg-indigoPrimary/80 border border-white/30 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Match 89%</span>
-                                <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white mb-2">
-                                    <i class="fa-solid fa-building-columns text-lg"></i>
+                        <!-- Kampus 2: Universitas Indonesia -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&q=80" alt="UI" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-coral text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 95%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-brand-indigo">UI</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Indonesia</h4>
+                                            <p class="text-[11px] text-gray-200">PTN • Depok</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h4 class="font-extrabold text-base leading-snug campus-title">Telkom University</h4>
-                                <p class="text-xs text-indigo-100">PTS - Akreditasi Unggul</p>
-                            </div>
-                            <div class="p-5 space-y-3">
                                 <div>
-                                    <span class="text-xs text-gray-400 block font-medium">Rekomendasi Program Studi:</span>
-                                    <span class="font-bold text-indigoPrimary text-sm block mt-0.5 campus-major">Desain Komunikasi Visual (DKV)</span>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Ilmu Komputer & Sistem Informasi</span>
                                 </div>
-                                <div class="text-xs text-gray-600 space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-graduation-cap text-coralOrange"></i>
-                                        <span>Daya Tampung: 200 Kursi</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-briefcase text-indigoPrimary"></i>
-                                        <span>Prospek: UI/UX Designer, Art Director</span>
-                                    </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul / Internasional</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="p-5 pt-0">
-                            <a href="#detail" class="w-full bg-softSky hover:bg-indigoPrimary hover:text-white text-indigoPrimary text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 border border-indigoPrimary/10">
-                                <span>Lihat Detail Kampus</span>
-                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                            </a>
-                        </div>
-                    </div>
 
-                    <!-- Kampus 3 -->
-                    <div class="campus-card bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col justify-between group">
-                        <div>
-                            <div class="bg-gradient-to-r from-indigoPrimary to-indigo-700 p-4 text-white relative">
-                                <span class="absolute top-3 right-3 bg-indigoPrimary/80 border border-white/30 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Match 84%</span>
-                                <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white mb-2">
-                                    <i class="fa-solid fa-building-columns text-lg"></i>
+                        <!-- Kampus 3: Universitas Padjadjaran -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-14982436915f1-b58e72e2d787?auto=format&fit=crop&w=600&q=80" alt="Unpad" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 91%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-brand-indigo">UNPAD</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Padjadjaran</h4>
+                                            <p class="text-[11px] text-gray-200">PTN • Jatinangor, Sumedang</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <h4 class="font-extrabold text-base leading-snug campus-title">Universitas Padjadjaran</h4>
-                                <p class="text-xs text-indigo-100">PTN - Akreditasi Unggul</p>
-                            </div>
-                            <div class="p-5 space-y-3">
                                 <div>
-                                    <span class="text-xs text-gray-400 block font-medium">Rekomendasi Program Studi:</span>
-                                    <span class="font-bold text-indigoPrimary text-sm block mt-0.5 campus-major">Bisnis Digital / Manajemen</span>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Bisnis Digital & Ilmu Komunikasi</span>
                                 </div>
-                                <div class="text-xs text-gray-600 space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-graduation-cap text-coralOrange"></i>
-                                        <span>Daya Tampung: 90 Kursi</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-briefcase text-indigoPrimary"></i>
-                                        <span>Prospek: Digital Marketer, Consultant</span>
-                                    </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="p-5 pt-0">
-                            <a href="#detail" class="w-full bg-softSky hover:bg-indigoPrimary hover:text-white text-indigoPrimary text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 border border-indigoPrimary/10">
-                                <span>Lihat Detail Kampus</span>
-                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                            </a>
-                        </div>
-                    </div>
 
+                        <!-- Kampus 4: Telkom University -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80" alt="Telkom" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 90%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-[10px] font-bold text-brand-indigo">TEL-U</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Telkom University</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Bandung</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">DKV & Teknik Informatika</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>PTS #1 di Indonesia</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 5: IPB University -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1592280771190-3e2e4d57ffa9?auto=format&fit=crop&w=600&q=80" alt="IPB" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 88%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-brand-indigo">IPB</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">IPB University</h4>
+                                            <p class="text-[11px] text-gray-200">PTN • Bogor</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Ilmu Komputer & Statistika</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 6: Universitas Pendidikan Indonesia (UPI) -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=600&q=80" alt="UPI" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 86%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-brand-indigo">UPI</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Pendidikan Indonesia</h4>
+                                            <p class="text-[11px] text-gray-200">PTN • Bandung</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Pendidikan Ilmu Komputer & Desain</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 7: Universitas Islam Bandung (Unisba) -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=600&q=80" alt="Unisba" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 84%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-[10px] font-bold text-brand-indigo">UNISBA</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Islam Bandung</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Bandung</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Teknik Informatika & Ilmu Komunikasi</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>PTS Favorit di Bandung</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 8: Universitas Pasundan (Unpas) -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80" alt="Unpas" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 82%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-[10px] font-bold text-brand-indigo">UNPAS</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Pasundan</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Bandung</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Teknik Informatika & Manajemen</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 9: Universitas Jenderal Achmad Yani (Unjani) -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80" alt="Unjani" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 80%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-[10px] font-bold text-brand-indigo">UNJANI</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Jenderal Achmad Yani</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Cimahi</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Informatika & Kedokteran</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Kampus Cimahi / Bandung Raya</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 10: Universitas Kristen Maranatha -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1564979291008-3796f7c6d48c?auto=format&fit=crop&w=600&q=80" alt="Maranatha" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 79%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-[9px] font-bold text-brand-indigo">MRN</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Kristen Maranatha</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Bandung</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Arsitektur & DKV</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Fasilitas Modern & Kreatif</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Script Tambahan untuk Fungsi Tombol Geser -->
+    <script>
+        function scrollSlider(direction) {
+            const slider = document.getElementById('campusSlider');
+            const scrollAmount = 320; // Ukuran lebar card + gap
+            if (direction === 'left') {
+                slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else {
+                slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+        }
+    </script>
+
+    <style>
+        /* Utility untuk menyembunyikan scrollbar namun tetap bisa digeser */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
 
     <!-- SECTION: Percaya Diri Melangkah -->
     <section class="py-20 bg-white border-y border-gray-200">
@@ -816,7 +1041,7 @@
                                 A
                             </div>
                             <div>
-                                <h4 class="font-bold text-sm text-indigoPrimary" id="spotlight-author">Anisa Rahmawati</h4>
+                                <h4 class="font-bold text-sm text-indigoPrimary" id="spotlight-author">Anggia Tresa</h4>
                                 <p class="text-xs text-gray-500" id="spotlight-role">Siswa XII RPL - Lolos SNBP Teknik Informatika</p>
                             </div>
                         </div>
@@ -837,7 +1062,7 @@
                             A
                         </div>
                         <div>
-                            <h4 class="font-bold text-xs text-indigoPrimary">Anisa Rahmawati</h4>
+                            <h4 class="font-bold text-xs text-indigoPrimary">Anggia Tresa</h4>
                             <p class="text-[10px] text-gray-400">Kelas XII RPL</p>
                         </div>
                     </div>
@@ -853,7 +1078,7 @@
                             B
                         </div>
                         <div>
-                            <h4 class="font-bold text-xs text-indigoPrimary">Budi Santoso</h4>
+                            <h4 class="font-bold text-xs text-indigoPrimary">Tiara Maharani</h4>
                             <p class="text-[10px] text-gray-400">Kelas XII TKJ</p>
                         </div>
                     </div>
@@ -869,7 +1094,7 @@
                             C
                         </div>
                         <div>
-                            <h4 class="font-bold text-xs text-indigoPrimary">Citra Dewi</h4>
+                            <h4 class="font-bold text-xs text-indigoPrimary">Salsabila</h4>
                             <p class="text-[10px] text-gray-400">Kelas XII AKL</p>
                         </div>
                     </div>
@@ -985,7 +1210,7 @@
                         Jl. Babakan Tiga No. 82, Ciwidey, Kec. Ciwidey, Kabupaten Bandung, Jawa Barat 40925
                     </p>
                     <div class="pt-1 space-y-1 text-gray-500">
-                        <p><i class="fa-solid fa-phone text-coralOrange mr-2"></i>(022) 5928123 / Hotline BK</p>
+                        <p><i class="fa-solid fa-phone text-coralOrange mr-2"></i>(+62) 813-2251-2633 / Hotline BK</p>
                         <p><i class="fa-solid fa-envelope text-coralOrange mr-2"></i>info@smkbudibakticiwidey.sch.id</p>
                     </div>
                 </div>
@@ -1021,9 +1246,9 @@
             <div class="pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-gray-400 text-[11px]">
                 <p>&copy; 2026 MyUniv - SKYNIS Prism SMK Budi Bakti Ciwidey. All rights reserved.</p>
                 <div class="flex space-x-4 text-sm text-indigoPrimary">
-                    <a href="#" class="hover:text-coralOrange transition-colors"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="hover:text-coralOrange transition-colors"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#" class="hover:text-coralOrange transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/info.smkbudibakticiwidey/" class="hover:text-coralOrange transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/smkbudibakticiwideyreal/?locale=id_ID" class="hover:text-coralOrange transition-colors"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://www.youtube.com/@smkbbc" class="hover:text-coralOrange transition-colors"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>
         </div>
@@ -1038,7 +1263,10 @@
                 <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-coralOrange"></span>
             </span>
             <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden shrink-0 border border-white/40">
-                <img src="image_88917e.jpg" onerror="this.onerror=null; this.src='https://placehold.co/100x100/3650A2/FFFFFF?text=Mauny'" alt="Mauny Chat" class="w-full h-full object-cover">
+                <img src="{{ asset('images/head.png') }}"
+                onerror="this.onerror=null; this.src='https://placehold.co/100x100/3650A2/FFFFFF?text=Mauny'"
+                alt="Mauny Chat"
+                class="w-full h-full object-cover">
             </div>
         </button>
 
@@ -1048,10 +1276,13 @@
             <div class="bg-gradient-to-r from-indigoPrimary to-indigo-700 p-4 text-white flex items-center justify-between shadow-sm">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-full bg-white/20 border border-white/30 p-0.5 overflow-hidden">
-                        <img src="image_88917e.jpg" onerror="this.onerror=null; this.src='https://placehold.co/100x100/FFFFFF/3650A2?text=Mauny'" alt="Mauny AI" class="w-full h-full rounded-full object-cover">
+                        <img src="{{ asset('images/head.png') }}"
+                        onerror="this.onerror=null; this.src='https://placehold.co/100x100/FFFFFF/3650A2?text=Mauny'"
+                        alt="Mauny AI"
+                        class="w-full h-full rounded-full object-cover">
                     </div>
                     <div>
-                        <h4 class="font-extrabold text-sm leading-tight">Asisten Mauny 🐉</h4>
+                        <h4 class="font-extrabold text-sm leading-tight">Asisten Mauny </h4>
                         <span class="text-[10px] text-emerald-300 flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Online AI Assistant
                         </span>
@@ -1154,20 +1385,20 @@
         const testimonialData = {
             1: {
                 text: '"Tesnya sangat interaktif dan hasilnya sesuai banget dengan minat koding saya. Rekomendasi kampusnya membantu saya menentukan SNBP!"',
-                author: 'Anisa Rahmawati',
+                author: 'Anggia Tresa',
                 role: 'Siswa XII RPL - Lolos SNBP Teknik Informatika',
                 avatar: 'A'
             },
             2: {
                 text: '"Awalnya bingung bedanya S1 dan D4, tapi lewat fitur Education Planning di MyUniv semuanya jadi terstruktur dengan rapi."',
-                author: 'Budi Santoso',
+                author: 'Tiara Maharani',
                 role: 'Siswa XII TKJ - Persiapan Mandiri Telkom Univ',
                 avatar: 'B'
             },
             3: {
                 text: '"Fitur konsultasi ke Guru BK via WhatsApp gampang banget, tinggal klik langsung terhubung dengan template pesan yang sopan."',
-                author: 'Citra Dewi',
-                role: 'Siswa XII AKL - Lolos SNBP Akuntansi',
+                author: 'Salsabila',
+                role: 'Siswa XII - Lolos SNBP Elektro',
                 avatar: 'C'
             }
         };
