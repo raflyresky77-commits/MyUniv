@@ -9,16 +9,26 @@ class EducationPlan extends Model
 {
     use HasFactory;
 
-    protected $table = 'education_plans'; // Sesuai PRD[cite: 3]
+    /**
+     * Nama tabel yang digunakan di database.
+     * Sesuai dengan spesifikasi PRD untuk perencanaan studi siswa.
+     */
+    protected $table = 'education_plans';
 
+    /**
+     * Atribut yang dapat diisi secara massal (mass assignable).
+     */
     protected $fillable = [
         'user_id',
         'title',
         'target_date',
-        'status', // pending, in_progress, completed[cite: 3]
+        'status', // pending, in_progress, completed
         'notes',
     ];
 
+    /**
+     * Relasi kebalikannya: Rencana pendidikan ini milik siapa (User).
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

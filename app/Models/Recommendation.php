@@ -9,8 +9,15 @@ class Recommendation extends Model
 {
     use HasFactory;
 
-    protected $table = 'recommendations'; // Atau relasi langsung ke tabel majors / student recommendations
+    /**
+     * Nama tabel yang digunakan di database.
+     * Sesuaikan dengan nama tabel di database partner kamu jika berbeda.
+     */
+    protected $table = 'recommendations';
 
+    /**
+     * Atribut yang dapat diisi secara massal (mass assignable).
+     */
     protected $fillable = [
         'user_id',
         'major_name',
@@ -18,6 +25,9 @@ class Recommendation extends Model
         'description',
     ];
 
+    /**
+     * Relasi kebalikannya: Rekomendasi ini milik siapa (User).
+     */
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class AssessmentResult extends Model
 {
-    use HasFactory;
+/**
+     * Nama tabel yang digunakan di database.
+     * Sesuaikan dengan nama tabel yang dibuat oleh partner kamu (misal: 'student_assessments' atau 'assessment_results').
+     */
+    protected $table = 'assessment_results';
 
-    protected $table = 'student_assessments'; // Sesuai nama tabel di PRD
-
+    /**
+     * Atribut yang dapat diisi secara massal (mass assignable).
+     */
     protected $fillable = [
         'user_id',
         'assessment_id',
@@ -19,6 +24,9 @@ class AssessmentResult extends Model
         'completed_at',
     ];
 
+    /**
+     * Relasi kebalikannya: Hasil asesmen ini milik siapa (User).
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
