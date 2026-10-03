@@ -18,25 +18,25 @@ class LoginController extends Controller
     public function store(Request $request)
     {
         $credentials = $request->validate([
-            'login' => ['required'],
+            'login' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        $field = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-
-        if (Auth::attempt([$field => $credentials['login'], 'password' => $credentials['password']])) {
+        if (Auth::attempt([
+            'email' => $credentials['login'],
+            'password' => $credentials['password'],
+        ])) {
             $request->session()->regenerate();
 
+            if (Auth::user()->role_id == 3) {
+                return redirect()->route('admin.dashboard');
+            }
 
-        if (Auth::attempt([$field => $credentials['login'], 'password' => $credentials['password']])) {
-    $request->session()->regenerate();
-
-    return redirect()->route('student.dashboard');
-}
+            return redirect()->route('student.dashboard');
         }
 
         return back()->withErrors([
-            'login' => 'Username atau password yang Anda masukkan salah.',
+            'login' => 'Email atau password yang Anda masukkan salah.',
         ])->onlyInput('login');
     }
 
@@ -44,6 +44,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

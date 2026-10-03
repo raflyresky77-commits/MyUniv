@@ -2,26 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\AssessmentSubtest;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class question extends Model
+class Question extends Model
 {
+    use HasFactory;
+
+    protected $table = 'questions';
+
     protected $fillable = [
-    'category_id',
-    'subtest_id',
-    'question_text',
-    'type',
-    'is_active',
-];
+        'assessment_id',
+        'subtest_id',
+        'category_id',
+        'question_text',
+        'type',
+        'is_active',
+    ];
 
-public function subtest(): BelongsTo
-{
-    return $this->belongsTo(
-        AssessmentSubtest::class,
-        'subtest_id'
-    );
+    // Relasi ke Assessment
+    public function assessment()
+    {
+        return $this->belongsTo(Assessment::class, 'assessment_id');
+    }
 }
-}
-
