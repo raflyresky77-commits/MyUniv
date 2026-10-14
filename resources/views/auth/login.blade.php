@@ -80,7 +80,7 @@
                 </div>
 
                 @if ($errors->any())
-                    <div class="mb-5 rounded-[6px] border border-[#FF4D5A]/40 bg-[#FF4D5A]/20 px-4 py-3 text-sm text-white">
+                    <div class="mb-5 rounded-2xl border border-[#FF4D5A]/40 bg-[#FF4D5A]/20 px-4 py-3 text-xs text-white">
                         {{ $errors->first() }}
                     </div>
                 @endif
@@ -90,9 +90,9 @@
 
                     <div>
                         <label for="login" class="block mb-2 text-xs font-semibold text-[#F4FAFF] tracking-wide">
-                            Email
+                            Email / Username
                         </label>
-                        <input id="login" name="login" type="text" value="{{ old('login') }}" autocomplete="username" placeholder="Enter your username" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
+                        <input id="login" name="login" type="text" value="{{ old('login') }}" autocomplete="username" placeholder="Masukkan email atau username" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
                         @error('login')
                             <p class="mt-1 text-xs text-[#FF4D5A] pl-4 font-medium">{{ $message }}</p>
                         @enderror
@@ -102,14 +102,30 @@
                         <label for="password" class="block mb-2 text-xs font-semibold text-[#F4FAFF] tracking-wide">
                             Password
                         </label>
-                        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
+                        <div class="relative">
+                            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 pl-5 pr-12 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
+
+                            <!-- Tombol Toggle Mata untuk Password -->
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#C9D7EE] hover:text-white transition focus:outline-none">
+                                <!-- Ikon Mata Terbuka -->
+                                <svg id="eyeOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                <!-- Ikon Mata Dicoret (Hidden) -->
+                                <svg id="eyeClosed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/>
+                                </svg>
+                            </button>
+                        </div>
                         @error('password')
                             <p class="mt-1 text-xs text-[#FF4D5A] pl-4 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div class="flex justify-end pt-1">
-                        <a href="#" class="text-xs text-[#C9D7EE] hover:text-[#FF7A59] transition underline font-medium">
+                        <!-- Tautan Forgot Password yang sudah dihubungkan ke route -->
+                        <a href="{{ route('password.request') }}" class="text-xs text-[#C9D7EE] hover:text-[#FF7A59] transition underline font-medium">
                             Forgot Password?
                         </a>
                     </div>
@@ -136,5 +152,23 @@
         </div>
     </main>
 
+    <!-- Script JavaScript untuk Toggle Lihat/Sembunyikan Password -->
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeOpen = document.getElementById('eyeOpen');
+            const eyeClosed = document.getElementById('eyeClosed');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeOpen.classList.add('hidden');
+                eyeClosed.classList.remove('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeOpen.classList.remove('hidden');
+                eyeClosed.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>

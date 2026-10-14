@@ -710,7 +710,7 @@
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=600&q=80" alt="ITB" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-ITB.jpg" alt="ITB" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-coral text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 98%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
@@ -734,11 +734,39 @@
                             </div>
                         </div>
 
-                        <!-- Kampus 2: Universitas Indonesia -->
+                        <!-- Kampus 2: Bina Nusantara -->
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&q=80" alt="UI" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-BINUS.png" alt="Bina Nusantara" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-coral text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 95%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-xs font-bold text-brand-indigo">BINUS</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Bina Nusantara</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Jakarta, Tangerang, Bekasi, Bandung, Malang, Semarang, Medan.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Ilmu Komputer & Sistem Informasi</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul / Internasional</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 3: Universitas Indonesia -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="/images/universities/BANNER-UI.jpg" alt="UI" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-coral text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 95%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
@@ -766,7 +794,7 @@
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-14982436915f1-b58e72e2d787?auto=format&fit=crop&w=600&q=80" alt="Unpad" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-Unpad.jpg" alt="Unpad" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 91%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
@@ -794,7 +822,7 @@
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80" alt="Telkom" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-Telkom.jpg" alt="Telkom" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 90%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
@@ -822,7 +850,7 @@
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1592280771190-3e2e4d57ffa9?auto=format&fit=crop&w=600&q=80" alt="IPB" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-IPB.jpg" alt="IPB" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 88%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
@@ -850,7 +878,7 @@
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=600&q=80" alt="UPI" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-UPI.jpg" alt="UPI" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 86%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
@@ -878,7 +906,7 @@
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=600&q=80" alt="Unisba" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-UNISBA.jpg" alt="Unisba" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 84%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
@@ -906,7 +934,7 @@
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80" alt="Unpas" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-UNPAS.jpg" alt="Unpas" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 82%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
@@ -930,48 +958,48 @@
                             </div>
                         </div>
 
-                        <!-- Kampus 9: Universitas Jenderal Achmad Yani (Unjani) -->
+                        <!-- Kampus 9: Institut Teknologi Sepuluh Nopember -->
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80" alt="Unjani" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-ITS.jpg" alt="ITS" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 80%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
                                         <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
-                                            <span class="text-[10px] font-bold text-brand-indigo">UNJANI</span>
+                                            <span class="text-[10px] font-bold text-brand-indigo">ITS</span>
                                         </div>
                                         <div class="min-w-0">
-                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Jenderal Achmad Yani</h4>
-                                            <p class="text-[11px] text-gray-200">PTS • Cimahi</p>
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Institut Teknologi Sepuluh Nopember</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Surabaya</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div>
                                     <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
-                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Informatika & Kedokteran</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Teknik Informatika & Manajemen</span>
                                 </div>
                                 <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
                                     <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
-                                    <span>Kampus Cimahi / Bandung Raya</span>
+                                    <span>Akreditasi Unggul</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Kampus 10: Universitas Kristen Maranatha -->
+                        <!-- Kampus 10: Universitas Gadjah Mada -->
                         <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                             <div class="p-5 space-y-4">
                                 <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
-                                    <img src="https://images.unsplash.com/photo-1564979291008-3796f7c6d48c?auto=format&fit=crop&w=600&q=80" alt="Maranatha" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img src="/images/universities/BANNER-UGM.jpg" alt="Gadjah Mada" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                                     <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 79%</span>
                                     <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
                                         <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
-                                            <span class="text-[9px] font-bold text-brand-indigo">MRN</span>
+                                            <span class="text-[9px] font-bold text-brand-indigo">GDM</span>
                                         </div>
                                         <div class="min-w-0">
-                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Kristen Maranatha</h4>
-                                            <p class="text-[11px] text-gray-200">PTS • Bandung</p>
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Gadjah Mada</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Yogyakarta</p>
                                         </div>
                                     </div>
                                 </div>
@@ -981,7 +1009,63 @@
                                 </div>
                                 <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
                                     <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
-                                    <span>Fasilitas Modern & Kreatif</span>
+                                    <span>Akreditas Unggul</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 11: UIN -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="/images/universities/BANNER-UIN.jpg" alt="UIN" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 79%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-[9px] font-bold text-brand-indigo">UIN</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas Islam Negeri</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Jakarta</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Arsitektur & DKV</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul/Internasional</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kampus 13: Universitas President -->
+                        <div class="min-w-[280px] sm:min-w-[310px] snap-start bg-white rounded-3xl border border-brand-indigo/10 shadow-lg shadow-brand-indigo/5 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-5 space-y-4">
+                                <div class="relative h-44 -mx-5 -mt-5 overflow-hidden">
+                                    <img src="/images/universities/BANNER-PRESIDENT.jpg" alt="President " class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                                    <span class="absolute top-3 right-3 bg-brand-indigo text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">Match 79%</span>
+                                    <div class="absolute bottom-3 left-3 right-3 flex items-center gap-2.5">
+                                        <div class="w-9 h-9 bg-white rounded-xl p-1 shadow-md flex items-center justify-center shrink-0">
+                                            <span class="text-[9px] font-bold text-brand-indigo">PRESIDENT</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h4 class="font-extrabold text-white text-sm leading-tight truncate">Universitas President</h4>
+                                            <p class="text-[11px] text-gray-200">PTS • Jakarta</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-brand-textGray block font-semibold uppercase tracking-wider">Program Studi Unggulan:</span>
+                                    <span class="font-bold text-brand-indigo text-xs block mt-0.5">Arsitektur & DKV</span>
+                                </div>
+                                <div class="text-xs text-brand-textGray flex items-center gap-2 font-medium pt-3 border-t border-gray-100">
+                                    <i class="fa-solid fa-graduation-cap text-brand-coral"></i>
+                                    <span>Akreditasi Unggul/International</span>
                                 </div>
                             </div>
                         </div>
@@ -1168,9 +1252,9 @@
                 Mauny siap mendampingimu kapan saja! Bergabunglah dengan ribuan siswa lain yang telah menemukan arah studi mereka.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                <button onclick="openModal('daftar')" class="w-full sm:w-auto bg-coralOrange hover:bg-orange-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-coralOrange/30 hover:shadow-xl transition-all transform hover:-translate-y-1 text-sm">
+                <a href="{{ route('register') }}" class="w-full sm:w-auto bg-coralOrange hover:bg-orange-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-coralOrange/30 hover:shadow-xl transition-all transform hover:-translate-y-1 text-sm text-center">
                     Daftar Sekarang
-                </button>
+                </a>
                 <a href="#alur" class="w-full sm:w-auto border-2 border-white/40 hover:border-white text-white font-bold px-8 py-4 rounded-xl transition-all hover:bg-white/10 text-sm">
                     Pelajari Alur
                 </a>

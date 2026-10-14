@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Student\AssessmentController as StudentAssessmentController;
 use App\Http\Controllers\Student\ResultController;
@@ -10,7 +11,6 @@ use App\Http\Controllers\Student\ExplorationController;
 use App\Http\Controllers\Student\PlanningController;
 use App\Http\Controllers\Student\ConsultationController;
 use App\Http\Controllers\Student\ProfileController;
-use App\Http\Controllers\Student\ArticleController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
@@ -41,6 +41,10 @@ Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
+
+//Route Forgot Password
+Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 
 /*
 |--------------------------------------------------------------------------
@@ -77,16 +81,12 @@ Route::middleware(['auth', 'role:siswa'])->prefix('student')->name('student.')->
     Route::get('/planning', [PlanningController::class, 'index'])->name('planning.index');
     Route::post('/planning', [PlanningController::class, 'store'])->name('planning.store');
 
-    // Konsultasi BK (SUDAH DIPERBAIKI)
+    // Konsultasi BK
     Route::get('/consultation', [ConsultationController::class, 'index'])->name('consultation.index');
     Route::post('/consultation', [ConsultationController::class, 'store'])->name('consultation.store');
 
     // Profil Siswa
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-
-    // Artikel
-    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
-    Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 });
 
 /*

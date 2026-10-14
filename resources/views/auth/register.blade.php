@@ -71,26 +71,26 @@
             </section>
 
             {{-- KANAN: FORM REGISTER --}}
-            <section class="lg:col-span-5 px-6 py-10 sm:px-12 flex flex-col justify-center text-white relative z-10 bg-[#3650A2]">
+            <section class="lg:col-span-5 px-6 py-6 sm:px-12 flex flex-col justify-center text-white relative z-10 bg-[#3650A2]">
 
-                <div class="mb-6 sm:mb-8">
+                <div class="mb-4">
                     <h1 class="text-[32px] sm:text-[38px] font-bold tracking-tight text-white leading-[40px] sm:leading-[48px]">
                         Register
                     </h1>
-                    <p class="text-xs text-[#C9D7EE] mt-1">Buat akun baru untuk mulai merencanakan masa depanmu.</p>
+                    <p class="text-xs text-[#C9D7EE] mt-0.5">Buat akun baru untuk mulai merencanakan masa depanmu.</p>
                 </div>
 
                 @if ($errors->any())
-                    <div class="mb-5 rounded-[6px] border border-[#FF4D5A]/40 bg-[#FF4D5A]/20 px-4 py-3 text-sm text-white">
+                    <div class="mb-3 rounded-[6px] border border-[#FF4D5A]/40 bg-[#FF4D5A]/20 px-4 py-2.5 text-xs text-white">
                         {{ $errors->first() }}
                     </div>
                 @endif
 
-                <form action="{{ route('register.store') }}" method="POST" class="space-y-4">
+                <form action="{{ route('register.store') }}" method="POST" class="space-y-3">
                     @csrf
 
                     <div>
-                        <label for="name" class="block mb-2 text-xs font-semibold text-[#F4FAFF] tracking-wide">
+                        <label for="name" class="block mb-1.5 text-xs font-semibold text-[#F4FAFF] tracking-wide">
                             Full Name
                         </label>
                         <input id="name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" placeholder="Enter your full name" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
@@ -100,7 +100,7 @@
                     </div>
 
                     <div>
-                        <label for="login" class="block mb-2 text-xs font-semibold text-[#F4FAFF] tracking-wide">
+                        <label for="login" class="block mb-1.5 text-xs font-semibold text-[#F4FAFF] tracking-wide">
                              Email
                         </label>
                         <input id="login" name="login" type="text" value="{{ old('login') }}" autocomplete="username" placeholder="Enter your username or email" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
@@ -110,20 +110,46 @@
                     </div>
 
                     <div>
-                        <label for="password" class="block mb-2 text-xs font-semibold text-[#F4FAFF] tracking-wide">
+                        <label for="password" class="block mb-1.5 text-xs font-semibold text-[#F4FAFF] tracking-wide">
                             Password
                         </label>
-                        <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Create a password" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
+                        <div class="relative">
+                            <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Create a password" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 pl-5 pr-12 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
+
+                            <!-- Tombol Toggle Mata Password -->
+                            <button type="button" onclick="togglePassword('password', 'eyeOpen1', 'eyeClosed1')" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#C9D7EE] hover:text-white transition focus:outline-none">
+                                <svg id="eyeOpen1" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                <svg id="eyeClosed1" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/>
+                                </svg>
+                            </button>
+                        </div>
                         @error('password')
                             <p class="mt-1 text-xs text-[#FF4D5A] pl-4 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <label for="password_confirmation" class="block mb-2 text-xs font-semibold text-[#F4FAFF] tracking-wide">
+                        <label for="password_confirmation" class="block mb-1.5 text-xs font-semibold text-[#F4FAFF] tracking-wide">
                             Confirm Password
                         </label>
-                        <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" placeholder="Confirm your password" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 px-5 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
+                        <div class="relative">
+                            <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" placeholder="Confirm your password" class="w-full h-12 rounded-full border border-[#C9D7EE]/40 bg-white/10 pl-5 pr-12 text-sm text-white placeholder-[#C9D7EE]/60 outline-none transition focus:bg-white/20 focus:border-[#FF7A59] focus:ring-2 focus:ring-[#FF7A59]/30">
+
+                            <!-- Tombol Toggle Mata Confirm Password -->
+                            <button type="button" onclick="togglePassword('password_confirmation', 'eyeOpen2', 'eyeClosed2')" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#C9D7EE] hover:text-white transition focus:outline-none">
+                                <svg id="eyeOpen2" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                <svg id="eyeClosed2" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full h-12 rounded-full bg-[#FF7A59] hover:bg-[#e0684a] text-[#F4FAFF] text-sm font-bold transition shadow-md shadow-[#FF7A59]/20 focus:outline-none mt-2">
@@ -131,14 +157,14 @@
                     </button>
                 </form>
 
-                <div class="mt-6 text-center text-xs text-[#C9D7EE]">
+                <div class="mt-4 text-center text-xs text-[#C9D7EE]">
                     Already have an account?
                     <a href="{{ route('login') }}" class="font-semibold text-white underline hover:text-[#FF7A59] transition">
                         Login Here
                     </a>
                 </div>
 
-                <div class="mt-8 sm:mt-10 pt-4 border-t border-white/15 flex justify-between items-center text-[10px] sm:text-[11px] text-[#C9D7EE]">
+                <div class="mt-6 pt-3 border-t border-white/15 flex justify-between items-center text-[10px] sm:text-[11px] text-[#C9D7EE]">
                     <a href="#" class="hover:underline">Terms and Services</a>
                     <a href="#" class="hover:underline">Have a problem? Contact us</a>
                 </div>
@@ -148,5 +174,23 @@
         </div>
     </main>
 
+    <!-- Script JavaScript untuk Toggle Lihat/Sembunyikan Password -->
+    <script>
+        function togglePassword(fieldId, openId, closedId) {
+            const inputField = document.getElementById(fieldId);
+            const eyeOpen = document.getElementById(openId);
+            const eyeClosed = document.getElementById(closedId);
+
+            if (inputField.type === 'password') {
+                inputField.type = 'text';
+                eyeOpen.classList.add('hidden');
+                eyeClosed.classList.remove('hidden');
+            } else {
+                inputField.type = 'password';
+                eyeOpen.classList.remove('hidden');
+                eyeClosed.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>

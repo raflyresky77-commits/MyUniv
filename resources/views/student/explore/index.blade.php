@@ -107,11 +107,11 @@
 
         <div class="flex items-center gap-3">
             <div class="text-right hidden sm:block">
-                <div class="text-sm font-extrabold text-gray-900 leading-tight">{{ $user->name ?? 'Anisa Lidia' }}</div>
+                <div class="text-sm font-extrabold text-gray-900 leading-tight">{{ $user->name ?? 'Siswa' }}</div>
                 <div class="text-xs font-semibold text-indigo-500">Siswa</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-gradient-strong text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-900/20">
-                {{ strtoupper(substr($user->name ?? 'Anisa Lidia', 0, 2)) }}
+                {{ strtoupper(substr($user->name ?? 'S', 0, 2)) }}
             </div>
         </div>
     </header>
@@ -128,11 +128,11 @@
                 <div class="relative z-10 max-w-2xl space-y-3">
                     <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-indigo-100">
                         <svg class="w-3.5 h-3.5 text-[#FF7A59]" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.788 0l7-3a1 1 0 000-1.84l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.17 1 1 0.01-1.98c.35.035.7.093 1.05.17V16.5a1 1 0 001 1h8a1 1 0 001-1v-4.148c.35-.077.7-.135 1.05-.17a1 1 0 01.01 1.98 8.969 8.969 0 01-1.05.17v-4.102l1.69-.723a1 1 0 000-1.84l-7-3a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84z"/></svg>
-                        Direktori Kampus PTN &amp; PTS Unggulan
+                        Direktori Kampus PTN &amp; PTS Unggulan (Database Supabase)
                     </span>
                     <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">Temukan Masa Depanmu di Kampus Impian</h1>
                     <p class="text-xs sm:text-sm text-indigo-100 font-medium leading-relaxed">
-                        Jelajahi profil lengkap Perguruan Tinggi Negeri (PTN) dan Swasta (PTS) terbaik termasuk BINUS University, informasi akreditasi, hingga program studi pilihanmu.
+                        Jelajahi profil lengkap Perguruan Tinggi Negeri (PTN) dan Swasta (PTS) terbaik langsung dari database Supabase, informasi akreditasi, hingga program studi pilihanmu.
                     </p>
 
                     <!-- Search Input Bar -->
@@ -141,277 +141,60 @@
                             <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                                 <svg class="w-5 h-5 text-[#3650A2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             </span>
-                            <input type="text" id="searchInput" onkeyup="filterUniversities()" placeholder="Cari nama kampus (cth: Binus, UI, ITB), kota, atau jurusan..." class="w-full pl-12 pr-4 py-3.5 bg-white text-gray-900 rounded-2xl font-semibold text-xs shadow-lg focus:outline-none focus:ring-4 focus:ring-[#FF7A59]/30 transition-all placeholder:text-gray-400">
+                            <input type="text" id="searchInput" onkeyup="filterUniversities()" placeholder="Cari nama kampus (cth: UI, ITB, Unpad), kota, atau jenis..." class="w-full pl-12 pr-4 py-3.5 bg-white text-gray-900 rounded-2xl font-semibold text-xs shadow-lg focus:outline-none focus:ring-4 focus:ring-[#FF7A59]/30 transition-all placeholder:text-gray-400">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- List Perguruan Tinggi (PTN & PTS Termasuk BINUS) -->
+            <!-- List Perguruan Tinggi (Ditarik Dinamis dari Supabase Database) -->
             <div class="space-y-6" id="universityList">
 
-                @php
-                    $universities = [
-                        [
-                            'code' => 'binus',
-                            'name' => 'BINUS University',
-                            'location' => 'Jakarta, Bandung, Malang, Semarang',
-                            'type' => 'PTS',
-                            'accreditation' => 'Unggul (A)',
-                            'program_studi' => 'Computer Science, Information Systems, Desain Komunikasi Visual, Manajemen',
-                            'jenjang' => 'S1, S2, S3',
-                            'pendaftaran' => 'PMB Binus (Tes Potensi Keberhasilan / Rapor)',
-                            'website' => 'https://binus.ac.id',
-                            'desc' => 'Perguruan tinggi swasta berkelas dunia dengan keunggulan di bidang teknologi informasi, kreativitas, dan kewirausahaan.',
-                            'image' => 'universities/BANNER-BINUS.png',
-                        ],
-                        [
-                            'code' => 'telkom',
-                            'name' => 'Telkom University',
-                            'location' => 'Bandung, Jawa Barat',
-                            'type' => 'PTS',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Teknik Informatika, Teknik Telekomunikasi, Bisnis Digital, Desain Interior',
-                            'jenjang' => 'D3, S1, S2',
-                            'pendaftaran' => 'Jalur Seleksi Siswa Unggulan (JSS), UTMB',
-                            'website' => 'https://telkomuniversity.ac.id',
-                            'desc' => 'PTS swasta papan atas peraih predikat kampus swasta terbaik nomor 1 di Indonesia dengan fokus ICT & digital business.',
-                            'image' => 'universities/BANNER-TELKOM.jpg',
-                        ],
-                        [
-                            'code' => 'ui',
-                            'name' => 'Universitas Indonesia (UI)',
-                            'location' => 'Depok, Jawa Barat',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Ilmu Komputer, Kedokteran, Hukum, Manajemen',
-                            'jenjang' => 'D3, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, SIMAK UI',
-                            'website' => 'https://www.ui.ac.id',
-                            'desc' => 'Perguruan tinggi negeri berstandar kelas dunia dengan rumpun ilmu sains, kesehatan, dan humaniora.',
-                            'image' => 'universities/BANNER-UI.jpg',
-                        ],
-                        [
-                            'code' => 'itb',
-                            'name' => 'Institut Teknologi Bandung (ITB)',
-                            'location' => 'Bandung, Jawa Barat',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Teknik Informatika, Teknik Elektro, Arsitektur, Bisnis',
-                            'jenjang' => 'S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, Seleksi Mandiri ITB',
-                            'website' => 'https://www.itb.ac.id',
-                            'desc' => 'Kampus teknik, sains, dan seni terkemuka pencetak innovator dan perintis teknologi bangsa.',
-                            'image' => 'universities/BANNER-ITB.jpg',
-                        ],
-                        [
-                            'code' => 'ugm',
-                            'name' => 'Universitas Gadjah Mada (UGM)',
-                            'location' => 'Yogyakarta',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Kedokteran, Psikologi, Teknik Industri, Hubungan Internasional',
-                            'jenjang' => 'D4, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, UM UGM',
-                            'website' => 'https://www.ugm.ac.id',
-                            'desc' => 'Universitas nasional berkelas dunia yang mengakar kuat pada budaya bangsa dan kerakyatan.',
-                            'image' => 'universities/BANNER-UGM.jpg',
-                        ],
-                        [
-                            'code' => 'its',
-                            'name' => 'Institut Teknologi Sepuluh Nopember (ITS)',
-                            'location' => 'Surabaya, Jawa Timur',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Teknik Sistem Perkapalan, Teknik Komputer, Desain Produk',
-                            'jenjang' => 'D4, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, Seleksi Mandiri ITS',
-                            'website' => 'https://www.its.ac.id',
-                            'desc' => 'Pusat unggulan riset dan teknologi maritim, industri kreatif, serta rekayasa modern.',
-                            'image' => 'universities/BANNER-ITS.jpg',
-                        ],
-                        [
-                            'code' => 'unair',
-                            'name' => 'Universitas Airlangga (UNAIR)',
-                            'location' => 'Surabaya, Jawa Timur',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Kedokteran Gigi, Farmasi, Ilmu Komunikasi, Akuntansi',
-                            'jenjang' => 'D3, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, Mandiri UNAIR',
-                            'website' => 'https://www.unair.ac.id',
-                            'desc' => 'Perguruan tinggi terdepan di bidang kedokteran, kesehatan, farmasi, dan ilmu sosial.',
-                            'image' => 'universities/BANNER-UNAIR.jpg',
-                        ],
-                        [
-                            'code' => 'ipb',
-                            'name' => 'Institut Pertanian Bogor (IPB)',
-                            'location' => 'Bogor, Jawa Barat',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Agronomi & Hortikultura, Kedokteran Hewan, Statistika',
-                            'jenjang' => 'D4, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, Mandiri IPB (SM-IPB)',
-                            'website' => 'https://www.ipb.ac.id',
-                            'desc' => 'Kampus pelopor inovasi pertanian, biosains, kelautan, dan sosio-ekonomi agribisnis.',
-                            'image' => 'universities/BANNER-IPB.jpg',
-                        ],
-                        [
-                            'code' => 'trisakti',
-                            'name' => 'Universitas Trisakti',
-                            'location' => 'Jakarta Barat',
-                            'type' => 'PTS',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Kedokteran, Teknik Perminyakan, Arsitektur, Hukum',
-                            'jenjang' => 'D3, S1, S2, S3',
-                            'pendaftaran' => 'Saringan Masuk Usakti (SMUS)',
-                            'website' => 'https://www.trisakti.ac.id',
-                            'desc' => 'Universitas swasta bersejarah dengan kualitas jejang fakultas teknik dan kedokteran yang sangat kuat.',
-                            'image' => 'universities/BANNER-TRISAKTI.jpg',
-                        ],
-                        [
-                            'code' => 'undip',
-                            'name' => 'Universitas Diponegoro (UNDIP)',
-                            'location' => 'Semarang, Jawa Tengah',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Ilmu Hukum, Kedokteran, Teknik Sipil, Administrasi Publik',
-                            'jenjang' => 'D4, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, UM Undip',
-                            'website' => 'https://www.undip.ac.id',
-                            'desc' => 'Universitas riset mandiri yang menghasilkan lulusan berkualitas tinggi dan berdaya saing global.',
-                            'image' => 'universities/BANNER-UNDIP.jpg',
-                        ],
-                        [
-                            'code' => 'unpad',
-                            'name' => 'Universitas Padjadjaran (UNPAD)',
-                            'location' => 'Sumedang, Jawa Barat',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Ilmu Komunikasi, Kedokteran, Sastra Inggris, Hubungan Masyarakat',
-                            'jenjang' => 'D4, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, SMUP Unpad',
-                            'website' => 'https://www.unpad.ac.id',
-                            'desc' => 'Kampus unggulan di bidang sosio-humaniora, kesehatan, serta sains terapan.',
-                            'image' => 'universities/BANNER-UNPAD.jpg',
-                        ],
-                        [
-                            'code' => 'upi',
-                            'name' => 'Universitas Pendidikan Indonesia (UPI)',
-                            'location' => 'Bandung, Jawa Barat',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Pendidikan Arsitektur, Pendidikan Teknik Informatika, Psikologi',
-                            'jenjang' => 'D4, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, Seleksi Mandiri UPI',
-                            'website' => 'https://www.upi.edu',
-                            'desc' => 'Pelopor pendidikan tinggi kependidikan terdepan di Indonesia yang menghasilkan pendidik profesional.',
-                            'image' => 'universities/BANNER-UPI.jpg',
-                        ],
-                        [
-                            'code' => 'ub',
-                            'name' => 'Universitas Brawijaya (UB)',
-                            'location' => 'Malang, Jawa Timur',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Teknik Informatika, Ilmu Administrasi Bisnis, Kedokteran',
-                            'jenjang' => 'D3, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, Seleksi Mandiri UB',
-                            'website' => 'https://ub.ac.id',
-                            'desc' => 'Universitas unggul berwawasan enterpreneurship dengan riset ilmu pengetahuan dan teknologi.',
-                            'image' => 'universities/BANNER-UB.jpg',
-                        ],
-                        [
-                            'code' => 'unnes',
-                            'name' => 'Universitas Negeri Semarang (UNNES)',
-                            'location' => 'Semarang, Jawa Tengah',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Pendidikan Guru, Hukum, Ilmu Olahraga, Sastra',
-                            'jenjang' => 'D3, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, Seleksi Mandiri UNNES',
-                            'website' => 'https://unnes.ac.id',
-                            'desc' => 'Universitas berwawasan konservasi dan bereputasi internasional yang menghasilkan lulusan berkarakter.',
-                            'image' => 'universities/BANNER-UNNES.png',
-                        ],
-                        [
-                            'code' => 'uny',
-                            'name' => 'Universitas Negeri Yogyakarta (UNY)',
-                            'location' => 'Yogyakarta',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Pendidikan Teknik Mesin, Pendidikan Luar Biasa, Manajemen',
-                            'jenjang' => 'D4, S1, S2, S3',
-                            'pendaftaran' => 'SNBP, SNBT, Seleksi Mandiri UNY',
-                            'website' => 'https://www.uny.ac.id',
-                            'desc' => 'Kampus kependidikan dan keahlian vokasi unggulan yang melahirkan SDM cerdas dan mandiri.',
-                            'image' => 'universities/BANNER-UNY.jpg',
-                        ],
-                        [
-                            'code' => 'unhas',
-                            'name' => 'Universitas Hasanuddin (UNHAS)',
-                            'location' => 'Makassar, Sulawesi Selatan',
-                            'type' => 'PTN',
-                            'accreditation' => 'Unggul',
-                            'program_studi' => 'Kedokteran, Teknik Kelautan, Hubungan Internasional',
-                            'jenjang' => 'D4, S1, S2, S3',
-                            'pendaftaran' => 'JALUR MANDIRI UNHAS',
-                            'website' => 'https://www.unhas.ac.id',
-                            'desc' => 'Pusat pengembangan maritim, benua maritim Indonesia, serta sains dan teknologi kawasan timur.',
-                            'image' => 'universities/BANNER-UNHAS.png',
-                        ],
-                    ];
-                @endphp
+                @forelse($universities as $univ)
+                <div class="university-card card-glass rounded-[32px] p-6 sm:p-8 flex flex-col md:flex-row gap-6 items-center justify-between transition-all duration-300 hover:-translate-y-1" data-search="{{ strtolower($univ->name . ' ' . $univ->location . ' ' . ($univ->type ?? '')) }}">
 
-                @foreach($universities as $univ)
-                <div class="university-card card-glass rounded-[32px] p-6 sm:p-8 flex flex-col md:flex-row gap-6 items-center justify-between transition-all duration-300 hover:-translate-y-1" data-search="{{ strtolower($univ['name'] . ' ' . $univ['location'] . ' ' . $univ['program_studi'] . ' ' . $univ['pendaftaran'] . ' ' . $univ['type']) }}">
-
-                    <!-- Kiri: Foto Kampus dengan Tag img & Tombol Web -->
+                    <!-- Kiri: Foto Kampus / Banner & Tombol Web -->
                     <div class="w-full md:w-5/12 flex flex-col gap-4">
                         <div class="w-full h-48 rounded-2xl relative overflow-hidden shadow-md shrink-0 group bg-gray-200">
-                            @if($univ['code'] == 'itb')
-                                <img src="{{ asset('images/universities/BANNER-ITB.jpg') }}" alt="{{ $univ['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            @elseif($univ['code'] == 'undip')
-                                <img src="{{ asset('images/universities/BANNER-UNDIP.jpg') }}" alt="{{ $univ['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            @else
-                                <img src="{{ asset('images/' . $univ['image']) }}" alt="{{ $univ['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            @endif
+                            <img src="{{ asset('images/' . ($univ->image ?? 'universities/default.png')) }}" alt="{{ $univ->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
 
                             <!-- Gradient Overlay -->
                             <div class="absolute inset-0 bg-gradient-to-t from-[#141F43]/90 via-[#141F43]/30 to-transparent"></div>
 
                             <!-- Badge Atas -->
                             <div class="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
-                                <span class="px-2.5 py-1 {{ $univ['type'] == 'PTS' ? 'bg-[#FF7A59]/90 text-white' : 'bg-white/20 text-white' }} backdrop-blur-md rounded-lg text-[10px] font-extrabold uppercase tracking-wider border border-white/20 shadow-xs">
-                                    {{ $univ['type'] }} • Akreditasi {{ $univ['accreditation'] }}
+                                <span class="px-2.5 py-1 {{ ($univ->type ?? 'PTN') == 'PTS' ? 'bg-[#FF7A59]/90 text-white' : 'bg-white/20 text-white' }} backdrop-blur-md rounded-lg text-[10px] font-extrabold uppercase tracking-wider border border-white/20 shadow-xs">
+                                    {{ $univ->type ?? 'PTN' }} • Akreditasi {{ $univ->accreditation ?? 'Unggul' }}
                                 </span>
                             </div>
 
                             <!-- Keterangan Bawah di atas Foto -->
                             <div class="absolute bottom-3 left-3 right-3 z-10 text-white">
-                                <h4 class="text-sm font-extrabold tracking-tight drop-shadow-sm">{{ $univ['name'] }}</h4>
+                                <h4 class="text-sm font-extrabold tracking-tight drop-shadow-sm">{{ $univ->name }}</h4>
                                 <p class="text-[11px] text-indigo-100 flex items-center gap-1 mt-0.5 font-medium">
                                     <svg class="w-3 h-3 text-[#FF7A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    {{ $univ['location'] }}
+                                    {{ $univ->location }}
                                 </p>
                             </div>
                         </div>
 
                         <!-- TOMBOL KUNJUNGI WEBSITE -->
-                        <a href="{{ $univ['website'] }}" target="_blank" class="w-full py-3.5 px-5 bg-gradient-to-r from-[#FF7A59] to-[#FF5233] text-white rounded-2xl text-xs font-black shadow-lg shadow-orange-500/30 hover:opacity-95 hover:scale-[1.02] transition-all flex items-center justify-center gap-2.5 uppercase tracking-wider group">
+                        @if(!empty($univ->website))
+                        <a href="{{ $univ->website }}" target="_blank" class="w-full py-3.5 px-5 bg-gradient-to-r from-[#FF7A59] to-[#FF5233] text-white rounded-2xl text-xs font-black shadow-lg shadow-orange-500/30 hover:opacity-95 hover:scale-[1.02] transition-all flex items-center justify-center gap-2.5 uppercase tracking-wider group">
                             <span>Kunjungi Website Resmi</span>
                             <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </a>
+                        @endif
                     </div>
 
                     <!-- Kanan: Informasi Detail -->
                     <div class="w-full md:w-7/12 space-y-4 flex flex-col justify-between">
                         <div>
                             <div class="flex items-center gap-2">
-                                <h3 class="text-lg sm:text-xl font-black text-gray-900 tracking-tight">{{ $univ['name'] }}</h3>
-                                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md {{ $univ['type'] == 'PTS' ? 'bg-orange-100 text-[#FF7A59]' : 'bg-indigo-100 text-[#3650A2]' }}">{{ $univ['type'] }}</span>
+                                <h3 class="text-lg sm:text-xl font-black text-gray-900 tracking-tight">{{ $univ->name }}</h3>
+                                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md {{ ($univ->type ?? 'PTN') == 'PTS' ? 'bg-orange-100 text-[#FF7A59]' : 'bg-indigo-100 text-[#3650A2]' }}">{{ $univ->type ?? 'PTN' }}</span>
                             </div>
-                            <p class="text-xs text-gray-500 font-medium mt-0.5">{{ $univ['location'] }}</p>
+                            <p class="text-xs text-gray-500 font-medium mt-0.5">{{ $univ->location }}</p>
                         </div>
 
                         <!-- Tabel Detail Informasi -->
@@ -420,30 +203,28 @@
                                 <tbody class="divide-y divide-gray-100">
                                     <tr class="hover:bg-indigo-50/40 transition">
                                         <td class="py-2.5 px-4 font-bold text-gray-600 w-1/3">Jenis Institusi</td>
-                                        <td class="py-2.5 px-4 font-semibold text-gray-900">{{ $univ['type'] == 'PTS' ? 'Perguruan Tinggi Swasta (PTS)' : 'Perguruan Tinggi Negeri (PTN)' }}</td>
+                                        <td class="py-2.5 px-4 font-semibold text-gray-900">{{ ($univ->type ?? 'PTN') == 'PTS' ? 'Perguruan Tinggi Swasta (PTS)' : 'Perguruan Tinggi Negeri (PTN)' }}</td>
                                     </tr>
                                     <tr class="hover:bg-indigo-50/40 transition">
                                         <td class="py-2.5 px-4 font-bold text-gray-600">Akreditasi</td>
                                         <td class="py-2.5 px-4 font-semibold text-emerald-600 flex items-center gap-1.5">
                                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                            {{ $univ['accreditation'] }}
+                                            {{ $univ->accreditation ?? 'Unggul' }}
                                         </td>
                                     </tr>
                                     <tr class="hover:bg-indigo-50/40 transition">
                                         <td class="py-2.5 px-4 font-bold text-gray-600">Lokasi Kampus</td>
-                                        <td class="py-2.5 px-4 font-medium text-gray-900">{{ $univ['location'] }}</td>
+                                        <td class="py-2.5 px-4 font-medium text-gray-900">{{ $univ->location }}</td>
                                     </tr>
                                     <tr class="hover:bg-indigo-50/40 transition">
-                                        <td class="py-2.5 px-4 font-bold text-gray-600">Program Studi</td>
-                                        <td class="py-2.5 px-4 font-medium text-gray-900">{{ $univ['program_studi'] }}</td>
-                                    </tr>
-                                    <tr class="hover:bg-indigo-50/40 transition">
-                                        <td class="py-2.5 px-4 font-bold text-gray-600">Jenjang</td>
-                                        <td class="py-2.5 px-4 font-medium text-gray-900">{{ $univ['jenjang'] }}</td>
-                                    </tr>
-                                    <tr class="hover:bg-indigo-50/40 transition">
-                                        <td class="py-2.5 px-4 font-bold text-gray-600">Pendaftaran</td>
-                                        <td class="py-2.5 px-4 font-extrabold text-[#3650A2]">{{ $univ['pendaftaran'] }}</td>
+                                        <td class="py-2.5 px-4 font-bold text-gray-600">Program Studi (Relasi)</td>
+                                        <td class="py-2.5 px-4 font-medium text-gray-900">
+                                            @if($univ->majors && $univ->majors->count() > 0)
+                                                {{ $univ->majors->pluck('name')->implode(', ') }}
+                                            @else
+                                                <span class="text-gray-400 italic">Belum ada data jurusan terkait</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -453,13 +234,17 @@
                         <div>
                             <span class="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider block">Tentang Kampus</span>
                             <p class="text-xs text-gray-600 font-medium mt-1 leading-relaxed">
-                                {{ $univ['desc'] }}
+                                {{ $univ->description ?? 'Belum ada deskripsi profil perguruan tinggi.' }}
                             </p>
                         </div>
                     </div>
 
                 </div>
-                @endforeach
+                @empty
+                <div class="bg-white/90 rounded-[32px] p-12 text-center text-gray-500 text-sm font-bold">
+                    Belum ada data perguruan tinggi di database Supabase.
+                </div>
+                @endforelse
 
             </div>
 

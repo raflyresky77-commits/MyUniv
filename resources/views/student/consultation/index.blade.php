@@ -138,11 +138,11 @@
 
         <div class="flex items-center gap-3">
             <div class="text-right hidden sm:block">
-                <div class="text-sm font-extrabold text-gray-900 leading-tight">{{ $user->name ?? 'Anisa' }}</div>
+                <div class="text-sm font-extrabold text-gray-900 leading-tight">{{ $user->name ?? ' Anisa Lidia Putri' }}</div>
                 <div class="text-xs font-semibold text-indigo-500">Siswa</div>
             </div>
             <div class="w-10 h-10 rounded-xl bg-gradient-strong text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-900/20 transition-transform hover:scale-105 cursor-pointer">
-                {{ strtoupper(substr($user->name ?? 'Anisa', 0, 2)) }}
+                {{ strtoupper(substr($user->name ?? 'Anisa Lidia Putri', 0, 2)) }}
             </div>
         </div>
     </header>

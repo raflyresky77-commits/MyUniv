@@ -214,9 +214,9 @@
 
                         <div class="relative bg-white/60 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border border-white/80 shadow-2xl overflow-hidden max-w-xs sm:max-w-sm">
                             <img src="image_88917e.jpg"
-                                 onerror="this.onerror=null; this.src='https://placehold.co/400x400/F4FAFF/3650A2?text=Mauny+Mascot'"
-                                 alt="Mauny Mascot"
-                                 class="w-full h-auto object-contain drop-shadow-md rounded-2xl transform hover:scale-105 transition-transform duration-300">
+                                    onerror="this.onerror=null; this.src='https://placehold.co/400x400/F4FAFF/3650A2?text=Mauny+Mascot'"
+                                    alt="Mauny Mascot"
+                                    class="w-full h-auto object-contain drop-shadow-md rounded-2xl transform hover:scale-105 transition-transform duration-300">
 
                             <div class="mt-4 text-center">
                                 <span class="bg-indigoPrimary/10 text-indigoPrimary font-bold text-xs px-3 py-1 rounded-full">Maskot Resmi MyUniv</span>

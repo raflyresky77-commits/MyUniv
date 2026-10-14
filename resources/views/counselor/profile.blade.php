@@ -149,11 +149,11 @@
                 <div class="space-y-4 text-sm">
                     <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
                         <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Peran / Role Sistem</span>
-                        <span class="font-extrabold text-[#3650A2] px-3 py-1 bg-indigo-50 rounded-xl w-fit">Counselor[cite: 6]</span>
+                        <span class="font-extrabold text-[#3650A2] px-3 py-1 bg-indigo-50 rounded-xl w-fit">Counselor</span>
                     </div>
                     <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
                         <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Status Akun</span>
-                        <span class="font-extrabold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-xs w-fit">Aktif & Terverifikasi[cite: 6]</span>
+                        <span class="font-extrabold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-xs w-fit">Aktif & Terverifikasi</span>
                     </div>
                     <div class="flex flex-col sm:flex-row sm:justify-between py-3 gap-1">
                         <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Institusi Mitra</span>
