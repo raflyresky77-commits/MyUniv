@@ -25,96 +25,19 @@
         }
     </style>
 </head>
-<body class="bg-[#F8FBFF] min-h-screen text-gray-800 flex overflow-x-hidden">
+<body class="bg-[#F8FBFF] min-h-screen text-gray-800 flex overflow-x-hidden overflow-y-auto">
 
-    <!-- Backdrop Sidebar Mobile -->
-    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden backdrop-blur-xs transition-opacity"></div>
-
-    <!-- Sidebar Navigation -->
-    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-[#E2E8F0] flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-[4px_0_24px_rgba(54,80,162,0.03)] h-screen sticky top-0">
-        <div>
-            <!-- Brand Logo -->
-            <div class="px-6 py-6 border-b border-gray-100 flex items-center gap-3.5">
-                <div class="h-10 flex items-center justify-center">
-                    <img src="{{ asset('images/icon.png') }}" alt="MyUniv Logo" class="h-10 w-auto object-contain">
-                </div>
-                <div>
-                    <span class="text-lg font-black text-[#3650A2] tracking-tight leading-none block">MyUniv</span>
-                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider mt-1 block">Enterprise OS</span>
-                </div>
-            </div>
-
-            <!-- Navigation Links -->
-            <nav class="p-5 space-y-2">
-                <div class="px-4 py-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Menu Utama</div>
-
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#F0F5FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                    Dashboard Utama
-                </a>
-
-                <a href="{{ route('admin.assessments.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#F0F5FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                    Bank Soal Asesmen
-                </a>
-
-                <a href="{{ route('admin.universities.index') }}" class="flex items-center gap-3.5 px-4.5 py-4 rounded-2xl bg-gradient-myuniv text-white font-bold text-sm shadow-lg shadow-indigo-200/60 transition-all duration-300 relative overflow-hidden group">
-                    <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#FF7A59]"></div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    <span>Kelola Perguruan Tinggi</span>
-                </a>
-
-                <a href="{{ route('admin.majors.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#F0F5FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
-                    Program Studi & Jurusan
-                </a>
-
-                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#F0F5FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    Manajemen Pengguna
-                </a>
-            </nav>
-        </div>
-
-        <div class="p-5 border-t border-gray-100">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50/80 rounded-xl transition font-bold group cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400 group-hover:text-red-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                    Keluar Sistem
-                </button>
-            </form>
-        </div>
-    </aside>
+    {{-- Navigasi admin reusable --}}
+    <x-admin-sidebar active="universities" />
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-w-0">
+    <div class="flex-1 flex flex-col min-w-0 w-full md:ml-72">
 
-        <!-- Top Navbar -->
-        <header class="bg-white/90 backdrop-blur-md border-b border-[#E2E8F0] px-6 lg:px-10 py-6 flex justify-between items-center sticky top-0 z-30 shadow-xs w-full">
-            <div class="flex items-center gap-3">
-                <button type="button" onclick="toggleSidebar()" class="md:hidden relative z-40 p-2.5 rounded-xl text-gray-700 bg-gray-100 hover:bg-indigo-50 hover:text-[#3650A2] transition focus:outline-none cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-
-                <span class="text-xs font-extrabold px-3.5 py-1.5 bg-indigo-50 text-[#3650A2] rounded-xl tracking-wide border border-indigo-100/50">Modul Akademik</span>
-                <span class="text-gray-300 font-light hidden sm:inline">/</span>
-                <h1 class="text-sm font-black text-gray-800 tracking-tight hidden sm:inline">Kelola Perguruan Tinggi & Program Studi</h1>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <div class="text-sm font-extrabold text-gray-900 leading-tight">Administrator Utama</div>
-                    <div class="text-xs font-semibold text-gray-400">admin@myuniv.test</div>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-gradient-myuniv text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-200/50">AD</div>
-            </div>
-        </header>
+        {{-- Topbar admin reusable --}}
+        <x-admin-topbar module="Modul Akademik" page-title="Kelola Perguruan Tinggi & Program Studi" />
 
         <!-- Page Body Content -->
-        <main class="p-8 max-w-7xl w-full mx-auto space-y-8">
+        <main class="pt-24 sm:pt-28 p-4 sm:px-6 sm:pb-6 lg:px-8 lg:pb-8 max-w-7xl w-full min-w-0 mx-auto space-y-6 sm:space-y-8">
             @if(session('success'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -130,35 +53,27 @@
             </script>
             @endif
 
-            <!-- Header Section dengan Desain Gradien Oval Estetik -->
-            <div class="bg-gradient-myuniv text-white p-8 sm:p-10 rounded-[28px] shadow-xl shadow-indigo-900/10 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <!-- Aksen Gradien Oval Dekoratif -->
-                <div class="absolute -right-16 -top-16 w-64 h-64 bg-[#FF7A59]/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-indigo-400/20 rounded-full blur-3xl pointer-events-none"></div>
+            {{-- Header halaman admin reusable --}}
+            <x-admin-page-header
+                label="Database Kampus & Mitra"
+                title="Daftar Perguruan Tinggi Mitra"
+                description="Kelola profil perguruan tinggi, lokasi pusat, catatan cabang, akreditasi, jenis, serta program studi."
+                button-text="Tambah Perguruan Tinggi"
+                button-onclick="openAddUniversityModal()"
+            />
 
-                <div class="relative z-10 max-w-xl">
-                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#FF7A59] text-white text-xs font-extrabold rounded-full mb-4 shadow-md shadow-orange-500/20">
-                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> Database Kampus & Mitra
-                    </span>
-                    <h2 class="text-3xl sm:text-4xl font-black tracking-tight mb-2">Daftar Perguruan Tinggi Mitra</h2>
-                    <p class="text-indigo-100 text-sm leading-relaxed font-medium">Kelola profil perguruan tinggi, lokasi pusat, catatan cabang, akreditasi, jenis, serta program studi.</p>
-                </div>
-                <div class="relative z-10">
-                    <button type="button" onclick="openAddUniversityModal()" class="px-6 py-3.5 bg-[#FF7A59] hover:bg-[#e06848] text-white text-xs font-extrabold rounded-2xl shadow-lg shadow-orange-500/30 transition-all flex items-center gap-2.5 cursor-pointer whitespace-nowrap">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                        <span>Tambah Perguruan Tinggi</span>
-                    </button>
-                </div>
-            </div>
+            <!-- Search Bar menggunakan component reusable dan tetap responsif -->
+            <div class="bg-white p-3 sm:p-4 rounded-[24px] border border-[#E2E8F0] shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center gap-3 min-w-0">
+                {{-- Input search reusable dengan live filter saat mengetik --}}
+                <x-search-input
+                    id="searchInput"
+                    placeholder="Cari berdasarkan nama perguruan tinggi, kota lokasi pusat, catatan cabang, atau program studi..."
+                    onkeyup="filterUniversities()"
+                    wrapper-class="relative flex-1 min-w-0 w-full"
+                    input-class="w-full min-w-0 pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white transition"
+                />
 
-            <!-- Search Bar Interaktif -->
-            <div class="bg-white p-4 rounded-[24px] border border-[#E2E8F0] shadow-xs flex items-center gap-3">
-                <div class="relative flex-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <input type="text" id="searchInput" onkeyup="filterUniversities()" placeholder="Cari berdasarkan nama perguruan tinggi, kota lokasi pusat, catatan cabang, atau program studi..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white transition">
-                </div>
+                {{-- Jumlah hasil ditampilkan di layar yang cukup lebar --}}
                 <div id="searchCounter" class="text-xs font-bold text-gray-400 px-3 hidden sm:block whitespace-nowrap"></div>
             </div>
 
@@ -166,7 +81,7 @@
             <div class="space-y-6" id="universityContainer">
                 @php $no = 1; @endphp
                 @forelse($universities as $university)
-                <div id="university-card-{{ $university->id }}" class="bg-white rounded-[24px] shadow-sm border border-[#E2E8F0] p-6 space-y-6 custom-card-shape relative overflow-hidden">
+                <div id="university-card-{{ $university->id }}" class="bg-white rounded-[24px] shadow-sm border border-[#E2E8F0] p-4 sm:p-6 space-y-5 sm:space-y-6 custom-card-shape relative overflow-hidden min-w-0">
 
                     <!-- Header Kartu Perguruan Tinggi -->
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-4">
@@ -297,7 +212,7 @@
 
     <!-- Modal Form Tambah Perguruan Tinggi -->
     <div id="addUniversityModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white w-full max-w-lg rounded-[28px] shadow-2xl border border-gray-100 overflow-hidden">
+        <div class="bg-white w-full max-w-lg max-h-[90dvh] overflow-y-auto rounded-[28px] shadow-2xl border border-gray-100">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-[#F9FBFF]">
                 <h3 class="text-sm font-black text-[#3650A2]">Tambah Perguruan Tinggi Baru</h3>
                 <button type="button" onclick="closeAddUniversityModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
@@ -310,7 +225,7 @@
                     <input type="text" name="name" required placeholder="Cth: Universitas Telkom" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Lokasi Pusat (Dataset Kota)</label>
                         <select name="location" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
@@ -359,69 +274,80 @@
         </div>
     </div>
 
-    <!-- Modal Form Edit Perguruan Tinggi -->
-    <div id="editUniversityModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-xs">
-        <div class="bg-white w-full max-w-lg rounded-[28px] shadow-2xl border border-gray-100 overflow-hidden">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-[#F9FBFF]">
-                <h3 class="text-sm font-black text-[#3650A2]">Edit Profil Perguruan Tinggi</h3>
-                <button type="button" onclick="closeEditUniversityModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
-            </div>
-
-            <form id="editUniversityForm" method="POST" class="p-6 space-y-4">
-                @csrf
-                @method('PUT')
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Nama Perguruan Tinggi</label>
-                    <input type="text" id="edit_name" name="name" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Lokasi Pusat (Dataset Kota)</label>
-                        <select id="edit_location" name="location" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
-                            <option value="Bandung">Bandung</option>
-                            <option value="Jakarta">Jakarta</option>
-                            <option value="Yogyakarta">Yogyakarta</option>
-                            <option value="Surabaya">Surabaya</option>
-                            <option value="Malang">Malang</option>
-                            <option value="Semarang">Semarang</option>
-                            <option value="Depok">Depok</option>
-                            <option value="Bogor">Bogor</option>
-                            <option value="Medan">Medan</option>
-                            <option value="Makassar">Makassar</option>
-                            <option value="Bali">Bali</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Jenis Perguruan Tinggi</label>
-                        <select id="edit_type" name="type" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
-                            <option value="Swasta">Swasta (PTS)</option>
-                            <option value="Negeri">Negeri (PTN)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Akreditasi Perguruan Tinggi</label>
-                    <select id="edit_accreditation" name="accreditation" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
-                        <option value="Unggul">Unggul</option>
-                        <option value="Baik Sekali">Baik Sekali</option>
-                        <option value="Baik">Baik</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Catatan Cabang Perguruan Tinggi</label>
-                    <textarea id="edit_branch_notes" name="branch_notes" rows="2" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white"></textarea>
-                </div>
-
-                <div class="pt-4 flex items-center justify-end gap-3 border-t border-gray-100">
-                    <button type="button" onclick="closeEditUniversityModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 transition cursor-pointer">Batal</button>
-                    <button type="button" onclick="confirmEditUniversity(event)" class="px-6 py-2.5 bg-gradient-myuniv text-white rounded-xl text-xs font-extrabold shadow-md hover:opacity-95 transition cursor-pointer">Perbarui Perguruan Tinggi</button>
-                </div>
-            </form>
+    {{-- Modal edit menggunakan komponen generik; field mengikuti data perguruan tinggi. --}}
+    <x-edit-modal
+        id="editUniversityModal"
+        title="Edit Profil Perguruan Tinggi"
+        form-id="editUniversityForm"
+        max-width="max-w-lg"
+        close-function="closeEditUniversityModal()"
+        method="PUT"
+        class="space-y-4 p-6"
+    >
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Nama Perguruan Tinggi</label>
+            <input type="text" id="edit_name" name="name" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
         </div>
-    </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Lokasi Pusat (Dataset Kota)</label>
+                <select id="edit_location" name="location" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
+                    <option value="Bandung">Bandung</option>
+                    <option value="Jakarta">Jakarta</option>
+                    <option value="Yogyakarta">Yogyakarta</option>
+                    <option value="Surabaya">Surabaya</option>
+                    <option value="Malang">Malang</option>
+                    <option value="Semarang">Semarang</option>
+                    <option value="Depok">Depok</option>
+                    <option value="Bogor">Bogor</option>
+                    <option value="Medan">Medan</option>
+                    <option value="Makassar">Makassar</option>
+                    <option value="Bali">Bali</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Jenis Perguruan Tinggi</label>
+                <select id="edit_type" name="type" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
+                    <option value="Swasta">Swasta (PTS)</option>
+                    <option value="Negeri">Negeri (PTN)</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Akreditasi Perguruan Tinggi</label>
+            <select id="edit_accreditation" name="accreditation" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
+                <option value="Unggul">Unggul</option>
+                <option value="Baik Sekali">Baik Sekali</option>
+                <option value="Baik">Baik</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Catatan Cabang Perguruan Tinggi</label>
+            <textarea id="edit_branch_notes" name="branch_notes" rows="2" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white"></textarea>
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-3 border-t border-gray-100">
+            <button type="button" onclick="closeEditUniversityModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100 transition cursor-pointer">Batal</button>
+            <button type="button" onclick="confirmEditUniversity(event)" class="px-6 py-2.5 bg-gradient-myuniv text-white rounded-xl text-xs font-extrabold shadow-md hover:opacity-95 transition cursor-pointer">Perbarui Perguruan Tinggi</button>
+        </div>
+    </x-edit-modal>
+
+    {{-- Konfirmasi hapus reusable untuk perguruan tinggi dan program studi. --}}
+    <x-confirm-delete
+        function-name="handleDeleteUniversity"
+        title="Hapus Perguruan Tinggi Ini?"
+        text="Semua data program studi di dalam perguruan tinggi ini juga akan ikut terhapus!"
+        confirm-text="Ya, Hapus PT!"
+    />
+    <x-confirm-delete
+        function-name="handleDeleteMajor"
+        title="Hapus Program Studi?"
+        text="Data program studi ini akan dihapus permanen."
+        confirm-text="Ya, Hapus!"
+    />
 
     <!-- JavaScript Scripting -->
     <script>
@@ -503,55 +429,6 @@
             });
         }
 
-        function handleDeleteUniversity(event, cardId) {
-            event.preventDefault();
-            const form = event.target.closest('form');
-            const card = document.getElementById(cardId);
-
-            Swal.fire({
-                title: 'Hapus Perguruan Tinggi Ini?',
-                text: "Semua data program studi di dalam perguruan tinggi ini juga akan ikut terhapus!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, Hapus PT!',
-                cancelButtonText: 'Batal',
-                customClass: { popup: 'rounded-[24px]' }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (card) card.classList.add('deleting-animation');
-                    setTimeout(() => {
-                        form.submit();
-                    }, 400);
-                }
-            });
-        }
-
-        function handleDeleteMajor(event, rowId) {
-            event.preventDefault();
-            const form = event.target.closest('form');
-            const row = document.getElementById(rowId);
-
-            Swal.fire({
-                title: 'Hapus Program Studi?',
-                text: "Data program studi ini akan dihapus permanen.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal',
-                customClass: { popup: 'rounded-[24px]' }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (row) row.classList.add('deleting-animation');
-                    setTimeout(() => {
-                        form.submit();
-                    }, 400);
-                }
-            });
-        }
     </script>
 </body>
 </html>

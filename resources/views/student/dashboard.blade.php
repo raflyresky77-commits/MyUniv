@@ -118,107 +118,87 @@
         .mascot-float {
             animation: floatMascot 4s ease-in-out infinite;
         }
-    </style>
+
+        /* FIX SCROLL V3: biarkan dokumen menjadi scroll container utama */
+        html {
+            display: block !important;
+            width: 100%;
+            min-height: 100%;
+            height: auto !important;
+            overflow-x: clip !important;
+            overflow-y: scroll !important;
+            scroll-behavior: auto;
+        }
+
+        body {
+            display: block !important;
+            position: static !important;
+            width: 100%;
+            min-height: 100vh !important;
+            min-height: 100dvh !important;
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            overscroll-behavior-y: auto;
+        }
+
+        #dashboardContent {
+            display: block !important;
+            position: relative;
+            width: auto;
+            min-height: 100vh;
+            min-height: 100dvh;
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            flex: none !important;
+        }
+
+        #dashboardMain {
+            display: block !important;
+            width: 100%;
+            min-height: 0;
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            flex: none !important;
+        }
+
+        /* Sidebar diatur oleh komponen student-sidebar; dashboard tidak menimpa layout internalnya. */
+
+        /* Ruang ekstra di akhir halaman agar konten terakhir bisa benar-benar mentok terlihat */
+        #dashboardMain {
+            padding-bottom: 4rem !important;
+        }
+
+        #dashboardContent {
+            padding-bottom: 1.5rem;
+        }
+
+        @media (max-width: 767px) {
+            #dashboardMain {
+                padding-bottom: 5rem !important;
+            }
+
+            #dashboardContent {
+                padding-bottom: 2rem;
+            }
+        }
+
+</style>
 </head>
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
 
-    <!-- Backdrop Gelap saat Sidebar Mobile Terbuka -->
-    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 md:hidden hidden backdrop-blur-xs transition-opacity"></div>
+    <!-- Backdrop dan Sidebar Component -->
+    <div id="sidebarBackdrop" aria-hidden="true" onclick="window.myUnivToggleStudentSidebar ? window.myUnivToggleStudentSidebar(true) : setSidebarOpen(false)" class="fixed inset-0 bg-black/50 z-40 md:hidden hidden backdrop-blur-xs transition-opacity"></div>
+    <x-student.student-sidebar active="dashboard" />
 
-    <!-- Sidebar Navigation -->
-    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-[#E2E8F0] flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-xl md:shadow-[4px_0_20px_rgba(54,80,162,0.04)] overflow-y-auto">
-        <div>
-            <!-- Brand Logo -->
-            <div class="px-6 py-5 border-b border-gray-100 flex items-center gap-3">
-                <div class="w-10 h-10 flex items-center justify-center bg-indigo-50 rounded-[12px] border border-indigo-200/80 p-1.5 shrink-0 shadow-xs">
-                    <img src="{{ asset('images/icon.png') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <span class="text-base font-black text-[#3650A2] tracking-tight leading-none block">MyUniv</span>
-                    <span class="text-[9px] font-extrabold text-indigo-400 uppercase tracking-wider mt-1 block">Sistem Peminatan</span>
-                </div>
-            </div>
-
-            <!-- Navigation Links -->
-            <nav class="p-4 space-y-1.5">
-                <div class="px-3 py-1.5 text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest">Menu Utama</div>
-
-                <!-- Beranda (Aktif) -->
-                <a href="{{ route('student.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-strong text-white font-bold text-xs shadow-md shadow-indigo-900/20 transition-all relative overflow-hidden group">
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#FF7A59]"></div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-0.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                    <span>Beranda</span>
-                </a>
-
-                <!-- Asesmen -->
-                <a href="{{ route('student.assessment.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-xs transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-[#3650A2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                    <span>Asesmen</span>
-                </a>
-
-                <!-- Eksplorasi -->
-                <a href="{{ route('student.exploration.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-xs transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-[#3650A2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <span>Eksplorasi</span>
-                </a>
-
-                <!-- Education Planning -->
-                <a href="{{ route('student.planning.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-xs transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-[#3650A2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                    <span>Education Planning</span>
-                </a>
-
-                <!-- Konsultasi BK -->
-                <a href="{{ route('student.consultation.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-xs transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-[#3650A2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                    <span>Konsultasi BK</span>
-                </a>
-
-                <!-- Profil -->
-                <a href="{{ route('student.profile.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-xs transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-[#3650A2]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    <span>Profil</span>
-                </a>
-            </nav>
-        </div>
-
-        <!-- Sidebar Footer & Tombol Logout -->
-        <div class="p-4 border-t border-gray-100 bg-white">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-red-600 hover:bg-red-50 font-bold text-xs transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    <span>Keluar (Logout)</span>
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- Top Navbar -->
-    <header class="bg-white/90 backdrop-blur-md border-b border-[#E2E8F0] px-6 lg:px-8 py-4 flex justify-between items-center fixed top-0 right-0 left-0 md:left-72 z-40 shadow-xs">
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="toggleSidebar()" class="md:hidden p-2 rounded-xl text-gray-700 bg-gray-100 hover:bg-indigo-50 hover:text-[#3650A2] transition focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-            </button>
-            <span class="text-xs font-extrabold text-[#3650A2] uppercase tracking-wider">Dashboard Utama</span>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <div class="text-right hidden sm:block">
-                <div class="text-xs font-extrabold text-gray-900 leading-tight">{{ $user->name ?? 'Siswa' }}</div>
-                <div class="text-[10px] font-semibold text-indigo-500">Siswa Aktif</div>
-            </div>
-            <div class="w-9 h-9 rounded-xl bg-gradient-strong text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-900/20">
-                {{ strtoupper(substr($user->name ?? 'S', 0, 2)) }}
-            </div>
-        </div>
-    </header>
+    <!-- Topbar Component -->
+    <x-student.student-topbar title="Dashboard Utama" :user="$user" />
 
     <!-- Main Content Area -->
-    <div class="md:ml-72 pt-24 min-h-screen flex flex-col">
-        <main class="p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto flex-1">
+    <div id="dashboardContent" class="md:ml-72 pt-24 min-h-screen flex flex-col">
+        <main id="dashboardMain" class="p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto flex-1">
 
             <!-- FITUR ONBOARDING / PERINGATAN PROFIL BELUM LENGKAP -->
             @php
@@ -226,7 +206,7 @@
             @endphp
 
             @if($isProfileIncomplete)
-                <div class="rounded-2xl bg-amber-50 border border-amber-200 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                <div class="w-[94%] sm:w-[96%] max-w-5xl mx-auto rounded-2xl bg-amber-50 border border-amber-200 px-4 py-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -242,20 +222,8 @@
                 </div>
             @endif
 
-            <!-- Greeting Banner -->
-            <div class="relative rounded-[28px] overflow-hidden px-6 sm:px-10 py-8 sm:py-10 shadow-md border border-indigo-100 flex flex-col justify-center">
-                <div class="absolute inset-0 z-0">
-                    <img src="{{ asset('images/header.png') }}" alt="Background Kampus" class="w-full h-full object-cover object-center filter scale-105">
-                </div>
-                <div class="absolute inset-0 z-5 bg-linear-to-r from-[#141F43]/75 via-[#1E2D62]/85 to-[#3650A2]/80 backdrop-blur-[1px]"></div>
-                <div class="space-y-2.5 relative z-20 max-w-xl text-white">
-                    <span class="px-3 py-1 bg-[#FF7A59] text-white rounded-full text-[10px] font-extrabold tracking-wider uppercase shadow-xs inline-block">Selamat Datang</span>
-                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-xs">Halo, {{ $user->name ?? 'Siswa' }}! 👋</h1>
-                    <p class="text-gray-200 text-xs sm:text-sm font-medium leading-relaxed">
-                        Temukan potensi dan arah pilihan perguruan tinggi terbaikmu bersama MyUniv.
-                    </p>
-                </div>
-            </div>
+            <!-- Welcome Header Component -->
+            <x-student.welcome-header :name="$user->name ?? 'Siswa'" />
 
             <!-- TOP CARDS: Asesmen (Card Expressive) & Quote Motivasi -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -297,15 +265,8 @@
                 </div>
             </div>
 
-            <!-- SHORTCUT MENU DENGAN GRADASI HALUS -->
-            <div class="section-shortcut-bg rounded-[32px] p-6 space-y-4 shadow-xs">
-                <div class="flex items-center justify-between px-1">
-                    <div>
-                        <span class="text-[9px] font-black text-[#FF7A59] uppercase tracking-widest block">Akses Cepat</span>
-                        <h3 class="text-base font-black text-[#3650A2]">Eksplorasi Fitur</h3>
-                    </div>
-                    <span class="text-[11px] font-semibold text-gray-500 hidden sm:inline">Pilih menu navigasi di bawah</span>
-                </div>
+            <!-- Shortcut Section Component -->
+            <x-student.shortcut-section>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Card 1: Eksplorasi -->
@@ -356,7 +317,7 @@
                         <span class="text-[11px] font-extrabold text-[#FF7A59] flex items-center gap-1 group-hover:translate-x-1 transition-transform">Buka &rarr;</span>
                     </a>
                 </div>
-            </div>
+            </x-student.shortcut-section>
 
             <!-- REKOMENDASI & ARTIKEL -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-8">
@@ -469,12 +430,49 @@
     </div>
 
     <script>
-        function toggleSidebar() {
+        // Gunakan kontrol sidebar dari komponen bersama agar class/state tidak bentrok.
+        function setSidebarOpen(open) {
+            if (typeof window.myUnivToggleStudentSidebar === 'function') {
+                if (open) {
+                    const sidebar = document.getElementById('mobileSidebar');
+                    if (sidebar && !sidebar.classList.contains('is-open')) window.myUnivToggleStudentSidebar();
+                } else {
+                    window.myUnivToggleStudentSidebar(true);
+                }
+                return;
+            }
             const sidebar = document.getElementById('mobileSidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
-            sidebar.classList.toggle('-translate-x-full');
-            backdrop.classList.toggle('hidden');
+            if (!sidebar) return;
+            const shouldOpen = Boolean(open) && window.innerWidth < 768;
+            sidebar.classList.toggle('is-open', shouldOpen);
+            sidebar.setAttribute('aria-hidden', String(!shouldOpen));
+            if (backdrop) {
+                backdrop.classList.toggle('is-visible', shouldOpen);
+                backdrop.classList.toggle('hidden', !shouldOpen);
+                backdrop.setAttribute('aria-hidden', String(!shouldOpen));
+            }
+            document.body.classList.toggle('overflow-hidden', shouldOpen);
         }
+
+        function toggleSidebar() {
+            if (typeof window.myUnivToggleStudentSidebar === 'function') {
+                window.myUnivToggleStudentSidebar();
+                return;
+            }
+            const sidebar = document.getElementById('mobileSidebar');
+            setSidebarOpen(!(sidebar && sidebar.classList.contains('is-open')));
+        }
+
+        function initializeSidebar() { setSidebarOpen(false); }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSidebar, { once: true });
+        } else {
+            initializeSidebar();
+        }
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') setSidebarOpen(false);
+        });
 
         const articlesData = {
             jalur: {

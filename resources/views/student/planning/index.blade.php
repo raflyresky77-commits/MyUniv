@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Education Planning - MyUniv</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,65 +31,25 @@
 </head>
 <body class="bg-[#F4F7FE] text-gray-800 antialiased selection:bg-[#FF7A59] selection:text-white">
 
-    <!-- Backdrop Mobile Sidebar -->
-    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 md:hidden hidden backdrop-blur-xs transition-opacity"></div>
+    {{-- Backdrop Mobile Sidebar --}}
+    <div
+        id="sidebarBackdrop"
+        aria-hidden="true"
+        onclick="closeSidebar()"
+        class="fixed inset-0 z-40 hidden md:hidden transition-opacity" style="background: transparent !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;">
+    </div>
 
-    <!-- Sidebar Navigation -->
-    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-[#E2E8F0] flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-[4px_0_24px_rgba(54,80,162,0.05)] overflow-y-auto">
-        <div>
-            <!-- Brand Logo -->
-            <div class="px-6 py-6 border-b border-gray-100 flex items-center gap-3.5">
-                <div class="w-11 h-11 flex items-center justify-center bg-indigo-50 rounded-[16px] border border-indigo-200/80 p-1.5 shrink-0 overflow-hidden shadow-sm">
-                    <img src="{{ asset('images/icon.png') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <span class="text-lg font-black text-[#3650A2] tracking-tight leading-none block">MyUniv</span>
-                    <span class="text-[10px] font-extrabold text-indigo-400 uppercase tracking-wider mt-1 block">Sistem Peminatan</span>
-                </div>
-            </div>
+    {{-- Komponen Sidebar Siswa --}}
+    <x-student.student-sidebar active="planning" />
 
-            <!-- Navigation Links -->
-            <nav class="p-5 space-y-2">
-                <div class="px-4 py-2 text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest">Menu Utama</div>
-                <a href="{{ route('student.dashboard') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">Beranda</a>
-                <a href="{{ route('student.assessment.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">Assesmen</a>
-                <a href="{{ route('student.exploration.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">Eksplorasi</a>
-                <a href="{{ route('student.planning.index') }}" class="flex items-center gap-3.5 px-4.5 py-4 rounded-2xl bg-gradient-strong text-white font-bold text-sm shadow-lg shadow-indigo-900/25 relative overflow-hidden">
-                    <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#FF7A59]"></div>
-                    <span>Education Planning</span>
-                </a>
-                <a href="{{ route('student.consultation.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">Konsultasi BK</a>
-                <a href="{{ route('student.profile.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">Profil</a>
-            </nav>
-        </div>
-
-        <div class="p-5 border-t border-gray-100 bg-white">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-600 hover:bg-red-50 font-bold text-sm transition-all">Keluar (Logout)</button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- Top Navbar -->
-    <header class="bg-white/90 backdrop-blur-md border-b border-[#E2E8F0] px-6 lg:px-10 py-5 flex justify-between items-center fixed top-0 right-0 left-0 md:left-72 z-40 shadow-xs">
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="toggleSidebar()" class="md:hidden p-2 rounded-xl text-gray-700 bg-gray-100 hover:bg-indigo-50 hover:text-[#3650A2]">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
-            </button>
-            <span class="text-sm font-extrabold text-[#3650A2] hidden sm:inline">Education Planning &amp; Roadmap Karir</span>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <div class="text-right hidden sm:block">
-                <div class="text-sm font-extrabold text-gray-900 leading-tight">{{ Auth::user()->name ?? 'Siswa' }}</div>
-                <div class="text-xs font-semibold text-indigo-500">Siswa</div>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-gradient-strong text-white flex items-center justify-center font-extrabold text-xs shadow-md">
-                {{ strtoupper(substr(Auth::user()->name ?? 'S', 0, 2)) }}
-            </div>
-        </div>
-    </header>
+    {{-- Komponen Topbar --}}
+    <div class="fixed top-0 right-0 left-0 z-30 md:left-72">
+        <x-student.student-topbar
+            title="Education Planning"
+            :username="Auth::user()->name ?? 'Siswa'"
+            :initials="strtoupper(substr(Auth::user()->name ?? 'S', 0, 2))"
+        />
+    </div>
 
     <!-- Main Content Area -->
     <div class="md:ml-72 pt-28 min-h-screen flex flex-col">
@@ -102,26 +63,28 @@
                 </div>
             @endif
 
-            <!-- Banner Header -->
-            <div class="relative rounded-[36px] overflow-hidden px-8 sm:px-12 py-10 shadow-lg border border-indigo-100 flex flex-col justify-center">
-                <div class="absolute inset-0 z-0">
-                    <img src="{{ asset('images/2!.png') }}" alt="Background" class="w-full h-full object-cover object-center filter scale-105">
-                </div>
-                <div class="absolute inset-0 z-5 bg-gradient-to-r from-[#141F43]/70 via-[#1E2D62]/80 to-[#3650A2]/80"></div>
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative z-20 text-white">
-                    <div class="space-y-3 max-w-2xl">
-                        <span class="px-4 py-1.5 bg-[#FF7A59] text-white rounded-full text-xs font-extrabold tracking-wider uppercase inline-block">Roadmap Studi &amp; Karir</span>
-                        <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-white">Education Planning 🚀</h1>
-                        <p class="text-gray-200 text-xs sm:text-sm font-medium leading-relaxed">
-                            Rancang target kuliah, atur milestone persiapan, dan pantau langkah sukses masa depanmu bersama MyUniv.
-                        </p>
+            {{-- Header menggunakan desain komponen header MyUniv yang sudah ada --}}
+            <section class="bg-gradient-strong rounded-[32px] p-8 sm:p-10 text-white relative overflow-hidden shadow-xl shadow-indigo-950/15">
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute right-20 top-0 w-32 h-32 bg-[#FF7A59]/20 rounded-full blur-xl pointer-events-none"></div>
+
+                <div class="relative z-10 max-w-2xl space-y-3">
+                    <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-indigo-100">
+                        <svg class="w-3.5 h-3.5 text-[#FF7A59]" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.788 0l7-3a1 1 0 000-1.84l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.17 1 1 0 01.01-1.98c.35.035.7.093 1.05.17V16.5a1 1 0 001 1h8a1 1 0 001-1v-4.148c.35-.077.7-.135 1.05-.17a1 1 0 01.01 1.98 8.969 8.969 0 01-1.05.17v-4.102l1.69-.723a1 1 0 000-1.84l-7-3a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84z"/></svg>
+                        Roadmap Studi &amp; Karir
+                    </span>
+
+                    <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">Education Planning</h1>
+                    <p class="text-xs sm:text-sm text-indigo-100 font-medium leading-relaxed">Rancang target kuliah, atur milestone persiapan, dan pantau langkah sukses masa depanmu bersama MyUniv.</p>
+
+                    <div class="pt-2">
+                        <x-button type="button" variant="coral" onclick="openModal()" class="!px-6 !py-3.5 !rounded-2xl !text-xs sm:!text-sm !shadow-lg !shadow-orange-500/30 hover:!scale-105">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                            <span>Buat Rencana Baru</span>
+                        </x-button>
                     </div>
-                    <button onclick="openModal()" class="px-6 py-3.5 bg-[#FF7A59] hover:bg-[#e0684a] text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-lg shadow-orange-500/30 transition hover:scale-105 shrink-0 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                        <span>Buat Rencana Baru</span>
-                    </button>
                 </div>
-            </div>
+            </section>
 
             <!-- Tab Navigation Interaktif -->
             <div class="flex items-center gap-8 border-b border-gray-200 text-sm font-bold">
@@ -133,7 +96,7 @@
             <!-- KONTEN TAB 1: RENCANA SAYA -->
             <div id="content-plans" class="space-y-6">
                 @forelse($plans ?? [] as $plan)
-                <div class="card-notion rounded-3xl p-6 sm:p-8 space-y-6">
+                <x-card variant="default" class="card-notion !p-6 sm:!p-8 rounded-3xl space-y-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <div class="flex items-center gap-2">
@@ -143,7 +106,7 @@
                             <p class="text-xs text-gray-500 mt-1 ml-4.5">{{ $plan['description'] ?? $plan->description }}</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <form action="{{ url('/student/planning/' . ($plan['id'] ?? $plan->id)) }}" method="POST" onsubmit="return confirm('Hapus rencana ini?')">
+                            <form action="{{ url('/student/planning/' . ($plan['id'] ?? $plan->id)) }}" method="POST" class="delete-planning-form" onsubmit="return confirmDeletePlanning(event)">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="px-3.5 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition">Hapus</button>
@@ -151,24 +114,19 @@
                         </div>
                     </div>
 
-                    <!-- Progress Bar -->
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between text-xs font-extrabold text-gray-600">
-                            <span>Progress Keseluruhan</span>
-                            <span class="text-[#3650A2]" id="progress-text-{{ $loop->index }}">
-                                @php
-                                    $tasks = $plan['tasks'] ?? $plan->tasks ?? [];
-                                    $completedCount = collect($tasks)->where('status', 'Selesai')->count();
-                                    $totalCount = count($tasks);
-                                    $percent = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
-                                    echo $percent . '%';
-                                @endphp
-                            </span>
-                        </div>
-                        <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden p-0.5 border border-gray-200/60">
-                            <div id="progress-bar-{{ $loop->index }}" class="bg-gradient-to-r from-[#3650A2] to-[#FF7A59] h-2 rounded-full transition-all duration-500" style="width: {{ $percent }}%"></div>
-                        </div>
-                    </div>
+                    <!-- Progress Bar: komponen reusable, nilai tetap dihitung dari tasks -->
+                    @php
+                        $tasks = $plan['tasks'] ?? $plan->tasks ?? [];
+                        $completedCount = collect($tasks)->where('status', 'Selesai')->count();
+                        $totalCount = count($tasks);
+                        $percent = $totalCount > 0 ? round(($completedCount / $totalCount) * 100) : 0;
+                    @endphp
+                    <x-progress
+                        :value="$percent"
+                        label="Progress Keseluruhan"
+                        id="progress-container-{{ $loop->index }}"
+                        class="progress-component"
+                    />
 
                     <!-- Checklist Table / Items dengan Interaksi Animasi & Checkbox Aktif -->
                     <div class="space-y-3 pt-2 task-container">
@@ -198,13 +156,13 @@
                         </div>
                         @endforeach
                     </div>
-                </div>
+                </x-card>
                 @empty
-                <div class="card-notion rounded-3xl p-12 text-center space-y-3">
+                <x-card variant="default" class="card-notion !p-12 rounded-3xl text-center space-y-3">
                     <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-[#3650A2] text-xl font-bold">📋</div>
                     <h3 class="text-base font-black text-gray-900">Belum Ada Rencana Pendidikan</h3>
                     <p class="text-xs text-gray-500 max-w-sm mx-auto">Buat rencana pertamamu untuk mulai memetakan target kuliah dan langkah persiapan kariermu di MyUniv.</p>
-                </div>
+                </x-card>
                 @endforelse
             </div>
 
@@ -222,7 +180,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Card Universitas & Jurusan -->
-                    <div class="card-notion rounded-3xl p-6 sm:p-8 space-y-4">
+                    <x-card variant="default" class="card-notion !p-6 sm:!p-8 rounded-3xl space-y-4">
                         <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[#3650A2] font-black text-lg">🎯</div>
                         <div>
                             <span class="text-[11px] font-extrabold text-indigo-400 uppercase tracking-wider">Pilihan Utama</span>
@@ -234,10 +192,10 @@
                             <div class="text-xs text-gray-500 font-semibold">Jalur Seleksi: <strong id="display-path" class="text-indigo-600">{{ $target->admission_path ?? 'SNBP &amp; SNBT' }}</strong></div>
                         </div>
                         <a href="{{ route('student.exploration.index') }}" class="block text-center py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition">Eksplorasi Kampus Lainnya</a>
-                    </div>
+                    </x-card>
 
                     <!-- Card Profesi & Karir -->
-                    <div class="card-notion rounded-3xl p-6 sm:p-8 space-y-4">
+                    <x-card variant="default" class="card-notion !p-6 sm:!p-8 rounded-3xl space-y-4">
                         <div class="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF7A59] font-black text-lg">💼</div>
                         <div>
                             <span class="text-[11px] font-extrabold text-[#FF7A59] uppercase tracking-wider">Masa Depan</span>
@@ -249,13 +207,13 @@
                             <div class="text-xs text-gray-500 font-semibold">Status Persiapan: <strong class="text-emerald-600">On Track (Sesuai Rencana)</strong></div>
                         </div>
                         <a href="{{ route('student.assessment.index') }}" class="block text-center py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition">Ulangi Asesmen Minat Bakat</a>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
             <!-- KONTEN TAB 3: TIMELINE & DEADLINE (Pure Kalender Akademik Resmi) -->
             <div id="content-deadlines" class="space-y-6 hidden">
-                <div class="card-notion rounded-3xl p-6 sm:p-8 space-y-6">
+                <x-card variant="default" class="card-notion !p-6 sm:!p-8 rounded-3xl space-y-6">
                     <div>
                         <span class="px-3 py-1 bg-indigo-50 text-[#3650A2] rounded-full text-[10px] font-extrabold tracking-wider uppercase inline-block mb-2">Kalender Resmi Nasional</span>
                         <h3 class="text-lg font-black text-gray-900">Timeline &amp; Deadline Penting Camaba</h3>
@@ -288,7 +246,7 @@
                             <div class="text-xs text-gray-500 mt-0.5">Pengunggahan berkas akhir dan permanenisasi akun ke portal seleksi nasional.</div>
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
 
         </main>
@@ -392,17 +350,62 @@
 
                 <div class="flex justify-end gap-3 pt-2">
                     <button type="button" onclick="closeTargetModal()" class="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm">Batal</button>
-                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-[#3650A2] hover:bg-[#2b4185] text-white font-bold text-sm shadow-md">Simpan Perubahan</button>
+                    <x-button type="submit" variant="primary" class="!px-5 !py-2.5 !rounded-xl !text-sm !shadow-md">Simpan Perubahan</x-button>
                 </div>
             </form>
         </div>
     </div>
 
+    {{-- Komponen konfirmasi hapus reusable (di components/confirm-delete.blade.php, bukan di student) --}}
+    <x-confirm-delete
+        function-name="confirmDeletePlanning"
+        title="Hapus Rencana Pendidikan?"
+        text="Rencana ini akan dihapus permanen. Kamu yakin ingin melanjutkan?"
+        confirm-text="Ya, Hapus Rencana"
+    />
+
     <script>
-        function toggleSidebar() {
-            document.getElementById('mobileSidebar').classList.toggle('-translate-x-full');
-            document.getElementById('sidebarBackdrop').classList.toggle('hidden');
+        // Gunakan mekanisme bawaan komponen student-sidebar (class .is-open).
+        // Jangan membuat toggleSidebar baru karena itu menimpa fungsi milik komponen.
+        function closeSidebar() {
+            if (typeof window.myUnivToggleStudentSidebar === 'function') {
+                window.myUnivToggleStudentSidebar(true);
+            } else {
+                const sidebar = document.getElementById('mobileSidebar');
+                const backdrop = document.getElementById('sidebarBackdrop');
+                if (sidebar) sidebar.classList.remove('is-open');
+                if (backdrop) {
+                    backdrop.classList.add('hidden');
+                    backdrop.classList.remove('is-visible');
+                }
+                document.body.classList.remove('overflow-hidden');
+            }
         }
+
+        // Pastikan backdrop tidak mewarnai atau memburamkan halaman.
+        function keepSidebarBackdropTransparent() {
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (!backdrop) return;
+            backdrop.style.setProperty('background', 'transparent', 'important');
+            backdrop.style.setProperty('backdrop-filter', 'none', 'important');
+            backdrop.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            keepSidebarBackdropTransparent();
+            if (window.innerWidth < 768) closeSidebar();
+            document.querySelectorAll('#mobileSidebar nav a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    if (window.innerWidth < 768) closeSidebar();
+                });
+            });
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') closeSidebar();
+        });
+
+
         function openModal() {
             document.getElementById('planModal').classList.remove('hidden');
         }
@@ -461,12 +464,15 @@
 
             const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
 
-            // Cari elemen progress text dan bar di dalam card ini
-            const progressText = card.querySelector('[id^="progress-text-"]');
-            const progressBar = card.querySelector('[id^="progress-bar-"]');
+            // Update komponen progress di dalam card ini.
+            const progressRoot = card.querySelector('.progress-component');
+            const progressText = progressRoot ? progressRoot.querySelector('.flex.justify-between span:last-child') : null;
+            const progressBar = progressRoot ? progressRoot.querySelector('[role="progressbar"] > div') : null;
+            const progressTrack = progressRoot ? progressRoot.querySelector('[role="progressbar"]') : null;
 
-            if(progressText) progressText.textContent = percent + '%';
-            if(progressBar) progressBar.style.width = percent + '%';
+            if (progressText) progressText.textContent = percent + '%';
+            if (progressBar) progressBar.style.width = percent + '%';
+            if (progressTrack) progressTrack.setAttribute('aria-valuenow', String(percent));
         }
 
         // Handler Dataset Lainnya untuk Modal Target

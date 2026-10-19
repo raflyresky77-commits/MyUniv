@@ -1,99 +1,113 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - MyUniv</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+@extends('layouts.app')
+
+@section('title', 'Admin Dashboard - MyUniv')
+@section('body-class', 'bg-[#F8FBFF] text-gray-800 antialiased')
+
+@push('styles')
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+        html { min-height: 100%; overflow-y: auto; }
+        body {
+            min-height: 100vh;
+            height: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
         .bg-gradient-myuniv { background: linear-gradient(135deg, #3650A2 0%, #22346E 100%); }
         .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
-    </style>
-</head>
-<body class="bg-[#F8FBFF] text-gray-800 antialiased">
+</style>
+@endpush
 
-    <!-- Backdrop Gelap saat Sidebar Mobile Terbuka -->
+@section('content')
+
+    <!-- Backdrop untuk menutup sidebar saat pengguna mengetuk area luar di mobile -->
     <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden backdrop-blur-xs transition-opacity"></div>
 
-    <!-- Sidebar Navigation (Tetap fixed di kiri layar) -->
-    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-[#E2E8F0] flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-[4px_0_24px_rgba(54,80,162,0.03)] overflow-y-auto">
-        <div>
-            <!-- Brand Logo -->
-            <div class="px-6 py-6 border-b border-gray-100 flex items-center gap-3.5">
-                <div class="h-10 flex items-center justify-center">
-                    <img src="{{ asset('images/icon.png') }}" alt="MyUniv Logo" class="h-10 w-auto object-contain">
-                </div>
-                <div>
-                    <span class="text-lg font-black text-[#3650A2] tracking-tight leading-none block">MyUniv</span>
-                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider mt-1 block">Enterprise OS</span>
-                </div>
-            </div>
+    @php
+        // Konfigurasi menu dikirim ke komponen agar sidebar bisa dipakai ulang.
+        $sidebarMenus = [
+            [
+                'key' => 'dashboard',
+                'label' => 'Dashboard Utama',
+                'url' => route('admin.dashboard'),
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2v-2z"/></svg>',
+            ],
+            [
+                'key' => 'assessments',
+                'label' => 'Bank Soal Asesmen',
+                'url' => route('admin.assessments.index'),
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>',
+            ],
+            [
+                'key' => 'universities',
+                'label' => 'Data Perguruan Tinggi',
+                'url' => route('admin.universities.index'),
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>',
+            ],
+            [
+                'key' => 'majors',
+                'label' => 'Program Studi & Jurusan',
+                'url' => route('admin.majors.index'),
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>',
+            ],
+            [
+                'key' => 'users',
+                'label' => 'Manajemen Pengguna',
+                'url' => route('admin.users.index'),
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
+            ],
+        ];
+    @endphp
 
-            <!-- Navigation Links -->
-            <nav class="p-5 space-y-2">
-                <div class="px-4 py-2 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Menu Utama</div>
+    {{-- Sidebar memakai komponen bersama; route, ikon, dan logout --}}
+    <x-sidebar :menus="$sidebarMenus" active="dashboard" title="MyUniv" logo="images/icon.png">
 
-                <!-- Menu Aktif (Dashboard) -->
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3.5 px-4.5 py-4 rounded-2xl bg-gradient-myuniv text-white font-bold text-sm shadow-lg shadow-indigo-200/60 transition-all duration-300 relative overflow-hidden group">
-                    <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#FF7A59]"></div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                    <span>Dashboard Utama</span>
-                </a>
+{{-- Form logout admin. --}}
+<form action="{{ route('logout') }}" method="POST" class="w-full">
+    @csrf
 
-                <!-- Bank Soal Asesmen -->
-                <a href="{{ route('admin.assessments.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#F0F5FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                    Bank Soal Asesmen
-                </a>
+    {{-- Tombol logout dengan area sentuh yang cukup untuk layar mobile. --}}
+    <button
+        type="submit"
+        class="flex min-h-12 w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-bold text-red-600 transition hover:bg-red-50/80 focus:outline-none focus:ring-2 focus:ring-red-300"
+    >
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 shrink-0 text-red-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+        </svg>
 
-                <!-- Data Universitas -->
-                <a href="{{ route('admin.universities.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#F0F5FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    Data Perguruan Tinggi
-                </a>
+        <span>Keluar Sistem</span>
+    </button>
+</form>
 
-                <!-- Program Studi & Jurusan -->
-                <a href="{{ route('admin.majors.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#F0F5FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
-                    Program Studi & Jurusan
-                </a>
-
-                <!-- Manajemen Pengguna -->
-                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#F0F5FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    Manajemen Pengguna
-                </a>
-            </nav>
-        </div>
-
-        <!-- Logout Section -->
-        <div class="p-5 border-t border-gray-100 bg-white">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50/80 rounded-xl transition font-bold group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400 group-hover:text-red-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                    Keluar Sistem
-                </button>
-            </form>
-        </div>
-    </aside>
+    </x-sidebar>
 
     <!-- Top Navbar (Fixed di atas, tidak ikut scroll) -->
-    <header class="bg-white/90 backdrop-blur-md border-b border-[#E2E8F0] px-6 lg:px-10 py-6 flex justify-between items-center fixed top-0 right-0 left-0 md:left-72 z-40 shadow-xs">
-        <div class="flex items-center gap-3">
+    <header class="bg-white/90 backdrop-blur-md border-b border-[#E2E8F0] px-4 sm:px-6 lg:px-10 py-4 sm:py-5 flex justify-between items-center fixed top-0 right-0 left-0 md:left-72 z-40 shadow-sm">
+        <div class="flex min-w-0 items-center gap-2 sm:gap-3">
             <button type="button" onclick="toggleSidebar()" class="md:hidden relative z-50 p-2.5 rounded-xl text-gray-700 bg-gray-100 hover:bg-indigo-50 hover:text-[#3650A2] transition focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
-            <span class="text-xs font-extrabold px-3.5 py-1.5 bg-indigo-50 text-[#3650A2] rounded-xl tracking-wide border border-indigo-100/50">Panel Kontrol</span>
+            <span class="text-[10px] sm:text-xs font-extrabold px-2.5 sm:px-3.5 py-1.5 bg-indigo-50 text-[#3650A2] rounded-xl tracking-wide border border-indigo-100/50">Panel Kontrol</span>
             <span class="text-gray-300 font-light hidden sm:inline">/</span>
-            <h1 class="text-sm font-black text-gray-800 tracking-tight hidden sm:inline">Ringkasan Admin</h1>
+            <h1 class="text-sm font-black text-gray-800 tracking-tight hidden lg:inline">Ringkasan Admin</h1>
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex shrink-0 items-center gap-2 sm:gap-4">
             <div class="text-right hidden sm:block">
                 <div class="text-sm font-extrabold text-gray-900 leading-tight">Administrator Utama</div>
                 <div class="text-xs font-semibold text-gray-400">admin@myuniv.test</div>
@@ -103,8 +117,8 @@
     </header>
 
     <!-- Main Content Wrapper -->
-    <div class="md:ml-72 pt-24 min-h-screen flex flex-col">
-        <main class="p-6 md:p-8 space-y-8 max-w-7xl w-full mx-auto flex-1">
+    <div class="md:ml-72 min-h-screen pt-24 pb-16">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8 pb-20 space-y-8">
 
             <!-- Hero Banner Lebih Menonjol dengan Efek Glow & Aksen Koral -->
             <div class="bg-gradient-myuniv text-white p-8 sm:p-12 rounded-[32px] shadow-2xl shadow-indigo-950/20 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border border-white/10">
@@ -235,13 +249,30 @@
         </main>
     </div>
 
-    <script>
+@endsection
+
+@push('scripts')
+<script>
+        // Membuka/menutup sidebar mobile tanpa mengganggu scroll halaman utama.
         function toggleSidebar() {
             const sidebar = document.getElementById('mobileSidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
-            sidebar.classList.toggle('-translate-x-full');
-            backdrop.classList.toggle('hidden');
+
+            if (!sidebar || !backdrop) return;
+
+            const isOpening = sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', !isOpening);
+            backdrop.classList.toggle('hidden', !isOpening);
+            document.body.classList.toggle('overflow-hidden', isOpening);
+            document.documentElement.classList.toggle('sidebar-open', isOpening);
         }
-    </script>
-</body>
-</html>
+
+        // Tombol Escape juga dapat menutup sidebar saat layar mobile.
+        document.addEventListener('keydown', function (event) {
+            const sidebar = document.getElementById('mobileSidebar');
+            if (event.key === 'Escape' && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+        });
+</script>
+@endpush

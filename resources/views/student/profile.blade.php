@@ -58,7 +58,7 @@
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
 
     <!-- Backdrop Gelap saat Sidebar Mobile Terbuka -->
-    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 md:hidden hidden backdrop-blur-xs transition-opacity"></div>
+    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-transparent z-40 md:hidden hidden transition-opacity"></div>
 
     <!-- Sidebar Navigation -->
     <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-[#E2E8F0] flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-[4px_0_24px_rgba(54,80,162,0.05)] overflow-y-auto">
@@ -79,37 +79,37 @@
                 <div class="px-4 py-2 text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest">Menu Utama</div>
 
                 <!-- Beranda -->
-                <a href="#beranda" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
+                <a href="{{ url('/student/dashboard') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] group-hover:scale-110 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     <span>Beranda</span>
                 </a>
 
                 <!-- Asesmen -->
-                <a href="#asesmen" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
+                <a href="{{ route('student.assessment.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] group-hover:scale-110 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     <span>Asesmen</span>
                 </a>
 
                 <!-- Eksplorasi -->
-                <a href="#eksplorasi" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
+                <a href="{{ route('student.exploration.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] group-hover:scale-110 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <span>Eksplorasi</span>
                 </a>
 
                 <!-- Education Planning -->
-                <a href="#planning" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
+                <a href="{{ route('student.planning.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] group-hover:scale-110 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                     <span>Education Planning</span>
                 </a>
 
                 <!-- Konsultasi BK -->
-                <a href="#konsultasi" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
+                <a href="{{ url('/student/consultation') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] group-hover:scale-110 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                     <span>Konsultasi BK</span>
                 </a>
 
                 <!-- Profil (Aktif) -->
-                <a href="#profil" class="flex items-center gap-3.5 px-4.5 py-4 rounded-2xl bg-gradient-strong text-white font-bold text-sm shadow-lg shadow-indigo-900/25 transition-all duration-300 relative overflow-hidden group">
+                <a href="{{ url('/student/profile') }}" class="flex items-center gap-3.5 px-4.5 py-4 rounded-2xl bg-gradient-strong text-white font-bold text-sm shadow-lg shadow-indigo-900/25 transition-all duration-300 relative overflow-hidden group">
                     <div class="absolute left-0 top-0 bottom-0 w-2 bg-[#FF7A59]"></div>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     <span>Profil</span>
@@ -169,28 +169,15 @@
                 </div>
             @endif
 
-            <!-- BANNER HEADER DENGAN TAG IMG DAN EFEK BLUR -->
-            <div class="profile-banner p-15 sm:p-10 text-white shadow-xl relative bg-linear-to-br from-[#3650A2] to-[#1E2D62]">
-                <!-- Tag Img sebagai latar belakang berefek blur -->
-                <img src="{{ asset('images/banner-profile.png') }}" alt="Background Banner" class="absolute inset-0 w-full h-full object-cover filter blur-[5px] scale- opacity-20 z-0">
-
-                <!-- Lapisan Overlay Warna agar teks tetap kontras terbaca -->
-                <div class="absolute inset-0 bg-[#3650A2]/10 z-0"></div>
-
-                <!-- Konten Banner -->
-                <div class="relative z-10 space-y-2 max-w-xl">
-                    <span class="inline-block px-3 py-1 bg-white/25 backdrop-blur-md text-white text-[8px] font-extrabold rounded-full uppercase tracking-wider mb-1">
-                        Pengaturan Akun
-                    </span>
-                    <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Profil Saya</h1>
-                    <p class="text-xs sm:text-sm text-indigo-100 font-medium leading-relaxed">
-                        Kelola informasi akun dan data diri kamu dengan mudah.
-                    </p>
-                </div>
-            </div>
+            <!-- Banner reusable MyUniv -->
+            <x-student.banner
+                eyebrow="Pengaturan Akun"
+                title="Profil Saya"
+                description="Kelola informasi akun dan data diri kamu dengan mudah."
+            />
 
             <!-- Kartu Identitas Ringkas (Hero Profile Card) -->
-            <div class="card-profile rounded-[32px] p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative overflow-hidden">
+            <x-card variant="expressive" class="card-profile rounded-[32px] p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none"></div>
 
                 <div class="flex items-center gap-5 relative z-10">
@@ -210,15 +197,15 @@
                 </div>
                 <div class="relative z-10 w-full sm:w-auto">
                     <!-- Tombol Pemicu Modal Edit Profil -->
-                    <button onclick="openEditModal()" class="w-full sm:w-auto px-6 py-3 bg-[#FF7A59] hover:bg-[#e86949] text-white text-xs font-extrabold rounded-2xl shadow-lg shadow-coral-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                    <x-button type="button" onclick="openEditModal()" variant="primary" size="md" class="w-full sm:w-auto !bg-[#FF7A59] hover:!bg-[#e86949] !text-white text-xs font-extrabold rounded-2xl shadow-lg shadow-coral-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                         Edit Profil
-                    </button>
+                    </x-button>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Informasi Pribadi (Tampilan Readonly) -->
-            <div class="card-profile rounded-[32px] p-6 sm:p-8 space-y-6">
+            <x-card variant="expressive" class="card-profile rounded-[32px] p-6 sm:p-8 space-y-6">
                 <div class="flex items-center justify-between border-b border-indigo-100/60 pb-4">
                     <h3 class="text-base font-black text-[#3650A2] flex items-center gap-2.5">
                         <svg class="w-5 h-5 text-[#FF7A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -253,10 +240,10 @@
                         <input type="email" id="displayField-email" value="{{ $user->email ?? 'anggia@myuniv.test' }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Bagian Akun & Keluar -->
-            <div class="card-profile rounded-[32px] p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <x-card variant="expressive" class="card-profile rounded-[32px] p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
                 <div class="space-y-1">
                     <h3 class="text-base font-black text-[#3650A2]">Sesi Akun</h3>
                     <p class="text-xs font-semibold text-gray-500">Keluar dari perangkat ini dan kembali ke halaman utama.</p>
@@ -264,12 +251,12 @@
                 <div class="w-full sm:w-auto">
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-white hover:bg-red-50 text-red-600 border border-red-200 text-xs font-extrabold rounded-2xl shadow-2xs transition-all hover:scale-105 active:scale-95">
+                        <x-button type="submit" variant="outline" size="md" class="w-full sm:w-auto !bg-white hover:!bg-red-50 !text-red-600 !border-red-200 text-xs font-extrabold rounded-2xl shadow-2xs transition-all hover:scale-105 active:scale-95">
                             Keluar (Logout)
-                        </button>
+                        </x-button>
                     </form>
                 </div>
-            </div>
+            </x-card>
         </main>
     </div>
 
@@ -310,12 +297,12 @@
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold transition">
+                    <x-button type="button" onclick="closeEditModal()" variant="outline" size="md" class="px-5 py-2.5 rounded-xl !bg-gray-100 hover:!bg-gray-200 !text-gray-600 text-xs font-bold transition">
                         Batal
-                    </button>
-                    <button type="submit" id="saveButton" class="px-6 py-2.5 rounded-xl bg-[#3650A2] hover:bg-[#2B4185] text-white text-xs font-bold shadow-md shadow-indigo-900/20 transition flex items-center gap-2">
+                    </x-button>
+                    <x-button type="submit" id="saveButton" variant="primary" size="md" class="px-6 py-2.5 !bg-[#3650A2] hover:!bg-[#2B4185] !text-white text-xs font-bold shadow-md shadow-indigo-900/20 transition flex items-center gap-2">
                         <span>Simpan Perubahan</span>
-                    </button>
+                    </x-button>
                 </div>
             </form>
 
@@ -326,8 +313,11 @@
         function toggleSidebar() {
             const sidebar = document.getElementById('mobileSidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
-            sidebar.classList.toggle('-translate-x-full');
-            backdrop.classList.toggle('hidden');
+            if (!sidebar || !backdrop) return;
+            const opening = sidebar.classList.contains('-translate-x-full');
+            sidebar.classList.toggle('-translate-x-full', !opening);
+            backdrop.classList.toggle('hidden', !opening);
+            document.body.classList.toggle('overflow-hidden', opening);
         }
 
         // Fungsi Membuka Modal Edit Profil

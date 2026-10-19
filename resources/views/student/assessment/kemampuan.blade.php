@@ -40,86 +40,17 @@
 </head>
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
 
-    <!-- Backdrop & Sidebar Mobile -->
-    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/40 z-40 md:hidden hidden backdrop-blur-xs transition-opacity"></div>
+    {{-- Backdrop dikelola oleh komponen sidebar reusable. Jangan tambahkan backdrop kedua. --}}
+    <x-student.student-sidebar active="assessment" />
 
-    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-[#E2E8F0] flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-2xl md:shadow-[4px_0_24px_rgba(54,80,162,0.05)] overflow-y-auto">
-        <div>
-            <!-- Logo & Brand Header -->
-            <div class="px-6 py-6 border-b border-gray-100 flex items-center gap-3.5 bg-gradient-to-b from-indigo-50/50 to-transparent">
-                <div class="w-11 h-11 flex items-center justify-center bg-indigo-100/80 rounded-[16px] border border-indigo-200/80 p-1.5 shrink-0 overflow-hidden shadow-sm">
-                    <img src="{{ asset('images/icon.png') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
-                </div>
-                <div>
-                    <span class="text-lg font-black text-[#3650A2] tracking-tight leading-none block">MyUniv</span>
-                    <span class="text-[10px] font-extrabold text-indigo-400 uppercase tracking-wider mt-1 block">Sistem Peminatan</span>
-                </div>
-            </div>
-
-            <!-- Navigation Links -->
-            <nav class="p-5 space-y-2">
-                <div class="px-4 py-2 text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest">Menu Utama</div>
-                <a href="{{ route('student.dashboard') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200">
-                    <span>Beranda</span>
-                </a>
-                <a href="{{ route('student.assessment.index') }}" class="flex items-center gap-3.5 px-4.5 py-4 rounded-2xl bg-gradient-strong text-white font-bold text-sm shadow-lg shadow-indigo-900/25">
-                    <span>Assesmen</span>
-                </a>
-                <a href="{{ route('student.exploration.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">
-                    <span>Eksplorasi</span>
-                </a>
-                <a href="{{ route('student.planning.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">
-                    <span>Education Planning</span>
-                </a>
-                <a href="{{ route('student.consultation.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">
-                    <span>Konsultasi BK</span>
-                </a>
-                <a href="{{ route('student.profile.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all">
-                    <span>Profil</span>
-                </a>
-            </nav>
-        </div>
-
-        <!-- Logout Button -->
-        <div class="p-5 border-t border-gray-100">
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-red-600 hover:bg-red-50 font-semibold text-sm transition-all duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    <span>Keluar / Logout</span>
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- Top Navbar -->
-    <header class="bg-white/85 backdrop-blur-md border-b border-[#E2E8F0] px-6 lg:px-10 py-4 flex justify-between items-center fixed top-0 right-0 left-0 md:left-72 z-40 shadow-xs">
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="toggleSidebar()" class="md:hidden p-2 rounded-xl text-gray-700 bg-gray-100 hover:bg-indigo-50 hover:text-[#3650A2] transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
-            </button>
-            <span class="text-sm font-bold text-gray-700 hidden sm:inline">Asesmen / <span class="text-[#3650A2]">Tes Kemampuan</span></span>
-        </div>
-        <div class="flex items-center gap-4">
-            <div class="hidden lg:flex flex-col items-end">
-                <span class="text-[11px] font-extrabold text-gray-500" id="progressTextHeader">Terjawab: 0 / 18 Soal</span>
-                <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
-                    <div id="progressBarHeader" class="h-full bg-gradient-coral w-0 transition-all duration-300"></div>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 pl-3 border-l border-gray-200">
-                <div class="text-right hidden sm:block">
-                    <div class="text-sm font-extrabold text-gray-900 leading-tight">{{ $user->name ?? 'Anggia Tresa' }}</div>
-                    <div class="text-xs font-semibold text-indigo-500">Siswa</div>
-                </div>
-                <div class="w-10 h-10 rounded-xl bg-gradient-strong text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-900/20">
-                    {{ strtoupper(substr($user->name ?? 'Anggia Tresa', 0, 2)) }}
-                </div>
-            </div>
-        </div>
-    </header>
+    <!-- Topbar melalui component reusable -->
+    <x-student.student-topbar
+        title="Tes Kemampuan"
+        subtitle="Asesmen"
+        :user="$user ?? auth()->user()"
+        progress-id="progressTextHeader"
+        progress-bar-id="progressBarHeader"
+    />
 
     <!-- Main Content Area -->
     <div class="md:ml-72 pt-28 min-h-screen flex flex-col">
@@ -214,7 +145,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
 
                 <!-- Form Ujian -->
-                <form id="assessmentForm" action="{{ route('student.assessment.kemampuan') }}" method="POST" class="lg:col-span-3 space-y-10">
+                <form id="assessmentForm" action="{{ route('student.assessment.kemampuan.store') }}" method="POST" class="lg:col-span-3 space-y-10">
                     @csrf
 
                     <!-- ================= SUBTES 1: NUMERIK (5 Soal) ================= -->
@@ -237,14 +168,14 @@
                         @foreach($numerikQuestions as $index => $item)
                             <div id="card-question-{{ $index + 1 }}" class="bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-8 space-y-4 shadow-sm transition-all duration-200">
                                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $index + 1 }} dari 18</h3>
+                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $index + 1 }} dari {{ 16 + $drawingQuestions->count() }}</h3>
                                     <span class="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">Numerik</span>
                                 </div>
                                 <p class="text-sm sm:text-base font-bold text-gray-800">{{ $item['q'] }}</p>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                                     @foreach($item['opts'] as $opt)
                                         <label class="relative cursor-pointer">
-                                            <input type="radio" name="numerik_{{ $index + 1 }}" value="{{ $opt }}" class="peer sr-only" onchange="updateProgress({{ $index + 1 }})">
+                                            <input type="radio" name="responses[numerik][{{ $index + 1 }}]" value="{{ $opt }}" class="peer sr-only" onchange="updateProgress({{ $index + 1 }})">
                                             <div class="flex items-center gap-3.5 p-3.5 rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-200 transition-all">
                                                 <div class="radio-bullet w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0 relative"><div class="w-1.5 h-1.5 rounded-full bg-white transform scale-0 transition-transform"></div></div>
                                                 <span class="text-sm font-bold text-gray-700">{{ $opt }}</span>
@@ -277,14 +208,14 @@
                             @php $qNum = $index + 6; @endphp
                             <div id="card-question-{{ $qNum }}" class="bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-8 space-y-4 shadow-sm transition-all duration-200">
                                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $qNum }} dari 18</h3>
+                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $qNum }} dari {{ 16 + $drawingQuestions->count() }}</h3>
                                     <span class="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">Verbal</span>
                                 </div>
                                 <p class="text-sm sm:text-base font-bold text-gray-800">{!! $item['q'] !!}</p>
                                 <div class="space-y-2.5 pt-2">
                                     @foreach($item['opts'] as $opt)
                                         <label class="block relative cursor-pointer">
-                                            <input type="radio" name="verbal_{{ $index + 1 }}" value="{{ $opt }}" class="peer sr-only" onchange="updateProgress({{ $qNum }})">
+                                            <input type="radio" name="responses[verbal][{{ $index + 1 }}]" value="{{ $opt }}" class="peer sr-only" onchange="updateProgress({{ $qNum }})">
                                             <div class="flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-200 transition-all">
                                                 <div class="radio-bullet w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0 relative"><div class="w-1.5 h-1.5 rounded-full bg-white transform scale-0 transition-transform"></div></div>
                                                 <span class="text-sm font-bold text-gray-700">{{ $opt }}</span>
@@ -318,7 +249,7 @@
                             @php $qNum = $index + 11; @endphp
                             <div id="card-question-{{ $qNum }}" class="bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-8 space-y-4 shadow-sm transition-all duration-200">
                                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $qNum }} dari 18</h3>
+                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $qNum }} dari {{ 16 + $drawingQuestions->count() }}</h3>
                                     <span class="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">Abstrak</span>
                                 </div>
                                 <p class="text-sm sm:text-base font-bold text-gray-800">{{ $questionText }}</p>
@@ -328,7 +259,7 @@
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
                                     @foreach(['A', 'B', 'C', 'D'] as $opt)
                                         <label class="relative cursor-pointer">
-                                            <input type="radio" name="abstrak_{{ $index + 1 }}" value="{{ $opt }}" class="peer sr-only" onchange="updateProgress({{ $qNum }})">
+                                            <input type="radio" name="responses[abstrak][{{ $index + 1 }}]" value="{{ $opt }}" class="peer sr-only" onchange="updateProgress({{ $qNum }})">
                                             <div class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-300 transition-all">
                                                 <span class="font-black text-[#3650A2] text-lg">{{ $opt }}</span>
                                                 <span class="text-[10px] text-gray-400 font-bold uppercase mt-1">Pilihan</span>
@@ -340,93 +271,59 @@
                         @endforeach
                     </div>
 
-                    <!-- ================= SUBTES 4: KREATIVITAS (2 Canvas Gambar - Soal 17 & 18) ================= -->
+                    <!-- ================= SUBTES 4: KREATIVITAS (5 Soal dari Supabase) ================= -->
                     <div class="space-y-6 pt-4" id="section-kreativitas">
                         <div class="bg-gradient-coral text-white px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-wider flex justify-between items-center shadow-md">
                             <span>Subtes 4: Kreativitas (Drawing Test)</span>
-                            <span class="text-xs bg-orange-900/40 px-3 py-1 rounded-xl text-orange-100">2 Gambar</span>
+                            <span class="text-xs bg-orange-900/40 px-3 py-1 rounded-xl text-orange-100">{{ $drawingQuestions->count() }} Gambar</span>
                         </div>
 
-                        <!-- Gambar 1 (Soal 17) -->
-                        <div id="card-question-17" class="bg-white border border-[#E2E8F0] rounded-[32px] p-6 sm:p-8 space-y-6 shadow-sm">
-                            <div class="flex flex-wrap justify-between items-center border-b border-gray-100 pb-4 gap-2">
-                                <div>
-                                    <h3 class="text-base font-black text-[#3650A2]">Soal 17 dari 18 - Gambar Garis Lengkung</h3>
-                                    <p class="text-xs text-gray-500 font-semibold mt-0.5">Lanjutkan garis lengkung biru di bawah ini menjadi sebuah gambar yang bermakna.</p>
-                                </div>
-                                <span class="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-xl border border-orange-100">KREATIVITAS 1</span>
-                            </div>
-
-                            <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
-                                <div class="flex items-center gap-4 flex-wrap">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs font-bold text-gray-600">Warna:</span>
-                                        <button type="button" onclick="setBrushColor(1, '#1E2D62')" class="w-6 h-6 rounded-full bg-[#1E2D62] border-2 border-white shadow-md"></button>
-                                        <button type="button" onclick="setBrushColor(1, '#FF7A59')" class="w-6 h-6 rounded-full bg-[#FF7A59] border-2 border-white shadow-md"></button>
-                                        <button type="button" onclick="setBrushColor(1, '#10B981')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-md"></button>
-                                        <button type="button" onclick="setBrushColor(1, '#111827')" class="w-6 h-6 rounded-full bg-gray-900 border-2 border-white shadow-md"></button>
+                        @foreach ($drawingQuestions as $index => $question)
+                            @php
+                                $canvasId = $index + 1;
+                                $questionNumber = 17 + $index;
+                            @endphp
+                            <div id="card-question-{{ $questionNumber }}" class="bg-white border border-[#E2E8F0] rounded-[32px] p-6 sm:p-8 space-y-6 shadow-sm">
+                                <div class="flex flex-wrap justify-between items-center border-b border-gray-100 pb-4 gap-2">
+                                    <div>
+                                        <h3 class="text-base font-black text-[#3650A2]">Soal {{ $questionNumber }} dari {{ 16 + $drawingQuestions->count() }}</h3>
+                                        <p class="text-xs text-gray-500 font-semibold mt-1">{{ $question->question_text }}</p>
                                     </div>
-                                    <div class="flex items-center gap-2 pl-3 border-l border-gray-300">
-                                        <span class="text-xs font-bold text-gray-600">Kuas:</span>
-                                        <select id="brushSize1" onchange="setBrushSize(1, this.value)" class="text-xs border border-gray-300 rounded-xl px-2.5 py-1.5 bg-white font-bold text-gray-700">
-                                            <option value="2">Tipis</option>
-                                            <option value="5" selected>Sedang</option>
-                                            <option value="10">Tebal</option>
-                                        </select>
+                                    <span class="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-xl border border-orange-100">KREATIVITAS {{ $canvasId }}</span>
+                                </div>
+
+                                <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
+                                    <div class="flex items-center gap-4 flex-wrap">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold text-gray-600">Warna:</span>
+                                            <button type="button" onclick="setBrushColor({{ $canvasId }}, '#1E2D62')" class="w-6 h-6 rounded-full bg-[#1E2D62] border-2 border-white shadow-md" aria-label="Biru"></button>
+                                            <button type="button" onclick="setBrushColor({{ $canvasId }}, '#FF7A59')" class="w-6 h-6 rounded-full bg-[#FF7A59] border-2 border-white shadow-md" aria-label="Oranye"></button>
+                                            <button type="button" onclick="setBrushColor({{ $canvasId }}, '#10B981')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-md" aria-label="Hijau"></button>
+                                            <button type="button" onclick="setBrushColor({{ $canvasId }}, '#111827')" class="w-6 h-6 rounded-full bg-gray-900 border-2 border-white shadow-md" aria-label="Hitam"></button>
+                                        </div>
+                                        <div class="flex items-center gap-2 pl-3 border-l border-gray-300">
+                                            <label for="brushSize{{ $canvasId }}" class="text-xs font-bold text-gray-600">Kuas:</label>
+                                            <select id="brushSize{{ $canvasId }}" onchange="setBrushSize({{ $canvasId }}, this.value)" class="text-xs border border-gray-300 rounded-xl px-2.5 py-1.5 bg-white font-bold text-gray-700">
+                                                <option value="2">Tipis</option>
+                                                <option value="5" selected>Sedang</option>
+                                                <option value="10">Tebal</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button type="button" onclick="undoCanvas(1)" class="px-3.5 py-1.5 bg-white border border-gray-300 hover:bg-gray-100 rounded-xl text-xs font-bold text-gray-700 shadow-xs">Undo</button>
-                                    <button type="button" onclick="resetCanvas(1)" class="px-3.5 py-1.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold">Reset</button>
-                                </div>
-                            </div>
-
-                            <div class="w-full h-80 border-2 border-dashed border-indigo-200 rounded-2xl bg-white relative overflow-hidden flex justify-center items-center shadow-inner">
-                                <canvas id="drawingCanvas1" class="drawingCanvas w-full h-full bg-white"></canvas>
-                            </div>
-                            <input type="hidden" name="kreativitas_image_1" id="kreativitasImageInput1">
-                        </div>
-
-                        <!-- Gambar 2 (Soal 18) -->
-                        <div id="card-question-18" class="bg-white border border-[#E2E8F0] rounded-[32px] p-6 sm:p-8 space-y-6 shadow-sm">
-                            <div class="flex flex-wrap justify-between items-center border-b border-gray-100 pb-4 gap-2">
-                                <div>
-                                    <h3 class="text-base font-black text-[#3650A2]">Soal 18 dari 18 - Gambar Garis Sudut & Siku</h3>
-                                    <p class="text-xs text-gray-500 font-semibold mt-0.5">Lanjutkan garis sudut tajam di bawah ini menjadi sebuah gambar utuh.</p>
-                                </div>
-                                <span class="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-xl border border-orange-100">KREATIVITAS 2</span>
-                            </div>
-
-                            <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
-                                <div class="flex items-center gap-4 flex-wrap">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs font-bold text-gray-600">Warna:</span>
-                                        <button type="button" onclick="setBrushColor(2, '#1E2D62')" class="w-6 h-6 rounded-full bg-[#1E2D62] border-2 border-white shadow-md"></button>
-                                        <button type="button" onclick="setBrushColor(2, '#FF7A59')" class="w-6 h-6 rounded-full bg-[#FF7A59] border-2 border-white shadow-md"></button>
-                                        <button type="button" onclick="setBrushColor(2, '#10B981')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-md"></button>
-                                        <button type="button" onclick="setBrushColor(2, '#111827')" class="w-6 h-6 rounded-full bg-gray-900 border-2 border-white shadow-md"></button>
-                                    </div>
-                                    <div class="flex items-center gap-2 pl-3 border-l border-gray-300">
-                                        <span class="text-xs font-bold text-gray-600">Kuas:</span>
-                                        <select id="brushSize2" onchange="setBrushSize(2, this.value)" class="text-xs border border-gray-300 rounded-xl px-2.5 py-1.5 bg-white font-bold text-gray-700">
-                                            <option value="2">Tipis</option>
-                                            <option value="5" selected>Sedang</option>
-                                            <option value="10">Tebal</option>
-                                        </select>
+                                    <div class="flex gap-2">
+                                        <button type="button" onclick="undoCanvas({{ $canvasId }})" class="px-3.5 py-1.5 bg-white border border-gray-300 hover:bg-gray-100 rounded-xl text-xs font-bold text-gray-700 shadow-xs">Undo</button>
+                                        <button type="button" onclick="resetCanvas({{ $canvasId }})" class="px-3.5 py-1.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold">Reset</button>
                                     </div>
                                 </div>
-                                <div class="flex gap-2">
-                                    <button type="button" onclick="undoCanvas(2)" class="px-3.5 py-1.5 bg-white border border-gray-300 hover:bg-gray-100 rounded-xl text-xs font-bold text-gray-700 shadow-xs">Undo</button>
-                                    <button type="button" onclick="resetCanvas(2)" class="px-3.5 py-1.5 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-bold">Reset</button>
-                                </div>
-                            </div>
 
-                            <div class="w-full h-80 border-2 border-dashed border-indigo-200 rounded-2xl bg-white relative overflow-hidden flex justify-center items-center shadow-inner">
-                                <canvas id="drawingCanvas2" class="drawingCanvas w-full h-full bg-white"></canvas>
+                                <div class="w-full h-80 border-2 border-dashed border-indigo-200 rounded-2xl bg-white relative overflow-hidden flex justify-center items-center shadow-inner">
+                                    <canvas id="drawingCanvas{{ $canvasId }}" class="drawingCanvas w-full h-full bg-white"></canvas>
+                                </div>
+                                <input type="hidden" name="responses[kreativitas][{{ $question->id }}]" id="kreativitasImageInput{{ $canvasId }}">
                             </div>
-                            <input type="hidden" name="kreativitas_image_2" id="kreativitasImageInput2">
-                        </div>
+                        @endforeach
                     </div>
+
 
                     <!-- Tombol Navigasi Bawah -->
                     <div class="flex justify-between items-center pt-6">
@@ -444,10 +341,10 @@
                     <div class="bg-white border border-[#E2E8F0] rounded-[28px] p-5 shadow-sm space-y-4">
                         <div class="flex justify-between items-center border-b border-gray-100 pb-3">
                             <span class="text-xs font-black uppercase text-[#3650A2] tracking-wider">Navigasi Soal</span>
-                            <span id="paletteAnsweredCount" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">0/18 Terjawab</span>
+                            <span id="paletteAnsweredCount" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">0/{{ 16 + $drawingQuestions->count() }} Terjawab</span>
                         </div>
                         <div class="grid grid-cols-5 gap-2" id="questionPaletteGrid">
-                            @for ($i = 1; $i <= 18; $i++)
+                            @for ($i = 1; $i <= 16 + $drawingQuestions->count(); $i++)
                                 <button type="button" onclick="scrollToQuestion({{ $i }})" id="palette-btn-{{ $i }}" class="w-full aspect-square rounded-xl bg-gray-100 hover:bg-indigo-50 border border-gray-200 text-gray-700 font-extrabold text-xs transition flex items-center justify-center shadow-2xs">
                                     {{ $i }}
                                 </button>
@@ -464,28 +361,17 @@
         </main>
     </div>
 
-    <!-- Modal Pop-up Pemberitahuan Belum Menyelesaikan Semua Soal -->
-    <div id="warningModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-xs transition-opacity p-4">
-        <div class="bg-white rounded-[28px] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 text-center space-y-5 transform scale-95 transition-transform duration-300" id="warningModalContent">
-            <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black shadow-inner">
-                ⚠
-            </div>
-            <div class="space-y-2">
-                <h3 class="text-xl font-black text-[#3650A2]">Peringatan: Belum Selesai!</h3>
-                <p id="warningModalMessage" class="text-xs sm:text-sm font-medium text-gray-600 leading-relaxed">
-                    Masih ada beberapa soal yang belum Anda selesaikan. Silakan lengkapi terlebih dahulu sebelum melanjutkan.
-                </p>
-            </div>
-            <div class="flex gap-3 pt-2">
-                <button type="button" onclick="closeWarningModal()" class="flex-1 py-3.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-extrabold text-xs transition">
-                    Periksa Kembali
-                </button>
-                <button type="button" onclick="forceSubmitAssessment()" class="flex-1 py-3.5 px-4 bg-gradient-coral text-white rounded-2xl font-extrabold text-xs shadow-lg shadow-orange-950/20 transition">
-                    Tetap Kirim
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Modal peringatan reusable: component student.assessment-warning-modal -->
+    <x-student.assessment-warning-modal
+        modal-id="warningModal"
+        message-id="warningModalMessage"
+        title="Peringatan: Belum Selesai!"
+        initial-message="Masih ada beberapa soal yang belum Anda selesaikan. Silakan lengkapi terlebih dahulu sebelum melanjutkan."
+        close-action="closeWarningModal"
+        continue-action="forceSubmitAssessment"
+        cancel-text="Periksa Kembali"
+        confirm-text="Tetap Kirim"
+    />
 
     <!-- Modal Pop-up Konfirmasi Berhasil / Lanjut ke Tahap Kepribadian (Baru) -->
     <div id="successModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-xs transition-opacity p-4">
@@ -529,6 +415,7 @@
         }, 1000);
 
         const answeredQuestions = new Set();
+        const totalQuestions = 16 + {{ $drawingQuestions->count() }};
 
         function updateProgress(questionNumber) {
             answeredQuestions.add(questionNumber);
@@ -540,10 +427,12 @@
             }
 
             let totalAnswered = answeredQuestions.size;
-            document.getElementById('paletteAnsweredCount').textContent = `${totalAnswered}/18 Terjawab`;
-            document.getElementById('progressTextHeader').textContent = `Terjawab: ${totalAnswered} / 18 Soal`;
-            let percent = (totalAnswered / 18) * 100;
-            document.getElementById('progressBarHeader').style.width = `${percent}%`;
+            document.getElementById('paletteAnsweredCount').textContent = `${totalAnswered}/${totalQuestions} Terjawab`;
+            const progressText = document.getElementById('progressTextHeader');
+            const progressBar = document.getElementById('progressBarHeader');
+            if (progressText) progressText.textContent = `Terjawab: ${totalAnswered} / ${totalQuestions} Soal`;
+            let percent = (totalAnswered / totalQuestions) * 100;
+            if (progressBar) progressBar.style.width = `${percent}%`;
         }
 
         function scrollToQuestion(num) {
@@ -567,7 +456,7 @@
         function validateAndSubmit() {
             prepareAllCanvasData();
             let missing = [];
-            for (let i = 1; i <= 18; i++) {
+            for (let i = 1; i <= totalQuestions; i++) {
                 if (!answeredQuestions.has(i)) {
                     missing.push(i);
                 }
@@ -584,29 +473,34 @@
 
         function showWarningModal(missingArray) {
             const modal = document.getElementById('warningModal');
-            const modalContent = document.getElementById('warningModalContent');
+            const modalContent = modal?.querySelector('[data-warning-content]');
             const msg = document.getElementById('warningModalMessage');
 
-            msg.textContent = `Masih ada ${missingArray.length} soal yang belum Anda selesaikan (Contoh: Soal nomor ${missingArray[0]}). Silakan lengkapi terlebih dahulu atau pilih tetap kirim jika sudah yakin.`;
+            if (!modal || !msg) return;
+            msg.textContent = `Masih ada ${missingArray.length} soal yang belum Anda selesaikan (contoh: soal nomor ${missingArray[0]}). Silakan lengkapi terlebih dahulu atau pilih tetap kirim jika sudah yakin.`;
 
             modal.classList.remove('hidden');
-            setTimeout(() => {
+            modal.style.display = 'grid';
+            if (modalContent) {
                 modalContent.classList.remove('scale-95');
                 modalContent.classList.add('scale-100');
-            }, 10);
+            }
         }
 
         function closeWarningModal() {
             const modal = document.getElementById('warningModal');
-            const modalContent = document.getElementById('warningModalContent');
+            const modalContent = modal?.querySelector('[data-warning-content]');
 
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
+            if (modalContent) {
+                modalContent.classList.remove('scale-100');
+                modalContent.classList.add('scale-95');
+            }
+            if (modal) {
+                modal.style.display = 'none';
                 modal.classList.add('hidden');
-            }, 200);
+            }
 
-            for (let i = 1; i <= 18; i++) {
+            for (let i = 1; i <= totalQuestions; i++) {
                 if (!answeredQuestions.has(i)) {
                     scrollToQuestion(i);
                     break;
@@ -637,43 +531,83 @@
         }
 
         function submitAssessmentForm() {
+            prepareAllCanvasData();
             document.getElementById('assessmentForm').submit();
         }
 
         function forceSubmitAssessment() {
-            if (confirm("Apakah Anda benar-benar yakin ingin mengirimkan jawaban dengan beberapa soal yang kosong?")) {
-                document.getElementById('assessmentForm').submit();
-            }
+            // Konfirmasi sudah ditangani oleh modal kedua dari component.
+            prepareAllCanvasData();
+            document.getElementById('assessmentForm').submit();
         }
 
-        const canvasConfigs = {
-            1: { color: '#1E2D62', size: 5, history: [], step: -1, type: 'curve' },
-            2: { color: '#1E2D62', size: 5, history: [], step: -1, type: 'angle' }
-        };
+        const canvasCount = {{ $drawingQuestions->count() }};
+        const canvasConfigs = {};
+
+        // Setiap soal memiliki garis/bentuk awal yang berbeda sesuai instruksi soal.
+        for (let id = 1; id <= canvasCount; id++) {
+            canvasConfigs[id] = {
+                color: '#1E2D62',
+                size: 5,
+                history: [],
+                step: -1,
+                type: id
+            };
+        }
 
         function drawSample(id) {
             const canvas = document.getElementById('drawingCanvas' + id);
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (!canvas) return;
 
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
             ctx.save();
             ctx.strokeStyle = '#3650A2';
             ctx.lineWidth = 5;
             ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
             ctx.beginPath();
 
-            let cx = canvas.width / 2;
-            let cy = canvas.height / 2;
-
-            if (canvasConfigs[id].type === 'curve') {
-                ctx.moveTo(cx - 70, cy + 30);
-                ctx.quadraticCurveTo(cx, cy - 90, cx + 70, cy + 30);
-            } else {
-                ctx.moveTo(cx - 50, cy + 40);
-                ctx.lineTo(cx, cy - 40);
-                ctx.lineTo(cx + 60, cy + 20);
+            switch (id) {
+                case 1:
+                    // Soal 26: garis lengkung sebagai awal gambar.
+                    ctx.moveTo(cx - 85, cy + 15);
+                    ctx.quadraticCurveTo(cx - 10, cy - 90, cx + 75, cy + 15);
+                    break;
+                case 2:
+                    // Soal 27: garis lengkung bergelombang untuk dikembangkan menjadi objek.
+                    ctx.moveTo(cx - 100, cy);
+                    ctx.bezierCurveTo(cx - 65, cy - 75, cx - 25, cy + 75, cx + 10, cy);
+                    ctx.bezierCurveTo(cx + 40, cy - 65, cx + 70, cy + 55, cx + 100, cy - 5);
+                    break;
+                case 3:
+                    // Soal 28: bentuk dasar terbuka untuk dilanjutkan.
+                    ctx.moveTo(cx - 55, cy + 35);
+                    ctx.lineTo(cx, cy - 45);
+                    ctx.lineTo(cx + 55, cy + 35);
+                    break;
+                case 4:
+                    // Soal 29: bentuk dasar berupa sudut siku.
+                    ctx.moveTo(cx - 55, cy - 45);
+                    ctx.lineTo(cx - 55, cy + 45);
+                    ctx.lineTo(cx + 45, cy + 45);
+                    break;
+                default:
+                    // Soal 30: garis zig-zag sebagai pemicu gambar imajinatif.
+                    ctx.moveTo(cx - 90, cy + 25);
+                    ctx.lineTo(cx - 35, cy - 30);
+                    ctx.lineTo(cx + 15, cy + 25);
+                    ctx.lineTo(cx + 70, cy - 35);
+                    break;
             }
+
             ctx.stroke();
             ctx.restore();
         }
@@ -719,7 +653,7 @@
                 if (isDrawing) {
                     isDrawing = false;
                     saveCanvasState(id);
-                    updateProgress(id === 1 ? 17 : 18);
+                    updateProgress(16 + id);
                 }
             };
 
@@ -742,8 +676,9 @@
         }
 
         window.addEventListener('load', () => {
-            initCanvas(1);
-            initCanvas(2);
+            for (let id = 1; id <= canvasCount; id++) {
+                initCanvas(id);
+            }
         });
 
         function setBrushColor(id, color) { canvasConfigs[id].color = color; }
@@ -773,14 +708,13 @@
         }
 
         function prepareAllCanvasData() {
-            document.getElementById('kreativitasImageInput1').value = document.getElementById('drawingCanvas1').toDataURL('image/png');
-            document.getElementById('kreativitasImageInput2').value = document.getElementById('drawingCanvas2').toDataURL('image/png');
+            for (let id = 1; id <= canvasCount; id++) {
+                const canvas = document.getElementById('drawingCanvas' + id);
+                const input = document.getElementById('kreativitasImageInput' + id);
+                if (canvas && input) input.value = canvas.toDataURL('image/png');
+            }
         }
 
-        function toggleSidebar() {
-            document.getElementById('mobileSidebar').classList.toggle('-translate-x-full');
-            document.getElementById('sidebarBackdrop').classList.toggle('hidden');
-        }
     </script>
 </body>
 </html>

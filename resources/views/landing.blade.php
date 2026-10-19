@@ -96,6 +96,602 @@
             transform: translateY(-4px);
             box-shadow: 0 10px 20px rgba(54, 80, 162, 0.1);
         }
+
+        /* Responsive refinements for MyUniv landing page */
+        html {
+            scroll-padding-top: 6rem;
+        }
+
+        img,
+        iframe {
+            max-width: 100%;
+        }
+
+        #campusSlider {
+            max-width: 100%;
+            overscroll-behavior-x: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #campusSlider > div {
+            flex: 0 0 310px;
+            min-width: 310px;
+        }
+
+        @media (max-width: 1023px) {
+            #rekomendasi .grid.lg\:grid-cols-12 {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            #rekomendasi .lg\:col-span-4,
+            #rekomendasi .lg\:col-span-8 {
+                min-width: 0;
+                width: 100%;
+            }
+
+            #campusSlider > div {
+                flex-basis: min(78vw, 310px);
+                min-width: min(78vw, 310px);
+            }
+        }
+
+        @media (max-width: 640px) {
+            header.fixed {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            header nav {
+                padding: 8px 10px;
+                gap: 6px;
+                border-radius: 16px;
+            }
+
+            header nav > a:first-child {
+                gap: 8px;
+                min-width: 0;
+                flex-shrink: 1;
+            }
+
+            header nav > a:first-child > div {
+                width: 34px;
+                height: 34px;
+                flex-shrink: 0;
+            }
+
+            header nav > a:first-child > span {
+                font-size: 20px;
+                white-space: nowrap;
+            }
+
+            header nav > div:last-child {
+                gap: 4px;
+                flex-shrink: 0;
+            }
+
+            header nav > div:last-child a {
+                padding: 7px 9px;
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+            header nav > div:last-child button {
+                font-size: 19px;
+                margin-left: 1px;
+                padding: 2px;
+            }
+
+            #mobileMenu {
+                margin-left: 0;
+                margin-right: 0;
+                padding: 12px 16px;
+            }
+
+            #beranda {
+                padding-top: 7.5rem;
+                padding-bottom: 3rem;
+            }
+
+            #beranda h1 {
+                font-size: clamp(1.8rem, 7vw, 2.35rem);
+                overflow-wrap: break-word;
+            }
+
+            #beranda .inline-flex {
+                max-width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+            }
+
+            #beranda .pt-6.flex {
+                flex-wrap: wrap;
+                gap: 12px 18px;
+            }
+
+            #beranda .max-w-xs,
+            #beranda .sm\:max-w-sm {
+                max-width: min(100%, 340px);
+            }
+
+            #fitur .arrow-card-inner {
+                padding: 1.25rem !important;
+            }
+
+            .step-chevron-card {
+                clip-path: none;
+                border-radius: 16px;
+            }
+
+            #rekomendasi {
+                padding-top: 3rem;
+                padding-bottom: 3rem;
+            }
+
+            #rekomendasi h2 {
+                overflow-wrap: break-word;
+            }
+
+            #campusSlider {
+                gap: 12px;
+                padding-left: 4px;
+                padding-right: 4px;
+                margin-left: -4px;
+                margin-right: -4px;
+            }
+
+            #campusSlider > div {
+                flex-basis: min(84vw, 300px);
+                min-width: min(84vw, 300px);
+            }
+
+            #campusSlider img {
+                display: block;
+            }
+
+            #faq h2 {
+                font-size: clamp(1.35rem, 6vw, 1.875rem);
+                line-height: 1.3;
+            }
+
+            footer .grid {
+                gap: 2rem;
+            }
+
+            #chatbotContainer {
+                width: min(88vw, 360px);
+                right: 0;
+                max-height: min(75vh, 600px);
+            }
+
+            #chatMessages {
+                height: min(18rem, 38vh);
+            }
+
+            .animate-float-mascot,
+            .animate-float-slow,
+            .animate-bg-glow {
+                animation-duration: 8s;
+            }
+        }
+
+        @media (max-width: 360px) {
+            header nav > div:last-child a {
+                padding: 6px 7px;
+                font-size: 10px;
+            }
+
+            header nav > a:first-child > span {
+                font-size: 18px;
+            }
+
+            #campusSlider > div {
+                flex-basis: 82vw;
+                min-width: 82vw;
+            }
+
+            #kuis .rounded-3xl {
+                padding: 1rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+
+
+        /* FINAL FIX: Navbar responsif untuk tablet dan mobile */
+        @media (max-width: 1023px) {
+            header.fixed {
+                left: 0;
+                right: 0;
+                width: 100%;
+                padding: 8px 12px;
+                box-sizing: border-box;
+            }
+
+            header.fixed > nav {
+                display: flex;
+                width: 100%;
+                max-width: none;
+                margin: 0;
+                padding: 8px 12px;
+                gap: 8px;
+                box-sizing: border-box;
+            }
+
+            /* Link navigasi desktop memang diganti dengan hamburger */
+            header.fixed > nav > div:nth-child(2) {
+                display: none !important;
+            }
+
+            /* Logo tetap di kiri dan tidak mendorong navbar melebar */
+            header.fixed > nav > a:first-child {
+                display: flex;
+                align-items: center;
+                flex: 0 1 auto;
+                min-width: 0;
+                gap: 8px;
+            }
+
+            header.fixed > nav > a:first-child > div {
+                width: 34px;
+                height: 34px;
+                flex: 0 0 34px;
+            }
+
+            header.fixed > nav > a:first-child > span {
+                font-size: 20px;
+                white-space: nowrap;
+            }
+
+            /* Tombol Masuk/Daftar desktop disembunyikan di baris navbar mobile */
+            header.fixed > nav > div:last-child > a {
+                display: none !important;
+            }
+
+            header.fixed > nav > div:last-child {
+                display: flex;
+                align-items: center;
+                flex: 0 0 auto;
+                margin-left: auto;
+                gap: 0;
+            }
+
+            header.fixed > nav > div:last-child > button {
+                display: inline-flex !important;
+                align-items: center;
+                justify-content: center;
+                flex: 0 0 40px;
+                width: 40px;
+                height: 40px;
+                margin: 0;
+                padding: 0;
+                line-height: 1;
+                font-size: 22px;
+            }
+
+            /* Dropdown memakai lebar container, bukan lebar desktop max-w-7xl */
+            #mobileMenu {
+                display: block;
+                width: 100%;
+                max-width: none;
+                margin: 8px 0 0;
+                padding: 12px 16px;
+                box-sizing: border-box;
+            }
+
+            #mobileMenu.hidden {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            header.fixed {
+                padding: 8px;
+            }
+
+            header.fixed > nav {
+                padding: 7px 10px;
+                border-radius: 16px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            header.fixed {
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            header.fixed > nav {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            header.fixed > nav > a:first-child > span {
+                font-size: 18px;
+            }
+        }
+
+
+        /* HARD FIX: paksa seluruh layout utama menjadi satu kolom pada layar ponsel */
+        @media screen and (max-width: 767px) {
+            html, body {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
+            body {
+                min-width: 0;
+            }
+
+            header.fixed {
+                width: 100%;
+                left: 0;
+                right: 0;
+                padding: 8px 10px;
+                box-sizing: border-box;
+            }
+
+            header.fixed > nav {
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
+                margin: 0;
+                padding: 7px 10px;
+                gap: 8px;
+                box-sizing: border-box;
+            }
+
+            /* Cegah elemen nav desktop membuat lebar layout membesar */
+            header.fixed > nav > div:nth-child(2) {
+                display: none !important;
+            }
+
+            header.fixed > nav > a:first-child {
+                min-width: 0;
+                max-width: calc(100% - 48px);
+                flex: 0 1 auto;
+            }
+
+            header.fixed > nav > a:first-child > span {
+                font-size: 19px;
+            }
+
+            header.fixed > nav > div:last-child {
+                flex: 0 0 40px;
+                width: 40px;
+                margin-left: auto;
+            }
+
+            header.fixed > nav > div:last-child > a {
+                display: none !important;
+            }
+
+            header.fixed > nav > div:last-child > button {
+                display: inline-flex !important;
+                width: 40px;
+                min-width: 40px;
+                height: 40px;
+                margin: 0;
+                padding: 0;
+            }
+
+            #mobileMenu {
+                width: 100%;
+                max-width: 100%;
+                margin: 8px 0 0;
+                box-sizing: border-box;
+            }
+
+            #mobileMenu.hidden {
+                display: none !important;
+            }
+
+            /* Hero: hilangkan sisa grid desktop agar konten memakai lebar penuh */
+            #beranda > .max-w-7xl {
+                width: 100%;
+                max-width: 100%;
+                padding-left: 16px;
+                padding-right: 16px;
+                box-sizing: border-box;
+            }
+
+            #beranda > .max-w-7xl > .grid,
+            #beranda .grid.md\:grid-cols-12 {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) !important;
+                width: 100%;
+                max-width: 100%;
+                gap: 28px;
+            }
+
+            #beranda .md\:col-span-7,
+            #beranda .md\:col-span-5 {
+                grid-column: 1 / -1 !important;
+                width: 100%;
+                min-width: 0;
+                max-width: 100%;
+            }
+
+            #beranda .md\:text-left {
+                text-align: center !important;
+            }
+
+            #beranda h1,
+            #beranda p {
+                max-width: 100%;
+                overflow-wrap: anywhere;
+            }
+
+            #beranda .relative.group {
+                max-width: 100%;
+            }
+
+            #beranda img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            /* Semua container besar mencegah lebar minimum desktop */
+            main, section, footer,
+            section > .max-w-7xl,
+            footer > .max-w-7xl {
+                min-width: 0;
+                max-width: 100%;
+            }
+
+            img, video, iframe {
+                max-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 390px) {
+            header.fixed {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            #beranda > .max-w-7xl {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+            #beranda h1 {
+                font-size: clamp(1.65rem, 7vw, 2rem);
+            }
+        }
+
+
+        /* HERO MOBILE COMPACT: teks lebih ringkas tanpa mengubah desktop */
+        @media screen and (max-width: 640px) {
+            #beranda {
+                padding-top: 6.75rem !important;
+                padding-bottom: 2rem !important;
+            }
+
+            #beranda > .max-w-7xl {
+                padding-left: 18px !important;
+                padding-right: 18px !important;
+            }
+
+            #beranda > .max-w-7xl > .grid,
+            #beranda .grid.md\:grid-cols-12 {
+                gap: 26px !important;
+            }
+
+            #beranda .md\:col-span-7 {
+                gap: 1rem !important;
+            }
+
+            #beranda .inline-flex.items-center.gap-2 {
+                gap: 6px !important;
+                padding: 6px 10px !important;
+                font-size: 10px !important;
+                line-height: 1.35 !important;
+                max-width: 100%;
+            }
+
+            #beranda .inline-flex.items-center.gap-2 > span:last-child {
+                min-width: 0;
+            }
+
+            #beranda h1 {
+                font-size: clamp(1.35rem, 5.3vw, 1.6rem) !important;
+                line-height: 1.22 !important;
+                letter-spacing: -0.035em !important;
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+            }
+
+            #beranda h1 .wavy-underline {
+                text-underline-offset: 4px;
+            }
+
+            #beranda .md\:col-span-7 > p {
+                font-size: 0.85rem !important;
+                line-height: 1.7 !important;
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+                max-width: 330px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            #beranda .md\:col-span-7 > .flex.flex-col {
+                padding-top: 0.25rem !important;
+                gap: 0.65rem !important;
+            }
+
+            #beranda .md\:col-span-7 > .flex.flex-col > a {
+                padding: 0.8rem 1rem !important;
+                font-size: 0.875rem !important;
+                border-radius: 0.8rem !important;
+                line-height: 1.35 !important;
+            }
+
+            #beranda .md\:col-span-7 > .pt-6.flex {
+                padding-top: 0.5rem !important;
+                gap: 8px 14px !important;
+                font-size: 10px !important;
+            }
+
+            #beranda .md\:col-span-7 > .pt-6.flex > div {
+                gap: 5px !important;
+            }
+
+            #beranda .md\:col-span-5 {
+                padding-top: 0 !important;
+            }
+
+            #beranda .md\:col-span-5 .relative.z-20 {
+                margin-bottom: 0.5rem !important;
+            }
+
+            #beranda .md\:col-span-5 .relative.z-20 > div {
+                padding: 0.65rem 0.9rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            #beranda .relative.group {
+                max-width: min(100%, 270px) !important;
+            }
+
+            #beranda .relative.group > div:not(.absolute) img {
+                max-height: 250px;
+                object-fit: contain;
+            }
+        }
+
+        @media screen and (max-width: 390px) {
+            #beranda > .max-w-7xl {
+                padding-left: 14px !important;
+                padding-right: 14px !important;
+            }
+
+            #beranda h1 {
+                font-size: clamp(1.32rem, 5.4vw, 1.55rem) !important;
+            }
+
+            #beranda .md\:col-span-7 > p {
+                font-size: 0.82rem !important;
+                line-height: 1.65 !important;
+            }
+
+            #beranda .md\:col-span-7 > .flex.flex-col > a {
+                padding: 0.72rem 0.9rem !important;
+            }
+        }
+
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#F4FAFF] via-[#FFF5F2] to-[#EEF3FF] font-sans text-gray-800 antialiased overflow-x-hidden relative">
@@ -142,7 +738,7 @@
                 <a href="{{ route('register') }}" class="bg-coralOrange hover:bg-orange-600 text-white px-4 sm:px-5 py-2 rounded-xl font-bold shadow-md shadow-coralOrange/25 hover:shadow-lg transition-all transform hover:-translate-y-0.5 text-xs sm:text-sm">
                     Daftar
                 </a>
-                <button onclick="toggleMobileMenu()" class="lg:hidden text-indigoPrimary text-2xl ml-2 focus:outline-none">
+                <button id="mobileMenuToggle" type="button" aria-controls="mobileMenu" aria-expanded="false" aria-label="Buka menu navigasi" onclick="toggleMobileMenu()" class="lg:hidden text-indigoPrimary text-2xl ml-2 focus:outline-none">
                     <i class="fa-solid fa-bars" id="menuIcon"></i>
                 </button>
             </div>
@@ -157,6 +753,10 @@
             <a href="#alur" onclick="toggleMobileMenu()" class="block py-2 hover:text-indigoPrimary border-b border-gray-100">Alur</a>
             <a href="#rekomendasi" onclick="toggleMobileMenu()" class="block py-2 hover:text-indigoPrimary border-b border-gray-100">Rekomendasi</a>
             <a href="#faq" onclick="toggleMobileMenu()" class="block py-2 hover:text-indigoPrimary">FAQ</a>
+            <div class="grid grid-cols-2 gap-3 pt-3">
+                <a href="{{ route('login') }}" class="block text-center border border-indigoPrimary/30 text-indigoPrimary px-3 py-2 rounded-xl font-bold text-sm">Masuk</a>
+                <a href="{{ route('register') }}" class="block text-center bg-coralOrange text-white px-3 py-2 rounded-xl font-bold text-sm">Daftar</a>
+            </div>
         </div>
     </header>
 
@@ -172,7 +772,7 @@
                 <div class="md:col-span-7 text-center md:text-left space-y-6">
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/90 border border-coralOrange/20 shadow-sm backdrop-blur-sm text-indigoPrimary text-xs sm:text-sm font-semibold">
                         <span class="bg-coralOrange text-white text-xs px-2 py-0.5 rounded-full font-bold">NEW</span>
-                        <span>Dampingi Perjalanan Kuliahmu Bersama Mauny 🐉</span>
+                        <span>Dampingi Perjalanan Kuliahmu Bersama Mauny</span>
                     </div>
 
                     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-indigoPrimary leading-tight tracking-tight">
@@ -180,7 +780,7 @@
                     </h1>
 
                     <p class="text-gray-600 text-base sm:text-lg max-w-2xl leading-relaxed">
-                        MyUniv membantu kamu mengenali potensi diri, menentukan jurusan kuliah yang tepat, dan merencanakan masa depan yang lebih jelas. Temukan pilihan yang sesuai dengan minat dan kemampuanmu.
+                        MyUniv membantumu mengenali minat dan potensi, menemukan jurusan yang sesuai, serta merencanakan pendidikan ke depan.
                     </p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 pt-4">
@@ -1420,7 +2020,21 @@
 
         function toggleMobileMenu() {
             const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
+            const toggle = document.getElementById('mobileMenuToggle');
+            if (!menu) return;
+
+            const isOpening = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !isOpening);
+
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', String(isOpening));
+                toggle.setAttribute('aria-label', isOpening ? 'Tutup menu navigasi' : 'Buka menu navigasi');
+                const icon = document.getElementById('menuIcon');
+                if (icon) {
+                    icon.classList.toggle('fa-bars', !isOpening);
+                    icon.classList.toggle('fa-xmark', isOpening);
+                }
+            }
         }
 
         function toggleChatbot() {

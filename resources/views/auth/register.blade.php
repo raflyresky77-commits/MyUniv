@@ -29,17 +29,203 @@
                 border-radius: 0;
             }
         }
+
+        /* Responsif halaman register mengikuti proporsi halaman login */
+        @media (max-width: 1023px) {
+            body {
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                min-height: 100svh;
+                padding: 16px !important;
+                box-sizing: border-box;
+            }
+
+            .register-card {
+                width: 100%;
+                max-width: 430px;
+                margin: auto;
+                transform: translateY(-42px);
+                border-radius: 22px;
+                flex-shrink: 0;
+            }
+
+            .register-illustration {
+                padding: 8px !important;
+            }
+
+            .register-illustration .wave-curve {
+                height: 210px;
+                min-height: 210px;
+                border-radius: 16px;
+            }
+
+            .register-illustration .relative.z-20 {
+                padding: 12px !important;
+            }
+
+            .register-form {
+                padding: 22px 24px 20px !important;
+            }
+
+            .register-form h1 {
+                font-size: 29px;
+                line-height: 1.15;
+            }
+
+            .register-form form {
+                display: flex;
+                flex-direction: column;
+                gap: 11px;
+            }
+
+            .register-form label {
+                margin-bottom: 6px;
+            }
+
+            .register-form input {
+                height: 44px;
+                font-size: 14px;
+            }
+
+            .register-form form > button[type="submit"] {
+                height: 46px;
+            }
+
+            .register-form > div:last-child {
+                margin-top: 20px;
+                padding-top: 12px;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 420px) {
+            body {
+                padding: 12px !important;
+                min-height: 100vh;
+                min-height: 100svh;
+            }
+
+            .register-card {
+                width: 100%;
+                max-width: 390px;
+                margin-top: auto;
+                margin-bottom: auto;
+                transform: translateY(-42px);
+                border-radius: 18px;
+            }
+
+            .register-illustration {
+                padding: 7px !important;
+            }
+
+            .register-illustration .wave-curve {
+                height: 135px;
+                min-height: 135px;
+                border-radius: 13px;
+            }
+
+            .register-illustration .relative.z-20 {
+                padding: 10px !important;
+            }
+
+            .register-form {
+                padding: 16px 17px 14px !important;
+            }
+
+            .register-form h1 {
+                font-size: 27px;
+                line-height: 1.15;
+            }
+
+            .register-form > div:first-child {
+                margin-bottom: 10px;
+            }
+
+            .register-form > div:first-child p {
+                font-size: 11px;
+                line-height: 1.5;
+            }
+
+            .register-form form {
+                gap: 7px;
+            }
+
+            .register-form label {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+
+            .register-form input {
+                height: 38px;
+                padding-left: 16px;
+                font-size: 13px;
+            }
+
+            .register-form form > button[type="submit"] {
+                height: 41px;
+                margin-top: 1px;
+            }
+
+            .register-form > div:nth-last-child(2) {
+                margin-top: 10px;
+                font-size: 11px;
+            }
+
+            .register-form > div:last-child {
+                margin-top: 13px;
+                padding-top: 9px;
+                font-size: 9px;
+            }
+        }
+
+        /* Form register lebih panjang: jangan memaksa card masuk ke layar pendek */
+        @media (max-width: 420px) and (max-height: 760px) {
+            body {
+                align-items: flex-start;
+            }
+
+            .register-card {
+                margin-top: 0;
+                margin-bottom: 0;
+                transform: none;
+            }
+        }
+
+        @media (max-width: 420px) and (max-height: 760px) {
+            .register-illustration .wave-curve {
+                height: 120px;
+                min-height: 120px;
+            }
+
+            .register-form {
+                padding-top: 14px !important;
+                padding-bottom: 12px !important;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .register-card {
+                min-height: 650px;
+            }
+
+            .register-illustration .wave-curve {
+                min-height: 620px;
+            }
+        }
+
     </style>
 </head>
 <body class="min-h-screen font-['Plus_Jakarta_Sans'] flex items-center justify-center p-4 sm:p-6 lg:p-8">
 
     <!-- Container Utama Card -->
-    <main class="w-full max-w-[1150px] bg-[#3650A2] rounded-[28px] overflow-hidden shadow-[0_20px_50px_rgba(54,80,162,0.2)] relative flex flex-col lg:flex-row justify-between border border-[#C9D7EE]/40">
+    <main class="register-card w-full max-w-[1150px] bg-[#3650A2] rounded-[28px] overflow-hidden shadow-[0_20px_50px_rgba(54,80,162,0.2)] relative flex flex-col lg:flex-row justify-between border border-[#C9D7EE]/40">
 
         <div class="grid grid-cols-1 lg:grid-cols-12 w-full">
 
             {{-- KIRI: AREA ILUSTRASI DENGAN KURVA GELOMBANG --}}
-            <section class="lg:col-span-7 bg-[#3650A2] relative z-10 p-2 sm:p-3 lg:p-3">
+            <section class="register-illustration lg:col-span-7 bg-[#3650A2] relative z-10 p-2 sm:p-3 lg:p-3">
                 <div class="wave-curve h-[260px] sm:h-[320px] lg:h-full min-h-[340px] w-full relative flex flex-col justify-between shadow-sm">
 
                     {{-- Gambar Ilustrasi Full Cover di dalam Kurva --}}
@@ -71,7 +257,7 @@
             </section>
 
             {{-- KANAN: FORM REGISTER --}}
-            <section class="lg:col-span-5 px-6 py-6 sm:px-12 flex flex-col justify-center text-white relative z-10 bg-[#3650A2]">
+            <section class="register-form lg:col-span-5 px-6 py-6 sm:px-12 flex flex-col justify-center text-white relative z-10 bg-[#3650A2]">
 
                 <div class="mb-4">
                     <h1 class="text-[32px] sm:text-[38px] font-bold tracking-tight text-white leading-[40px] sm:leading-[48px]">

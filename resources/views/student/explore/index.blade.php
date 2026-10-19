@@ -156,7 +156,19 @@
                     <!-- Kiri: Foto Kampus / Banner & Tombol Web -->
                     <div class="w-full md:w-5/12 flex flex-col gap-4">
                         <div class="w-full h-48 rounded-2xl relative overflow-hidden shadow-md shrink-0 group bg-gray-200">
-                            <img src="{{ asset('images/' . ($univ->image ?? 'universities/default.png')) }}" alt="{{ $univ->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            @php
+                                // Nama file gambar kampus diambil dari database.
+                                // File gambar disimpan di public/images/universities/.
+                                $imageName = trim((string) ($univ->image ?? ''));
+                                $imageName = str_replace('\\', '/', $imageName);
+                                $imageName = basename($imageName);
+                                $imageName = $imageName !== '' ? $imageName : 'default.png';
+                            @endphp
+                            <img
+                                src="{{ asset('images/universities/' . $imageName) }}"
+                                alt="{{ $univ->name }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                onerror="this.onerror=null; this.src='{{ asset('images/ilustrasi.png') }}';">
 
                             <!-- Gradient Overlay -->
                             <div class="absolute inset-0 bg-gradient-to-t from-[#141F43]/90 via-[#141F43]/30 to-transparent"></div>
