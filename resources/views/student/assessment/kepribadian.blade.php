@@ -120,9 +120,10 @@
             <form
                 action="{{ route('student.assessment.kepribadian.store') }}"
                 method="POST"
+                id="personalityAssessmentForm"
+                novalidate
                 class="space-y-6">
-
-                @csrf
+@csrf
 
                 {{-- Daftar pertanyaan dan pilihan jawaban --}}
                 @forelse ($displayQuestions as $question)
@@ -261,6 +262,119 @@
     </div>
 
     {{-- Toggle sidebar ditangani oleh komponen student-sidebar. --}}
+
+    <div
+        id="assessmentToast"
+        class="fixed top-5 right-5 z-[100] w-[calc(100%-2rem)] max-w-sm
+            translate-x-8 opacity-0 pointer-events-none
+            transition-all duration-300 ease-out"
+        role="alert"
+        aria-live="assertive"
+    >
+        <div class="flex items-start gap-3 rounded-2xl border border-orange-200
+                    bg-white p-4 shadow-xl shadow-slate-900/10">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center
+                        rounded-xl bg-orange-100 text-orange-600">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" class="h-5 w-5">
+                    <path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0
+                            1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <div class="min-w-0 flex-1">
+                <p class="text-sm font-extrabold text-slate-800">
+                    Jawaban belum lengkap
+                </p>
+                <p id="assessmentToastMessage"
+                class="mt-1 text-xs leading-relaxed text-slate-500">
+                    Silakan pilih jawaban untuk semua pertanyaan.
+                </p>
+            </div>
+
+            <button type="button" id="assessmentToastClose"
+                    class="text-slate-400 hover:text-slate-700"
+                    aria-label="Tutup notifikasi">
+                &times;
+            </button>
+        </div>
+    </div>
+
+
+
+    {{-- Modal peringatan reusable MyUniv --}}
+    <x-student.assessment-warning-modal
+        modal-id="personalityAssessmentWarning"
+        message-id="personalityAssessmentWarningMessage"
+        title="Peringatan: Belum Selesai!"
+        initial-message="Masih ada pertanyaan yang belum kamu jawab. Silakan lengkapi terlebih dahulu."
+        close-action="closePersonalityAssessmentWarning"
+        continue-action="forceSubmitPersonalityAssessment"
+        cancel-text="Periksa Kembali"
+        confirm-text="Tetap Kirim"
+    />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('personalityAssessmentForm');
+            const modal = document.getElementById('personalityAssessmentWarning');
+            const message = document.getElementById('personalityAssessmentWarningMessage');
+
+            if (!form || !modal || !message) return;
+
+            window.closePersonalityAssessmentWarning = function () {
+                const content = modal.querySelector('[data-warning-content]');
+
+                if (content) {
+                    content.classList.remove('scale-100');
+                    content.classList.add('scale-95');
+                }
+
+                setTimeout(function () {
+                    modal.classList.add('hidden');
+                    modal.style.display = 'none';
+                }, 200);
+            };
+
+            window.forceSubmitPersonalityAssessment = function () {
+                HTMLFormElement.prototype.submit.call(form);
+            };
+
+            form.addEventListener('submit', function (event) {
+                const groups = [
+                    ...new Set(
+                        [...form.querySelectorAll('input[type="radio"][name^="responses["]')]
+                            .map(input => input.name)
+                    )
+                ];
+
+                const missing = groups.filter(function (name) {
+                    return !form.querySelector(
+                        `input[type="radio"][name="${CSS.escape(name)}"]:checked`
+                    );
+                });
+
+                if (missing.length === 0) return;
+
+                event.preventDefault();
+
+                message.textContent =
+                    `Masih ada ${missing.length} pertanyaan yang belum dijawab. Lengkapi terlebih dahulu atau pilih Tetap Kirim jika ingin melanjutkan.`;
+
+                modal.classList.remove('hidden');
+                modal.style.display = 'grid';
+
+                requestAnimationFrame(function () {
+                    const content = modal.querySelector('[data-warning-content]');
+                    if (content) {
+                        content.classList.remove('scale-95');
+                        content.classList.add('scale-100');
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>

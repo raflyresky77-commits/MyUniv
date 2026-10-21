@@ -104,6 +104,14 @@
                 </div>
             @endif
 
+            @if (!($assessmentCompleted ?? false))
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
+                    <i class="fa-solid fa-circle-info mr-2"></i>
+                    Data jawaban belum lengkap. Selesaikan seluruh rangkaian asesmen
+                    untuk melihat rangkuman hasil.
+                </div>
+            @endif
+
             {{-- Header halaman hasil asesmen --}}
             <section class="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#3650A2] via-[#2A3F82] to-[#1C2C5E] p-6 text-white shadow-xl shadow-indigo-950/15 sm:p-10">
                 <div class="pointer-events-none absolute -right-10 -bottom-12 h-64 w-64 rounded-full bg-[#FF7A59]/15 blur-3xl"></div>

@@ -38,6 +38,17 @@
 
         <!-- Page Body Content -->
         <main class="pt-24 sm:pt-28 p-4 sm:px-6 sm:pb-6 lg:px-8 lg:pb-8 max-w-7xl w-full min-w-0 mx-auto space-y-6 sm:space-y-8">
+            @if($errors->any())
+                <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                    <p class="font-bold mb-1">Periksa kembali data yang dimasukkan:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @if(session('success'))
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -88,7 +99,7 @@
                         <div>
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span class="px-3 py-1 bg-indigo-50 text-[#3650A2] rounded-full text-xs font-extrabold border border-indigo-100 custom-badge-shape">
-                                    {{ $university->type ?? 'Swasta' }}
+                                    {{ $university->type ?? '-' }}
                                 </span>
                                 <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-extrabold border border-emerald-100">
                                     Akreditasi PT: {{ $university->accreditation ?? 'Unggul' }}
@@ -110,7 +121,19 @@
 
                         <!-- Tombol Aksi PT -->
                         <div class="flex items-center gap-2">
-                            <button type="button" onclick="openEditUniversityModal({{ $university->id }}, '{{ addslashes($university->name) }}', '{{ $university->location }}', '{{ $university->accreditation }}', '{{ $university->type }}', '{{ addslashes($university->branch_notes ?? '') }}')" class="px-3.5 py-2 bg-amber-50 text-amber-700 hover:bg-amber-100 transition rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer">
+                            <button
+                                type="button"
+                                onclick="openEditUniversityModal(this)"
+                                data-id="{{ $university->id }}"
+                                data-name="{{ $university->name }}"
+                                data-location="{{ $university->location }}"
+                                data-type="{{ $university->type }}"
+                                data-website="{{ $university->website }}"
+                                data-description="{{ $university->description }}"
+                                data-ranking="{{ $university->ranking }}"
+                                data-accreditation="{{ $university->accreditation }}"
+                                data-branch-notes="{{ $university->branch_notes }}"
+                                class="px-3.5 py-2 bg-amber-50 text-amber-700 hover:bg-amber-100 transition rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 Edit PT
                             </button>
@@ -136,7 +159,6 @@
                                         <th class="py-3 px-3">Jenis/Status</th>
                                         <th class="py-3 px-3">Lokasi</th>
                                         <th class="py-3 px-3">Program Studi</th>
-                                        <th class="py-3 px-3">Jenjang</th>
                                         <th class="py-3 px-3">Akreditasi</th>
                                         <th class="py-3 px-3 text-center">Aksi Prodi</th>
                                     </tr>
@@ -147,17 +169,16 @@
                                     <tr id="major-row-{{ $major->id }}">
                                         <td class="py-3 px-3 text-center font-bold text-gray-400">{{ $subNo++ }}</td>
                                         <td class="py-3 px-3 font-bold text-gray-700">{{ $university->name }}</td>
-                                        <td class="py-3 px-3 font-semibold text-gray-600">{{ $university->type ?? 'Swasta' }}</td>
+                                        <td class="py-3 px-3 font-semibold text-gray-600">{{ $university->type ?? '-' }}</td>
                                         <td class="py-3 px-3 text-gray-500">{{ $university->location ?? '-' }}</td>
                                         <td class="py-3 px-3 font-bold text-gray-900">{{ $major->name }}</td>
-                                        <td class="py-3 px-3 font-extrabold text-[#3650A2]">{{ $major->degree ?? 'S1' }}</td>
                                         <td class="py-3 px-3">
                                             <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-extrabold text-[10px] rounded">
-                                                {{ $major->accreditation ?? 'Unggul' }}
+                                                {{ $major->pivot->accreditation ?? 'Belum diisi' }}
                                             </span>
                                         </td>
                                         <td class="py-3 px-3 text-center">
-                                            <form action="{{ route('admin.majors.destroy.custom', $major->id) }}" method="POST" onsubmit="handleDeleteMajor(event, 'major-row-{{ $major->id }}')">
+                                            <form action="{{ route('admin.majors.destroy.custom', [$university->id, $major->id]) }}" method="POST" onsubmit="handleDeleteMajor(event, 'major-row-{{ $major->id }}')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-500 hover:text-red-700 font-bold cursor-pointer">Hapus</button>
@@ -166,7 +187,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="8" class="py-4 text-center text-gray-400 text-xs font-medium">Belum ada program studi terdaftar di perguruan tinggi ini.</td>
+                                        <td colspan="7" class="py-4 text-center text-gray-400 text-xs font-medium">Belum ada program studi terdaftar di perguruan tinggi ini.</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -179,20 +200,26 @@
                             <form action="{{ route('admin.universities.majors.store', $university->id) }}" method="POST" class="space-y-3">
                                 @csrf
                                 <div>
-                                    <input type="text" name="name" required placeholder="Nama Prodi (Cth: Sistem Informasi)" class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20">
+                                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Pilih program studi yang sudah terdaftar</label>
+                                    <select name="major_id" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20">
+                                        <option value="">Pilih program studi</option>
+                                        @foreach($majors as $availableMajor)
+                                            <option value="{{ $availableMajor->id }}">{{ $availableMajor->name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <select name="degree" class="px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none">
-                                        <option value="S1">Jenjang S1</option>
-                                        <option value="D4">Jenjang D4</option>
-                                        <option value="D3">Jenjang D3</option>
-                                        <option value="S2">Jenjang S2</option>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Akreditasi prodi di PT ini (opsional)</label>
+                                    <select name="accreditation" class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none">
+                                        <option value="">Belum diisi</option>
+                                        <option value="Unggul">Unggul</option>
+                                        <option value="Baik Sekali">Baik Sekali</option>
+                                        <option value="Baik">Baik</option>
                                     </select>
-                                    <select name="accreditation" class="px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none">
-                                        <option value="Unggul">Akreditasi Unggul</option>
-                                        <option value="Baik Sekali">Akreditasi Baik Sekali</option>
-                                        <option value="Baik">Akreditasi Baik</option>
-                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Informasi tambahan (opsional)</label>
+                                    <textarea name="additional_info" rows="2" placeholder="Catatan khusus prodi di universitas ini" class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20"></textarea>
                                 </div>
                                 <button type="submit" class="w-full py-2 bg-gradient-myuniv text-white rounded-xl font-extrabold text-xs shadow-md hover:opacity-95 transition cursor-pointer">
                                     Simpan Prodi
@@ -246,10 +273,23 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Jenis Perguruan Tinggi</label>
                         <select name="type" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
-                            <option value="Swasta">Swasta (PTS)</option>
-                            <option value="Negeri">Negeri (PTN)</option>
+                            <option value="PTS">Swasta (PTS)</option>
+                            <option value="PTN">Negeri (PTN)</option>
                         </select>
                     </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Website (Opsional)</label>
+                    <input type="url" name="website" placeholder="https://contoh.ac.id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Ranking (Opsional)</label>
+                    <input type="number" name="ranking" min="1" step="1" placeholder="Contoh: 10" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Deskripsi (Opsional)</label>
+                    <textarea name="description" rows="3" placeholder="Deskripsi singkat perguruan tinggi" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white"></textarea>
                 </div>
 
                 <div>
@@ -309,12 +349,24 @@
             <div>
                 <label class="block text-xs font-bold text-gray-700 mb-1">Jenis Perguruan Tinggi</label>
                 <select id="edit_type" name="type" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
-                    <option value="Swasta">Swasta (PTS)</option>
-                    <option value="Negeri">Negeri (PTN)</option>
+                    <option value="PTS">Swasta (PTS)</option>
+                    <option value="PTN">Negeri (PTN)</option>
                 </select>
             </div>
         </div>
 
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Website (Opsional)</label>
+            <input type="url" id="edit_website" name="website" placeholder="https://contoh.ac.id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Ranking (Opsional)</label>
+            <input type="number" id="edit_ranking" name="ranking" min="1" step="1" placeholder="Contoh: 10" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">Deskripsi (Opsional)</label>
+            <textarea id="edit_description" name="description" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white"></textarea>
+        </div>
         <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">Akreditasi Perguruan Tinggi</label>
             <select id="edit_accreditation" name="accreditation" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
@@ -345,7 +397,7 @@
     <x-confirm-delete
         function-name="handleDeleteMajor"
         title="Hapus Program Studi?"
-        text="Data program studi ini akan dihapus permanen."
+        text="Prodi hanya akan dilepas dari perguruan tinggi ini. Data prodi di universitas lain tetap aman."
         confirm-text="Ya, Hapus!"
     />
 
@@ -365,17 +417,20 @@
             document.getElementById('addUniversityModal').classList.add('hidden');
         }
 
-        function openEditUniversityModal(id, name, location, accreditation, type, branchNotes) {
+        function openEditUniversityModal(button) {
+            const university = button.dataset;
             const modal = document.getElementById('editUniversityModal');
             const form = document.getElementById('editUniversityForm');
 
-            form.action = `/admin/universities/${id}`;
-
-            document.getElementById('edit_name').value = name;
-            document.getElementById('edit_location').value = location;
-            document.getElementById('edit_accreditation').value = accreditation;
-            document.getElementById('edit_type').value = type;
-            document.getElementById('edit_branch_notes').value = branchNotes;
+            form.action = `/admin/universities/${university.id}`;
+            document.getElementById('edit_name').value = university.name || '';
+            document.getElementById('edit_location').value = university.location || '';
+            document.getElementById('edit_type').value = university.type || 'PTS';
+            document.getElementById('edit_website').value = university.website || '';
+            document.getElementById('edit_description').value = university.description || '';
+            document.getElementById('edit_ranking').value = university.ranking || '';
+            document.getElementById('edit_accreditation').value = university.accreditation || '';
+            document.getElementById('edit_branch_notes').value = university.branchNotes || '';
 
             modal.classList.remove('hidden');
         }

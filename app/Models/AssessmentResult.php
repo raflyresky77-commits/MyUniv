@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Models;
@@ -7,28 +8,41 @@ use Illuminate\Database\Eloquent\Model;
 
 class AssessmentResult extends Model
 {
-/**
-     * Nama tabel yang digunakan di database.
-     * Sesuaikan dengan nama tabel yang dibuat oleh partner kamu (misal: 'student_assessments' atau 'assessment_results').
-     */
+    use HasFactory;
+
     protected $table = 'assessment_results';
 
-    /**
-     * Atribut yang dapat diisi secara massal (mass assignable).
-     */
     protected $fillable = [
-        'user_id',
+        'student_id',
         'assessment_id',
+        'category_id',
         'score',
-        'summary_result',
-        'completed_at',
+        'percentage',
     ];
 
-    /**
-     * Relasi kebalikannya: Hasil asesmen ini milik siapa (User).
-     */
-    public function user()
+    protected function casts(): array
     {
-        return $this->belongsTo(User::class);
+        return [
+            'score' => 'integer',
+            'percentage' => 'decimal:2',
+        ];
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id');
+    }
+
+    public function assessment()
+    {
+        return $this->belongsTo(Assessment::class, 'assessment_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(
+            InterestCategory::class,
+            'category_id'
+        );
     }
 }

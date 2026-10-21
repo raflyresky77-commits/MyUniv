@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class University extends Model
 {
@@ -11,9 +12,13 @@ class University extends Model
 
     protected $guarded = ['id'];
 
-    // Ubah dari hasMany menjadi belongsToMany karena melewati tabel perantara university_majors
-    public function majors()
+    public function majors(): BelongsToMany
     {
-        return $this->belongsToMany(Major::class, 'university_majors', 'university_id', 'major_id');
+        return $this->belongsToMany(
+            Major::class,
+            'university_majors',
+            'university_id',
+            'major_id'
+        )->withPivot('accreditation', 'additional_info');
     }
 }

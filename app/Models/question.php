@@ -18,9 +18,22 @@ class Question extends Model
         'question_text',
         'type',
         'is_active',
+        'image_url',
     ];
 
-    // Relasi ke Assessment
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
+
+    public function options()
+    {
+        return $this->hasMany(QuestionOption::class, 'question_id')
+            ->orderBy('id');
+    }
+
     public function assessment()
     {
         return $this->belongsTo(Assessment::class, 'assessment_id');

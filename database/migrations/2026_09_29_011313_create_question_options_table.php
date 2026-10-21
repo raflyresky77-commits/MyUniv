@@ -6,25 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('question_options', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('question_id')->constrained()->cascadeOnDelete();
-    $table->string('option_text');
-    $table->integer('score')->default(0);
-    $table->foreignId('interest_category_id')->nullable()
-    ->constrained('interest_categories')->nullOnDelete();
-    $table->timestamps();
-});
+            $table->id();
+
+            $table->foreignId('question_id')
+                ->constrained('questions')
+                ->cascadeOnDelete();
+
+            $table->text('option_text');
+            $table->text('option_image')->nullable();
+            $table->boolean('is_correct')->nullable()->default(null);
+            $table->unsignedInteger('sort_order')->default(0);
+
+            $table->timestamps();
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('question_options');

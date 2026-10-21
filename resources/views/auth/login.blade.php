@@ -216,13 +216,13 @@
             <section class="login-illustration lg:col-span-7 bg-[#3650A2] relative z-10 p-2 sm:p-3 lg:p-3">
                 <div class="wave-curve lg:h-full w-full relative flex flex-col justify-between shadow-sm">
                     <div class="absolute inset-0 w-full h-full overflow-hidden">
-                        <img src="{{ asset('images/ilustrasi.png') }}" alt="Ilustrasi MyUniv" class="w-full h-full object-cover object-center">
+                        <img src="{{ asset('images/ilustrasi.jpg') }}" alt="Ilustrasi MyUniv" class="w-full h-full object-cover object-center">
                     </div>
 
                     <div class="brand-overlay relative z-20 p-5 sm:p-6">
                         <div class="brand-badge inline-flex items-center gap-2.5 sm:gap-3 bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-[#C9D7EE] shadow-sm">
                             <div class="brand-badge-icon w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center">
-                                <img src="{{ asset('images/icon.png') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
+                                <img src="{{ asset('images/icon.jpg') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
                             </div>
                             <div>
                                 <h2 class="text-xs font-bold text-[#2F3136] leading-tight">MyUniv</h2>

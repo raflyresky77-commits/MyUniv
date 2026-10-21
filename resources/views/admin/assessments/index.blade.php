@@ -34,7 +34,6 @@
     <div id="toastNotification" class="fixed top-6 right-6 z-50 flex items-center gap-3 bg-emerald-600 text-white px-5 py-3.5 rounded-2xl shadow-xl shadow-emerald-900/20 transform transition-all duration-300 translate-y-0 opacity-100">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
         <span class="text-xs font-bold">{{ session('success') }}</span>
-        <button onclick="closeToast()" class="ml-2 text-emerald-200 hover:text-white font-bold">&times;</button>
     </div>
     @endif
 
@@ -173,22 +172,34 @@
                             </div>
                         </div>
 
-                        <div class="pt-4 mt-4 border-t border-indigo-100/60 flex items-center justify-between relative z-10">
-                            <div class="text-xs font-extrabold text-[#3650A2] flex items-center gap-1.5">
+                        <div class="pt-4 mt-4 border-t border-indigo-100/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
+                            <div class="question-count text-xs font-extrabold text-[#3650A2] flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#FF7A59]"></span>
                                 {{ $assessment->questions_count ?? 0 }} Butir Soal
                             </div>
 
-                            <div class="flex items-center gap-1.5">
-                                <!-- Tombol Kelola Soal (Modal Pop-up) -->
-                                <button onclick="openManageQuestionsModal('{{ $assessment->id }}', '{{ addslashes($assessment->title) }}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-[11px] shadow-sm transition">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <!-- Tombol Kelola Soal -->
+                                <button
+                                    type="button"
+                                    class="manage-questions-btn px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-[11px] shadow-sm transition"
+                                    data-id="{{ $assessment->id }}"
+                                    data-title="{{ $assessment->title }}"
+                                    data-list-url="{{ route('admin.assessments.questions.index', $assessment->id) }}"
+                                    data-store-url="{{ route('admin.questions.store', $assessment->id) }}"
+                                    data-delete-base="{{ url('/admin/assessments/questions') }}">
                                     Kelola Soal
                                 </button>
-                                <!-- Tombol Edit (Modal Pop-up) -->
-                                <button onclick="openEditModal('{{ $assessment->id }}', '{{ addslashes($assessment->title) }}', '{{ $assessment->category }}', '{{ addslashes($assessment->description ?? '') }}', '{{ $assessment->subtest_type ?? '' }}')" class="px-3 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-xl text-[11px] transition shadow-xs">
+
+                                <!-- Tombol Edit -->
+                                <button
+                                    type="button"
+                                    onclick="openEditModal('{{ $assessment->id }}', '{{ addslashes($assessment->title) }}', '{{ $assessment->category }}', '{{ addslashes($assessment->description ?? '') }}', '{{ $assessment->subtest_type ?? '' }}')"
+                                    class="px-3 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-xl text-[11px] transition shadow-xs">
                                     Edit
                                 </button>
-                                <!-- Tombol Hapus (Di-upgrade dengan Form & SweetAlert2 Identik Univ) -->
+
+                                <!-- Tombol Hapus -->
                                 <form action="{{ route('admin.assessments.destroy', $assessment->id) }}" method="POST" onsubmit="handleDeleteAssessment(event, 'assessment-card-{{ $assessment->id }}')">
                                     @csrf
                                     @method('DELETE')
@@ -230,25 +241,118 @@
             <div class="p-6 overflow-y-auto space-y-6 flex-1 bg-[#F8FBFF]">
                 <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-4">
                     <h4 class="text-xs font-extrabold text-[#3650A2] uppercase tracking-wider">+ Tambah Pertanyaan Baru</h4>
-                    <form id="addQuestionForm" method="POST" class="space-y-3">
+
+                    <form id="addQuestionForm" method="POST" class="space-y-4">
                         @csrf
-                        <textarea name="question_text" rows="2" required placeholder="Tuliskan pertanyaan / pernyataan asesmen..." class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-[#3650A2]"></textarea>
-                        <div class="flex justify-end">
-                            <button type="submit" class="px-5 py-2 bg-[#3650A2] text-white text-xs font-bold rounded-xl shadow-md hover:bg-indigo-900 transition">Simpan Soal</button>
+
+                        <div>
+                            <label for="questionType" class="block text-xs font-bold text-gray-700 mb-1.5">Jenis Pertanyaan</label>
+                            <select name="type" id="questionType" required class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]">
+                                <option value="multiple_choice">Pilihan Ganda</option>
+                                <option value="likert">Skala Persetujuan</option>
+                                <option value="preference">Skala Kesukaan</option>
+                                <option value="image_choice">Pilihan Gambar</option>
+                                <option value="visual">Penalaran Visual</option>
+                                <option value="drawing">Menggambar</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="questionText" class="block text-xs font-bold text-gray-700 mb-1.5">Pertanyaan / Instruksi</label>
+                            <textarea name="question_text" id="questionText" rows="3" required placeholder="Tuliskan pertanyaan atau instruksi..." class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]"></textarea>
+                        </div>
+
+                        <div id="questionImageSection" class="hidden">
+                            <label for="questionImageUrl" class="block text-xs font-bold text-gray-700 mb-1.5">URL Gambar Soal (opsional)</label>
+                            <input type="url" name="image_url" id="questionImageUrl" placeholder="https://..." class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]">
+                            <p class="mt-1 text-[10px] text-gray-500">Digunakan untuk soal yang membutuhkan gambar. URL disimpan di kolom image_url.</p>
+                        </div>
+
+                        <div id="answerOptionsSection" class="space-y-3">
+                            <div class="flex justify-between items-center gap-2">
+                                <label class="block text-xs font-bold text-gray-700">Opsi Jawaban</label>
+                                <button type="button" id="addAnswerOptionBtn" class="text-xs font-bold text-indigo-600 hover:underline">+ Tambah Opsi</button>
+                            </div>
+                            <div id="answerOptionsList" class="space-y-2">
+                                @for ($i = 0; $i < 4; $i++)
+                                    <div class="answer-option-row grid grid-cols-1 sm:grid-cols-[1fr_100px_auto] gap-2">
+                                        <input type="text" name="options[{{ $i }}][option_text]" maxlength="1000" placeholder="Teks opsi {{ $i + 1 }}" class="answer-option-input min-w-0 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]">
+                                        <input type="number" name="options[{{ $i }}][score]" value="0" step="1" placeholder="Skor" class="answer-score-input w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]">
+                                        <button type="button" class="remove-answer-option text-red-500 text-xs font-bold">Hapus</button>
+                                    </div>
+                                @endfor
+                            </div>
+                            <p id="answerOptionsHelp" class="text-[10px] text-gray-500">Isi teks dan skor setiap opsi sesuai aturan asesmen.</p>
+                        </div>
+
+                        <div id="fixedScalePreview" class="hidden rounded-xl border border-indigo-100 bg-indigo-50 p-3">
+                            <p id="fixedScaleTitle" class="text-xs font-bold text-indigo-800"></p>
+                            <p id="fixedScaleDescription" class="mt-1 text-[10px] text-indigo-700"></p>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button type="submit" class="px-5 py-2.5 bg-[#3650A2] text-white text-xs font-bold rounded-xl shadow-md hover:bg-indigo-900 transition">Simpan Soal</button>
                         </div>
                     </form>
                 </div>
 
                 <div class="space-y-3">
                     <h4 class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">Daftar Pertanyaan Tersimpan</h4>
-                    <div id="questionsListContainer" class="space-y-2">
-                        <div class="p-3 bg-white border border-gray-200 rounded-xl text-xs text-gray-600 flex justify-between items-center">
-                            <span>1. Contoh pertanyaan tes psikometrik karir...</span>
-                            <button class="text-red-500 font-bold hover:underline">Hapus</button>
+                    <div id="questionsListContainer" class="space-y-2" aria-live="polite">
+                        <div class="p-4 bg-white border border-gray-200 rounded-xl text-xs text-gray-500">
+                            Pilih paket asesmen untuk memuat daftar soal.
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal edit soal -->
+    <div id="editQuestionModal" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-xs flex items-center justify-center hidden p-4">
+        <div class="bg-white w-full max-w-2xl rounded-[24px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-5 bg-gradient-myuniv text-white flex items-center justify-between">
+                <div>
+                    <h3 class="text-base font-black">Edit Soal</h3>
+                    <p class="text-xs text-indigo-100">Perbarui pertanyaan, tipe, dan opsi jawaban.</p>
+                </div>
+                <button type="button" onclick="closeEditQuestionModal()" class="text-white text-xl font-bold">&times;</button>
+            </div>
+            <form id="editQuestionForm" class="p-5 space-y-4 overflow-y-auto">
+                @csrf
+                @method('PUT')
+                <div>
+                    <label for="editQuestionType" class="block text-xs font-bold text-gray-700 mb-1.5">Jenis Pertanyaan</label>
+                    <select name="type" id="editQuestionType" required class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                        <option value="multiple_choice">Pilihan Ganda</option>
+                        <option value="likert">Skala Persetujuan</option>
+                        <option value="preference">Skala Kesukaan</option>
+                        <option value="image_choice">Pilihan Gambar</option>
+                        <option value="visual">Penalaran Visual</option>
+                        <option value="drawing">Menggambar</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="editQuestionText" class="block text-xs font-bold text-gray-700 mb-1.5">Pertanyaan / Instruksi</label>
+                    <textarea name="question_text" id="editQuestionText" rows="3" required class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs"></textarea>
+                </div>
+                <div id="editQuestionImageSection" class="hidden">
+                    <label for="editQuestionImageUrl" class="block text-xs font-bold text-gray-700 mb-1.5">URL Gambar Soal (opsional)</label>
+                    <input type="url" name="image_url" id="editQuestionImageUrl" placeholder="https://..." class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                </div>
+                <div id="editAnswerOptionsSection" class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs font-bold text-gray-700">Opsi Jawaban</label>
+                        <button type="button" id="editAddAnswerOptionBtn" class="text-xs font-bold text-indigo-600 hover:underline">+ Tambah Opsi</button>
+                    </div>
+                    <div id="editAnswerOptionsList" class="space-y-2"></div>
+                    <p class="text-[10px] text-gray-500">Ubah teks atau skor opsi sesuai kebutuhan. Untuk tipe tanpa opsi, bagian ini akan disembunyikan.</p>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeEditQuestionModal()" class="px-4 py-2.5 bg-gray-100 text-gray-600 text-xs font-bold rounded-xl">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 bg-[#3650A2] text-white text-xs font-bold rounded-xl">Simpan Perubahan</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -308,26 +412,20 @@
     <script>
         function toggleCreateForm() {
             const formCard = document.getElementById('createFormCard');
+            if (!formCard) return;
             formCard.classList.toggle('hidden');
-            if(!formCard.classList.contains('hidden')) formCard.scrollIntoView({ behavior: 'smooth' });
+            if (!formCard.classList.contains('hidden')) formCard.scrollIntoView({ behavior: 'smooth' });
         }
 
         function toggleSubTests(selectId, containerId) {
-            const categorySelect = document.getElementById(selectId);
+            const select = document.getElementById(selectId);
             const container = document.getElementById(containerId);
-            if (categorySelect && container) {
-                if (categorySelect.value === 'cognitive_ability') {
-                    container.classList.remove('hidden');
-                } else {
-                    container.classList.add('hidden');
-                }
-            }
+            if (select && container) container.classList.toggle('hidden', select.value !== 'cognitive_ability');
         }
 
-        // Auto hide toast after 4 seconds
         setTimeout(() => {
             const toast = document.getElementById('toastNotification');
-            if(toast) {
+            if (toast) {
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 300);
             }
@@ -335,63 +433,413 @@
 
         function closeToast() {
             const toast = document.getElementById('toastNotification');
-            if(toast) toast.remove();
+            if (toast) toast.remove();
         }
 
-        // Modal Kelola Soal
-        function openManageQuestionsModal(id, title) {
-            document.getElementById('modalAssessmentTitle').innerText = "Kelola Soal: " + title;
-            document.getElementById('addQuestionForm').action = "/admin/assessments/" + id + "/questions";
-            document.getElementById('manageQuestionsModal').classList.remove('hidden');
-        }
-        function closeManageQuestionsModal() {
-            document.getElementById('manageQuestionsModal').classList.add('hidden');
+        let currentAssessmentId = null;
+        let currentListUrl = null;
+        let currentStoreUrl = null;
+        let currentDeleteBase = null;
+        let currentUpdateBase = null;
+
+        const manageModal = document.getElementById('manageQuestionsModal');
+        const questionForm = document.getElementById('addQuestionForm');
+        const answerOptionsList = document.getElementById('answerOptionsList');
+        const addAnswerOptionBtn = document.getElementById('addAnswerOptionBtn');
+        const questionTypeSelect = document.getElementById('questionType');
+        const answerOptionsSection = document.getElementById('answerOptionsSection');
+        const questionImageSection = document.getElementById('questionImageSection');
+        const fixedScalePreview = document.getElementById('fixedScalePreview');
+        const fixedScaleTitle = document.getElementById('fixedScaleTitle');
+        const fixedScaleDescription = document.getElementById('fixedScaleDescription');
+        const answerOptionsHelp = document.getElementById('answerOptionsHelp');
+        const questionsContainer = document.getElementById('questionsListContainer');
+
+        const fixedScales = {
+            likert: {
+                title: 'Skala Persetujuan',
+                description: 'Sangat Tidak Setuju (1), Tidak Setuju (2), Netral (3), Setuju (4), Sangat Setuju (5). Opsi akan dibuat otomatis oleh controller.'
+            },
+            preference: {
+                title: 'Skala Kesukaan',
+                description: 'Sangat Tidak Suka (1), Tidak Suka (2), Netral (3), Suka (4), Sangat Suka (5). Opsi akan dibuat otomatis oleh controller.'
+            }
+        };
+
+        function updateAnswerOptionLabels() {
+            if (!answerOptionsList) return;
+            const rows = answerOptionsList.querySelectorAll('.answer-option-row');
+            rows.forEach((row, index) => {
+                const input = row.querySelector('.answer-option-input');
+                const score = row.querySelector('.answer-score-input');
+                const removeButton = row.querySelector('.remove-answer-option');
+                if (input) {
+                    input.name = `options[${index}][option_text]`;
+                    input.placeholder = `Teks opsi ${index + 1}`;
+                    input.required = !input.disabled;
+                }
+                if (score) score.name = `options[${index}][score]`;
+                if (removeButton) removeButton.classList.toggle('hidden', rows.length <= 2);
+            });
         }
 
-        // Modal Edit
-        function openEditModal(id, title, category, description, subtestType) {
-            document.getElementById('editTitle').value = title;
-            document.getElementById('editCategory').value = category;
-            document.getElementById('editDescription').value = description;
+        function updateQuestionTypeForm() {
+            if (!questionTypeSelect) return;
+            const type = questionTypeSelect.value;
+            const usesFixedScale = ['likert', 'preference'].includes(type);
+            const usesOptions = ['multiple_choice', 'image_choice', 'visual'].includes(type);
+            const needsImageField = ['image_choice', 'visual', 'drawing'].includes(type);
 
-            const subtestSelect = document.getElementById('editSubtestType');
-            if (subtestSelect && subtestType) {
-                subtestSelect.value = subtestType;
+            answerOptionsSection?.classList.toggle('hidden', !usesOptions);
+            fixedScalePreview?.classList.toggle('hidden', !usesFixedScale);
+            questionImageSection?.classList.toggle('hidden', !needsImageField);
+
+            if (usesFixedScale) {
+                fixedScaleTitle.textContent = fixedScales[type].title;
+                fixedScaleDescription.textContent = fixedScales[type].description;
             }
 
-            toggleSubTests('editCategory', 'editSubtestContainer');
+            if (answerOptionsList) {
+                answerOptionsList.querySelectorAll('input').forEach(input => {
+                    input.disabled = !usesOptions;
+                    input.required = usesOptions && input.classList.contains('answer-option-input');
+                });
+            }
 
-            document.getElementById('editForm').action = "/admin/assessments/" + id;
+            if (answerOptionsHelp) {
+                answerOptionsHelp.textContent = type === 'image_choice'
+                    ? 'Masukkan label tiap opsi dan skor yang sesuai. Kolom question_options tidak memiliki kolom gambar khusus.'
+                    : type === 'visual'
+                        ? 'Masukkan opsi jawaban penalaran visual beserta skor masing-masing.'
+                        : 'Isi teks dan skor tiap opsi. Untuk kunci benar/salah, gunakan skor sesuai aturan penilaian.';
+            }
+            updateAnswerOptionLabels();
+        }
+
+        questionTypeSelect?.addEventListener('change', updateQuestionTypeForm);
+
+        addAnswerOptionBtn?.addEventListener('click', function () {
+            const rows = answerOptionsList.querySelectorAll('.answer-option-row');
+            if (rows.length >= 10) {
+                Swal.fire({ icon: 'info', title: 'Batas opsi tercapai', text: 'Maksimal 10 opsi jawaban per pertanyaan.' });
+                return;
+            }
+
+            const row = document.createElement('div');
+            row.className = 'answer-option-row grid grid-cols-1 sm:grid-cols-[1fr_100px_auto] gap-2';
+            row.innerHTML = `
+                <input type="text" maxlength="1000" placeholder="Teks opsi" class="answer-option-input min-w-0 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]">
+                <input type="number" value="0" step="1" placeholder="Skor" class="answer-score-input w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]">
+                <button type="button" class="remove-answer-option text-red-500 text-xs font-bold">Hapus</button>
+            `;
+            answerOptionsList.appendChild(row);
+            updateAnswerOptionLabels();
+            row.querySelector('input')?.focus();
+        });
+
+        answerOptionsList?.addEventListener('click', function (event) {
+            const button = event.target.closest('.remove-answer-option');
+            if (!button || button.classList.contains('hidden')) return;
+            const rows = answerOptionsList.querySelectorAll('.answer-option-row');
+            if (rows.length <= 2) return;
+            button.closest('.answer-option-row').remove();
+            updateAnswerOptionLabels();
+        });
+
+        updateQuestionTypeForm();
+
+        document.querySelectorAll('.manage-questions-btn').forEach(button => {
+            button.addEventListener('click', async function () {
+                currentAssessmentId = this.dataset.id;
+                currentListUrl = this.dataset.listUrl;
+                currentStoreUrl = this.dataset.storeUrl;
+                currentDeleteBase = this.dataset.deleteBase;
+                currentUpdateBase = this.dataset.deleteBase;
+                document.getElementById('modalAssessmentTitle').textContent = 'Kelola Soal: ' + this.dataset.title;
+                questionForm.action = currentStoreUrl;
+                questionForm.reset();
+                updateQuestionTypeForm();
+                manageModal.classList.remove('hidden');
+                await loadQuestions();
+            });
+        });
+
+        function closeManageQuestionsModal() {
+            manageModal?.classList.add('hidden');
+        }
+
+        async function loadQuestions() {
+            if (!questionsContainer || !currentListUrl) return;
+            questionsContainer.innerHTML = '<div class="p-4 bg-white border rounded-xl text-xs text-gray-500">Memuat daftar soal...</div>';
+            try {
+                const response = await fetch(currentListUrl, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                if (!response.ok) throw new Error('Gagal mengambil data soal. HTTP ' + response.status);
+                const data = await response.json();
+                renderQuestions(data.questions || []);
+            } catch (error) {
+                questionsContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600">${escapeHtml(error.message)}</div>`;
+            }
+        }
+
+        function renderQuestions(questions) {
+            questionsContainer.replaceChildren();
+            if (!questions.length) {
+                questionsContainer.innerHTML = '<div class="p-4 bg-white border border-gray-200 rounded-xl text-xs text-gray-500">Belum ada soal pada paket asesmen ini.</div>';
+                updateQuestionCount(0);
+                return;
+            }
+            questions.forEach((question, index) => {
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-white border border-gray-200 rounded-xl flex gap-3 justify-between items-start';
+                const content = document.createElement('div');
+                content.className = 'flex-1 min-w-0 text-xs text-gray-700';
+                const number = document.createElement('span');
+                number.className = 'font-extrabold text-[#3650A2]';
+                number.textContent = `${index + 1}. `;
+                const text = document.createElement('span');
+                text.textContent = question.question_text || '';
+                content.append(number, text);
+                const type = document.createElement('p');
+                type.className = 'mt-1 text-[10px] text-gray-400';
+                type.textContent = 'Tipe: ' + questionTypeLabel(question.type);
+                content.appendChild(type);
+                const actions = document.createElement('div');
+                actions.className = 'shrink-0 flex items-center gap-3';
+                const editButton = document.createElement('button');
+                editButton.type = 'button';
+                editButton.className = 'text-indigo-600 font-bold text-xs hover:underline';
+                editButton.textContent = 'Edit';
+                editButton.addEventListener('click', () => openEditQuestionModal(question));
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.className = 'text-red-500 font-bold text-xs hover:underline';
+                deleteButton.textContent = 'Hapus';
+                deleteButton.addEventListener('click', () => deleteQuestion(question.id));
+                actions.append(editButton, deleteButton);
+                item.append(content, actions);
+                questionsContainer.appendChild(item);
+            });
+            updateQuestionCount(questions.length);
+        }
+
+        function questionTypeLabel(type) {
+            const labels = {
+                multiple_choice: 'Pilihan Ganda',
+                likert: 'Skala Persetujuan',
+                preference: 'Skala Kesukaan',
+                image_choice: 'Pilihan Gambar',
+                visual: 'Penalaran Visual',
+                drawing: 'Menggambar'
+            };
+            return labels[type] || type || '—';
+        }
+
+        const editQuestionModal = document.getElementById('editQuestionModal');
+        const editQuestionForm = document.getElementById('editQuestionForm');
+        const editQuestionType = document.getElementById('editQuestionType');
+        const editQuestionText = document.getElementById('editQuestionText');
+        const editQuestionImageUrl = document.getElementById('editQuestionImageUrl');
+        const editQuestionImageSection = document.getElementById('editQuestionImageSection');
+        const editAnswerOptionsSection = document.getElementById('editAnswerOptionsSection');
+        const editAnswerOptionsList = document.getElementById('editAnswerOptionsList');
+        const editAddAnswerOptionBtn = document.getElementById('editAddAnswerOptionBtn');
+
+        function updateEditQuestionTypeForm() {
+            const type = editQuestionType.value;
+            const usesOptions = ['multiple_choice', 'likert', 'preference', 'image_choice', 'visual'].includes(type);
+            const needsImage = ['image_choice', 'visual', 'drawing'].includes(type);
+            editAnswerOptionsSection.classList.toggle('hidden', !usesOptions);
+            editQuestionImageSection.classList.toggle('hidden', !needsImage);
+            editAnswerOptionsList.querySelectorAll('input').forEach(input => {
+                input.disabled = !usesOptions;
+            });
+        }
+
+        function addEditOptionRow(option = {}, index = null) {
+            const row = document.createElement('div');
+            row.className = 'edit-answer-option-row grid grid-cols-1 sm:grid-cols-[1fr_100px_auto] gap-2';
+            const text = document.createElement('input');
+            text.type = 'text'; text.maxLength = 1000; text.required = true;
+            text.className = 'edit-option-text min-w-0 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs';
+            text.placeholder = 'Teks opsi'; text.value = option.option_text || '';
+            const score = document.createElement('input');
+            score.type = 'number'; score.step = 'any'; score.className = 'edit-option-score px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs';
+            score.placeholder = 'Skor'; score.value = option.score ?? 0;
+            const remove = document.createElement('button');
+            remove.type = 'button'; remove.className = 'text-red-500 text-xs font-bold'; remove.textContent = 'Hapus';
+            remove.addEventListener('click', () => {
+                const rows = editAnswerOptionsList.querySelectorAll('.edit-answer-option-row');
+                if (rows.length <= 2) {
+                    Swal.fire({ icon: 'info', title: 'Minimal 2 opsi', text: 'Tipe ini memerlukan minimal 2 opsi jawaban.' });
+                    return;
+                }
+                row.remove(); updateEditOptionNames();
+            });
+            row.append(text, score, remove); editAnswerOptionsList.appendChild(row); updateEditOptionNames();
+        }
+
+        function updateEditOptionNames() {
+            editAnswerOptionsList.querySelectorAll('.edit-answer-option-row').forEach((row, index) => {
+                row.querySelector('.edit-option-text').name = `options[${index}][option_text]`;
+                row.querySelector('.edit-option-score').name = `options[${index}][score]`;
+            });
+        }
+
+        editAddAnswerOptionBtn?.addEventListener('click', () => {
+            if (editAnswerOptionsList.querySelectorAll('.edit-answer-option-row').length >= 10) {
+                Swal.fire({ icon: 'info', title: 'Batas opsi tercapai', text: 'Maksimal 10 opsi jawaban.' }); return;
+            }
+            addEditOptionRow();
+        });
+        editQuestionType?.addEventListener('change', updateEditQuestionTypeForm);
+
+        async function openEditQuestionModal(question) {
+            try {
+                const response = await fetch(`${currentUpdateBase}/${question.id}`, {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Gagal memuat detail soal.');
+                const item = data.question || question;
+                editQuestionForm.action = `${currentUpdateBase}/${item.id}`;
+                editQuestionText.value = item.question_text || '';
+                editQuestionType.value = item.type || 'multiple_choice';
+                editQuestionImageUrl.value = item.image_url || '';
+                editAnswerOptionsList.replaceChildren();
+                (item.options || []).forEach(option => addEditOptionRow(option));
+                if ((item.options || []).length === 0) {
+                    addEditOptionRow(); addEditOptionRow();
+                }
+                updateEditQuestionTypeForm();
+                editQuestionModal.classList.remove('hidden');
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Gagal membuka edit soal', text: error.message });
+            }
+        }
+
+        function closeEditQuestionModal() {
+            editQuestionModal?.classList.add('hidden');
+        }
+
+        editQuestionForm?.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const button = this.querySelector('button[type="submit"]');
+            const type = editQuestionType.value;
+            const optionsCount = editAnswerOptionsList.querySelectorAll('.edit-answer-option-row').length;
+            if (['multiple_choice', 'likert', 'preference', 'image_choice', 'visual'].includes(type) && optionsCount < 2) {
+                Swal.fire({ icon: 'warning', title: 'Opsi belum cukup', text: 'Tipe soal ini memerlukan minimal 2 opsi.' }); return;
+            }
+            button.disabled = true; button.textContent = 'Menyimpan...';
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': this.querySelector('[name="_token"]').value },
+                    body: new FormData(this)
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || Object.values(data.errors || {}).flat().join('\n') || 'Gagal memperbarui soal.');
+                closeEditQuestionModal(); await loadQuestions();
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message || 'Soal berhasil diperbarui.', timer: 1500, showConfirmButton: false });
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Gagal menyimpan perubahan', text: error.message });
+            } finally { button.disabled = false; button.textContent = 'Simpan Perubahan'; }
+        });
+
+        questionForm?.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const submitButton = this.querySelector('button[type="submit"]');
+            const textarea = this.querySelector('[name="question_text"]');
+            const token = this.querySelector('[name="_token"]')?.value;
+            if (!textarea?.value.trim()) { textarea?.focus(); return; }
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Menyimpan...';
+            try {
+                const response = await fetch(currentStoreUrl || this.action, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token || '' },
+                    body: new FormData(this)
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    const message = data.message || Object.values(data.errors || {}).flat().join('\n') || 'Gagal menyimpan soal.';
+                    throw new Error(message);
+                }
+                this.reset();
+                updateQuestionTypeForm();
+                await loadQuestions();
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message || 'Soal berhasil ditambahkan.', timer: 1500, showConfirmButton: false });
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Gagal menyimpan', text: error.message });
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Simpan Soal';
+            }
+        });
+
+        async function deleteQuestion(questionId) {
+            const result = await Swal.fire({
+                icon: 'warning', title: 'Hapus soal ini?', text: 'Soal yang dihapus tidak dapat dipulihkan.',
+                showCancelButton: true, confirmButtonText: 'Ya, hapus', cancelButtonText: 'Batal', confirmButtonColor: '#dc2626'
+            });
+            if (!result.isConfirmed) return;
+            const token = questionForm.querySelector('[name="_token"]')?.value;
+            try {
+                const response = await fetch(`${currentDeleteBase}/${questionId}`, {
+                    method: 'DELETE',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token || '' }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Gagal menghapus soal.');
+                await loadQuestions();
+                Swal.fire({ icon: 'success', title: 'Terhapus!', text: data.message || 'Soal berhasil dihapus.', timer: 1500, showConfirmButton: false });
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Gagal menghapus', text: error.message });
+            }
+        }
+
+        function updateQuestionCount(count) {
+            const card = document.getElementById(`assessment-card-${currentAssessmentId}`);
+            const countElement = card?.querySelector('.question-count');
+            if (countElement) countElement.innerHTML = `<span class="w-2 h-2 rounded-full bg-[#FF7A59]"></span>${count} Butir Soal`;
+        }
+
+        function escapeHtml(value) {
+            const element = document.createElement('span');
+            element.textContent = value ?? '';
+            return element.innerHTML;
+        }
+
+        function openEditModal(id, title, category, description, subtestType) {
+            document.getElementById('editTitle').value = title || '';
+            document.getElementById('editCategory').value = category || '';
+            document.getElementById('editDescription').value = description || '';
+            const subtestSelect = document.getElementById('editSubtestType');
+            if (subtestSelect && subtestType) subtestSelect.value = subtestType;
+            toggleSubTests('editCategory', 'editSubtestContainer');
+            document.getElementById('editForm').action = '/admin/assessments/' + id;
             document.getElementById('editModal').classList.remove('hidden');
         }
+
         function closeEditModal() {
-            document.getElementById('editModal').classList.add('hidden');
+            document.getElementById('editModal')?.classList.add('hidden');
         }
 
-        // Filter kartu asesmen secara langsung tanpa menekan Enter atau tombol Cari.
         function filterAssessments() {
             const input = document.getElementById('assessmentSearchInput');
-            const filter = input.value.trim().toLowerCase();
+            const filter = (input?.value || '').trim().toLowerCase();
             const cards = document.querySelectorAll('[id^="assessment-card-"]');
             const counter = document.getElementById('assessmentSearchCounter');
             let visibleCount = 0;
-
-            // Cocokkan kata pencarian dengan teks di setiap kartu asesmen.
-            cards.forEach((card) => {
-                const content = card.textContent.toLowerCase();
-                const isMatch = content.includes(filter);
+            cards.forEach(card => {
+                const isMatch = card.textContent.toLowerCase().includes(filter);
                 card.style.display = isMatch ? '' : 'none';
                 if (isMatch) visibleCount++;
             });
-
-            // Perbarui jumlah hasil yang sedang ditampilkan.
-            if (counter) {
-                counter.textContent = filter
-                    ? `Ditemukan ${visibleCount} paket asesmen`
-                    : `${visibleCount} paket ditampilkan`;
-            }
+            if (counter) counter.textContent = filter ? `Ditemukan ${visibleCount} paket asesmen` : `${visibleCount} paket ditampilkan`;
         }
-
     </script>
 </body>
 </html>

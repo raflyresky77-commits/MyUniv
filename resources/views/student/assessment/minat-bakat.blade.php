@@ -141,37 +141,62 @@
                 <x-student.assessment-panel variant="questionnaire" class="rounded-[28px] overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="questionnaire-table w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-indigo-50/70 text-[#3650A2] text-xs font-black uppercase tracking-wider border-b border-indigo-100">
-                                    <th class="py-4 px-6 w-3/5">Pernyataan Aktivitas / Pekerjaan</th>
-                                    <th class="py-4 px-4 text-center">Sangat Tidak Suka</th>
-                                    <th class="py-4 px-4 text-center">Netral</th>
-                                    <th class="py-4 px-4 text-center">Sangat Suka</th>
+                        <thead>
+                            <tr class="bg-indigo-50/70 text-[#3650A2] text-xs font-black uppercase tracking-wider border-b border-indigo-100">
+                                <th class="py-4 px-6 w-3/5">
+                                    Pernyataan Aktivitas / Pekerjaan
+                                </th>
+                                <th class="py-4 px-3 text-center">Sangat Tidak Suka</th>
+                                <th class="py-4 px-3 text-center">Tidak Suka</th>
+                                <th class="py-4 px-3 text-center">Netral</th>
+                                <th class="py-4 px-3 text-center">Suka</th>
+                                <th class="py-4 px-3 text-center">Sangat Suka</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-100 text-xs sm:text-sm">
+                            @forelse ($questions as $index => $question)
+                                <tr class="hover:bg-indigo-50/30 transition duration-150 group">
+                                    <td class="py-4 px-6 font-semibold text-gray-700 leading-relaxed">
+                                        <span class="text-[#3650A2] font-bold mr-1.5">
+                                            {{ $index + 1 }}.
+                                        </span>
+                                        {{ $question->question_text }}
+                                    </td>
+
+                                    @php
+                                        $scaleOptions = $question->options
+                                            ->sortBy('score')
+                                            ->values();
+                                    @endphp
+
+                                    @foreach ($scaleOptions as $option)
+                                        <x-student.assessment-option
+                                            :question-id="$question->id"
+                                            :value="$option->score"
+                                            :label="$option->option_text"
+                                            :required="$loop->first"
+                                        />
+                                    @endforeach
+
+                                    @if ($scaleOptions->isEmpty())
+                                        <td colspan="5" class="py-4 px-6 text-center text-amber-700">
+                                            Opsi jawaban belum diatur untuk pertanyaan ini.
+                                        </td>
+                                    @endif
                                 </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 text-xs sm:text-sm">
-                                @forelse($questions as $index => $question)
-                                    <tr class="hover:bg-indigo-50/30 transition duration-150 group">
-                                        <td class="py-4 px-6 font-semibold text-gray-700 leading-relaxed">
-                                            <span class="text-[#3650A2] font-bold mr-1.5">{{ $index + 1 }}.</span> {{ $question->question_text }}
-                                        </td>
-                                        <!-- Opsi 1: Sangat Tidak Suka -->
-                                        <x-student.assessment-option :question-id="$question->id" value="1" label="Tidak suka" :required="true" />
-                                        <!-- Opsi 2: Netral -->
-                                        <x-student.assessment-option :question-id="$question->id" value="2" label="Netral" />
-                                        <!-- Opsi 3: Sangat Suka -->
-                                        <x-student.assessment-option :question-id="$question->id" value="3" label="Suka" />
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="py-10 text-center text-gray-500 font-medium">
-                                            Belum ada pertanyaan asesmen minat bakat yang diatur oleh Admin di database.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="py-10 text-center text-gray-500 font-medium">
+                                        Belum ada pertanyaan asesmen minat bakat yang diatur oleh Admin di database.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+
                         </table>
                     </div>
+
                 </x-student.assessment-panel>
 
                 <!-- Tombol Navigasi Bawah -->
