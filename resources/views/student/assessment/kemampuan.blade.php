@@ -327,11 +327,11 @@
 
                     <!-- Tombol Navigasi Bawah -->
                     <div class="flex justify-between items-center pt-6">
-                        <a href="{{ route('student.assessment.minat-bakat') }}" class="px-6.5 py-4 rounded-2xl bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-xs shadow-xs transition flex items-center gap-2">
-                            &larr; Kembali ke Minat Bakat
+                        <a href="{{ route('student.assessment.index') }}" class="px-6.5 py-4 rounded-2xl bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-xs shadow-xs transition flex items-center gap-2">
+                            &larr; Kembali ke Halaman Asesmen
                         </a>
                         <button type="button" onclick="validateAndSubmit()" class="px-8 py-4 rounded-2xl bg-gradient-coral text-white font-extrabold text-xs shadow-lg shadow-orange-950/20 hover:scale-[1.02] transition flex items-center gap-2">
-                            <span>Selanjutnya ke Kepribadian</span> &rarr;
+                            <span>Simpan Jawaban</span> &rarr;
                         </button>
                     </div>
                 </form>
@@ -366,7 +366,7 @@
         modal-id="warningModal"
         message-id="warningModalMessage"
         title="Peringatan: Belum Selesai!"
-        initial-message="Masih ada beberapa soal yang belum Anda selesaikan. Silakan lengkapi terlebih dahulu sebelum melanjutkan."
+        initial-message="Masih ada beberapa soal yang belum kamu jawab atau gambar. Silakan lengkapi terlebih dahulu sebelum menyimpan."
         close-action="closeWarningModal"
         continue-action="forceSubmitAssessment"
         cancel-text="Periksa Kembali"
@@ -382,7 +382,7 @@
             <div class="space-y-2">
                 <h3 class="text-xl font-black text-[#3650A2]">Semua Soal Selesai!</h3>
                 <p class="text-xs sm:text-sm font-medium text-gray-600 leading-relaxed">
-                    Hebat! Anda telah menyelesaikan seluruh soal Tes Kemampuan Akademik & Kreativitas. Lanjutkan ke tahap asesmen kepribadian?
+                    Semua jawaban sudah lengkap. Simpan jawaban Tes Kemampuan dan kembali ke halaman awal asesmen?
                 </p>
             </div>
             <div class="flex gap-3 pt-2">
@@ -390,7 +390,7 @@
                     Batal
                 </button>
                 <button type="button" onclick="submitAssessmentForm()" class="flex-1 py-3.5 px-4 bg-gradient-coral text-white rounded-2xl font-extrabold text-xs shadow-lg shadow-orange-950/20 transition">
-                    Lanjut ke Kepribadian
+                    Simpan Jawaban
                 </button>
             </div>
         </div>

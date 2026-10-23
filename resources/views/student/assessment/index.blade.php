@@ -63,8 +63,19 @@
 
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
 
+    @php
+        // Nilai default agar halaman tetap aman saat variabel belum dikirim controller.
+        $submissions = $submissions ?? [];
+        $completedCount = $completedCount ?? (
+            (isset($submissions['minat_bakat']) ? 1 : 0)
+            + (isset($submissions['kemampuan']) ? 1 : 0)
+            + (isset($submissions['kepribadian']) ? 1 : 0)
+        );
+        $progress = $progress ?? (int) round(($completedCount / 3) * 100);
+    @endphp
+
     {{-- Sidebar reusable component.
-         Backdrop dikelola oleh komponen sidebar, jangan buat backdrop kedua. --}}
+    Backdrop dikelola oleh komponen sidebar, jangan buat backdrop kedua. --}}
     <x-student.student-sidebar active="assessment" />
 
     {{-- Topbar reusable component --}}
@@ -102,16 +113,16 @@
                     </span>
 
                     <span class="text-xs font-extrabold px-4 py-1.5 bg-indigo-50 text-[#3650A2] rounded-full border border-indigo-200">
-                        66% Selesai
+                        {{ $progress }}% Selesai
                     </span>
                 </div>
 
                 <div class="w-full bg-gray-100 h-3.5 rounded-full overflow-hidden p-0.5 border border-indigo-50">
-                    <div class="bg-gradient-to-r from-[#3650A2] via-indigo-600 to-[#FF7A59] h-full rounded-full transition-all duration-700 shadow-sm" style="width: 66%;"></div>
+                    <div class="bg-gradient-to-r from-[#3650A2] via-indigo-600 to-[#FF7A59] h-full rounded-full transition-all duration-700 shadow-sm" style="width: {{ $progress }}%;"></div>
                 </div>
 
                 <div class="text-xs font-bold text-gray-500">
-                    2 dari 3 tes telah diselesaikan dengan baik
+                    {{ $completedCount }} dari 3 tes telah disimpan ke database.
                 </div>
             </x-card>
 
@@ -132,8 +143,8 @@
                             </span>
 
                             <span class="px-3 py-1 bg-emerald-100/80 text-emerald-800 rounded-xl text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                                Selesai
+                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['minat_bakat']) ? 'bg-emerald-600' : 'bg-amber-600' }}"></span>
+                                {{ isset($submissions['minat_bakat']) ? 'Tersimpan' : 'Belum' }}
                             </span>
                         </div>
 
@@ -147,8 +158,8 @@
                         </div>
 
                         <div class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-2xl space-y-1 shadow-2xs">
-                            <div class="text-xs font-extrabold text-[#3650A2]">Hasil Tersimpan</div>
-                            <div class="text-[11px] text-gray-500 font-medium">Diperbarui minggu ini</div>
+                            <div class="text-xs font-extrabold text-[#3650A2]">{{ isset($submissions['minat_bakat']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
+                            <div class="text-[11px] text-gray-500 font-medium">{{ isset($submissions['minat_bakat']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['minat_bakat']->submitted_at)->format('d M Y, H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
                         </div>
                     </div>
 
@@ -160,7 +171,7 @@
                             block
                             class="w-full text-center px-5 py-3 !bg-[#3650A2] hover:!bg-[#FF7A59] active:!bg-[#FF7A59] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 border border-[#3650A2] hover:border-[#FF7A59] shadow-md shadow-indigo-900/20 hover:shadow-orange-500/25"
                         >
-                            Mulai
+                            {{ isset($submissions['minat_bakat']) ? 'Ulangi Tes' : 'Mulai Tes' }}
                         </x-button>
                     </div>
                 </x-card>
@@ -179,8 +190,8 @@
                             </span>
 
                             <span class="px-3 py-1 bg-amber-100 text-amber-900 rounded-xl text-[10px] font-extrabold uppercase tracking-wide border border-amber-200 flex items-center gap-1.5 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-ping"></span>
-                                Belum
+                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['kemampuan']) ? 'bg-emerald-600' : 'bg-amber-600' }}"></span>
+                                {{ isset($submissions['kemampuan']) ? 'Tersimpan' : 'Belum' }}
                             </span>
                         </div>
 
@@ -221,7 +232,7 @@
                             block
                             class="w-full text-center px-6 py-3.5 !bg-[#3650A2] hover:!bg-[#FF7A59] active:!bg-[#FF7A59] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 border border-[#3650A2] hover:border-[#FF7A59] shadow-md shadow-indigo-900/20 hover:shadow-orange-500/25 hover:scale-[1.02]"
                         >
-                            Mulai
+                            {{ isset($submissions['kemampuan']) ? 'Ulangi Tes' : 'Mulai Tes' }}
                         </x-button>
                     </div>
                 </x-card>
@@ -240,8 +251,8 @@
                             </span>
 
                             <span class="px-3 py-1 bg-emerald-100/80 text-emerald-800 rounded-xl text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                                Selesai
+                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['kepribadian']) ? 'bg-emerald-600' : 'bg-amber-600' }}"></span>
+                                {{ isset($submissions['kepribadian']) ? 'Tersimpan' : 'Belum' }}
                             </span>
                         </div>
 
@@ -255,8 +266,8 @@
                         </div>
 
                         <div class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-2xl space-y-1 shadow-2xs">
-                            <div class="text-xs font-extrabold text-[#3650A2]">Hasil Tersimpan</div>
-                            <div class="text-[11px] text-gray-500 font-medium">Tipe: Realistis - Investigatif</div>
+                            <div class="text-xs font-extrabold text-[#3650A2]">{{ isset($submissions['kepribadian']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
+                            <div class="text-[11px] text-gray-500 font-medium">{{ isset($submissions['kepribadian']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['kepribadian']->submitted_at)->format('d/m/Y H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
                         </div>
                     </div>
 
@@ -268,12 +279,24 @@
                             block
                             class="w-full text-center px-5 py-3 !bg-[#3650A2] hover:!bg-[#FF7A59] active:!bg-[#FF7A59] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 border border-[#3650A2] hover:border-[#FF7A59] shadow-md shadow-indigo-900/20 hover:shadow-orange-500/25"
                         >
-                            Mulai
+                            {{ isset($submissions['kepribadian']) ? 'Ulangi Tes' : 'Mulai Tes' }}
                         </x-button>
                     </div>
                 </x-card>
 
             </div>
+
+            {{-- Kartu Hasil Asesmen --}}
+            <x-card variant="strong" class="card-interactive-strong rounded-[32px] p-7 flex flex-col sm:flex-row items-center justify-between gap-5">
+                <div>
+                    <h3 class="text-lg font-black text-gray-900">Hasil Asesmen</h3>
+                    <p class="text-sm text-gray-600 mt-1">Lihat halaman hasil asesmen yang terkait dengan akunmu.</p>
+                    <p class="text-xs font-bold text-gray-500 mt-2">{{ $completedCount === 3 ? 'Semua tes sudah tersimpan.' : 'Tes tersimpan: ' . $completedCount . ' dari 3.' }}</p>
+                </div>
+                <x-button href="{{ route('student.result.index') }}" variant="primary" size="lg" class="px-7 py-3.5 !bg-[#3650A2] text-white text-xs font-extrabold rounded-2xl">
+                    Lihat Hasil Asesmen &rarr;
+                </x-button>
+            </x-card>
 
             {{-- Footer Bantuan / Konsultasi BK --}}
             <x-card
@@ -311,7 +334,7 @@
     </div>
 
     {{-- Tidak perlu script toggleSidebar di halaman ini.
-         Hamburger dan backdrop dikendalikan oleh komponen sidebar. --}}
+    Hamburger dan backdrop dikendalikan oleh komponen sidebar. --}}
 
 </body>
 </html>

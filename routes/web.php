@@ -78,7 +78,7 @@ Route::middleware(['auth', 'role:siswa'])
         Route::get('/assessment', [StudentAssessmentController::class, 'index'])
             ->name('assessment.index');
 
-        Route::get('/assessment/result', [StudentAssessmentController::class, 'result'])
+        Route::get('/assessment/result', [ResultController::class, 'index'])
             ->name('assessment.result');
 
         // Tes Minat Bakat

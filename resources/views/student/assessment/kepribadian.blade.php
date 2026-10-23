@@ -223,33 +223,22 @@
 
                     {{-- Kembali ke tes kemampuan --}}
                     <x-button
-                        :href="route('student.assessment.kemampuan')"
+                        :href="route('student.assessment.index')"
                         variant="outline"
                         size="lg">
 
                         <span aria-hidden="true">&larr;</span>
-                        Kembali ke Kemampuan
+                        Kembali ke Halaman Asesmen
                     </x-button>
 
                     <div class="flex flex-col gap-3 sm:flex-row">
-
-                        {{-- Lihat hasil asesmen --}}
-                        <x-button
-                            :href="url('/student/assessment/result')"
-                            variant="outline"
-                            size="lg">
-
-                            Lihat Hasil Asesmen
-                            <span aria-hidden="true">&rarr;</span>
-                        </x-button>
-
-                        {{-- Simpan dan selesaikan asesmen --}}
+{{-- Simpan dan selesaikan asesmen --}}
                         <x-button
                             type="submit"
                             variant="coral-gradient"
                             size="lg">
 
-                            Simpan &amp; Selesaikan Asesmen
+                            Simpan Jawaban
                             <span aria-hidden="true">&rarr;</span>
                         </x-button>
 

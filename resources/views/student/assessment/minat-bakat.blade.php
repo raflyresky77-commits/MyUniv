@@ -143,45 +143,48 @@
                         <table class="questionnaire-table w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-indigo-50/70 text-[#3650A2] text-xs font-black uppercase tracking-wider border-b border-indigo-100">
-                                <th class="py-4 px-6 w-3/5">
-                                    Pernyataan Aktivitas / Pekerjaan
-                                </th>
-                                <th class="py-4 px-3 text-center">Sangat Tidak Suka</th>
-                                <th class="py-4 px-3 text-center">Tidak Suka</th>
-                                <th class="py-4 px-3 text-center">Netral</th>
-                                <th class="py-4 px-3 text-center">Suka</th>
-                                <th class="py-4 px-3 text-center">Sangat Suka</th>
+                                <th class="py-4 px-6">Pernyataan Aktivitas / Pekerjaan</th>
+                                <th colspan="5" class="py-4 px-3 text-center">Pilih satu jawaban (1–5)</th>
                             </tr>
                         </thead>
 
                         <tbody class="divide-y divide-gray-100 text-xs sm:text-sm">
                             @forelse ($questions as $index => $question)
-                                <tr class="hover:bg-indigo-50/30 transition duration-150 group">
-                                    <td class="py-4 px-6 font-semibold text-gray-700 leading-relaxed">
-                                        <span class="text-[#3650A2] font-bold mr-1.5">
-                                            {{ $index + 1 }}.
-                                        </span>
+                                <tr class="hover:bg-indigo-50/30 transition duration-150">
+                                    <td class="py-4 px-6 font-semibold text-gray-700 leading-relaxed min-w-[280px]">
+                                        <span class="text-[#3650A2] font-bold mr-1.5">{{ $index + 1 }}.</span>
                                         {{ $question->question_text }}
                                     </td>
-
                                     @php
-                                        $scaleOptions = $question->options
-                                            ->sortBy('score')
-                                            ->values();
+                                        $scaleOptions = $question->options->sortBy('score')->take(5)->values();
+                                        $scaleLabels = [
+                                            1 => 'Sangat Tidak Suka',
+                                            2 => 'Tidak Suka',
+                                            3 => 'Netral',
+                                            4 => 'Suka',
+                                            5 => 'Sangat Suka',
+                                        ];
                                     @endphp
-
                                     @foreach ($scaleOptions as $option)
-                                        <x-student.assessment-option
-                                            :question-id="$question->id"
-                                            :value="$option->score"
-                                            :label="$option->option_text"
-                                            :required="$loop->first"
-                                        />
+                                        <td class="py-4 px-2 text-center">
+                                            <label class="inline-flex flex-col items-center gap-1.5 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="responses[{{ $question->id }}]"
+                                                    value="{{ $option->score }}"
+                                                    class="peer sr-only"
+                                                    {{ $loop->first ? 'required' : '' }}
+                                                >
+                                                <span class="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-gray-200 bg-white font-bold text-gray-600 transition peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-300">
+                                                    {{ $loop->iteration }}
+                                                </span>
+                                                <span class="w-16 text-[10px] leading-tight text-gray-500">{{ $scaleLabels[$loop->iteration] }}</span>
+                                            </label>
+                                        </td>
                                     @endforeach
-
-                                    @if ($scaleOptions->isEmpty())
-                                        <td colspan="5" class="py-4 px-6 text-center text-amber-700">
-                                            Opsi jawaban belum diatur untuk pertanyaan ini.
+                                    @if ($scaleOptions->count() < 5)
+                                        <td colspan="{{ 5 - $scaleOptions->count() }}" class="py-4 px-2 text-center text-amber-700">
+                                            Opsi jawaban belum lengkap di database.
                                         </td>
                                     @endif
                                 </tr>
@@ -205,7 +208,7 @@
                         &larr; Kembali
                     </x-button>
                     <x-button type="submit" variant="coral-gradient" size="lg" class="!px-8 !py-3.5 !text-xs !font-extrabold hover:scale-105 !shadow-orange-950/20">
-                        <span>Selanjutnya</span> &rarr;
+                        <span>Simpan &amp; Lanjutkan</span> &rarr;
                     </x-button>
                 </div>
             </form>

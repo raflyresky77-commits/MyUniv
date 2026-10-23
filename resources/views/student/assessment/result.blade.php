@@ -104,11 +104,15 @@
                 </div>
             @endif
 
-            @if (!($assessmentCompleted ?? false))
+            @if (!($minatResult['has_result'] ?? false))
                 <div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
                     <i class="fa-solid fa-circle-info mr-2"></i>
-                    Data jawaban belum lengkap. Selesaikan seluruh rangkaian asesmen
-                    untuk melihat rangkuman hasil.
+                    Jawaban Tes Minat Bakat belum dapat dihitung. Pastikan kamu sudah menyimpan jawaban dan skor opsi tersedia di database.
+                </div>
+            @elseif (!($assessmentCompleted ?? false))
+                <div class="rounded-2xl border border-sky-200 bg-sky-50 px-5 py-4 text-sm text-sky-800">
+                    <i class="fa-solid fa-circle-info mr-2"></i>
+                    Hasil sementara menampilkan Tes Minat Bakat yang sudah tersimpan. Hasil gabungan dan rekomendasi jurusan menunggu asesmen Kemampuan serta Kepribadian Karier.
                 </div>
             @endif
 
@@ -145,66 +149,118 @@
                 </div>
             </section>
 
-            {{-- Ringkasan hasil utama --}}
-            <div class="result-card p-5 sm:p-7">
-                <div class="grid grid-cols-1 items-center gap-6 md:grid-cols-3">
-
-                    <div class="rounded-2xl border border-[#DCE4F0] bg-white p-6 shadow-sm md:col-span-2 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-[#3650A2] to-[#FF7A59]"></div>
-                        <p class="text-xs font-bold uppercase tracking-wider text-indigo-600">
-                            Hasil Peminatan Utama
-                        </p>
-
-                        <h2 class="mt-2 text-2xl font-black text-gray-900 sm:text-3xl">
-                            Belum tersedia
+            {{-- Ringkasan hasil utama: layout ringkas terinspirasi halaman Potensia --}}
+            <section class="overflow-hidden rounded-[30px] border border-indigo-100 bg-gradient-to-r from-[#F0FDFF] via-white to-[#EEF7FF] shadow-sm">
+                <div class="grid grid-cols-1 items-center gap-8 p-6 sm:p-9 lg:grid-cols-2">
+                    <div>
+                        <span class="inline-flex rounded-full bg-white px-3 py-1.5 text-xs font-extrabold uppercase tracking-wide text-[#3650A2] shadow-sm">Hasil Tes Minat Bakat</span>
+                        <h2 class="mt-4 text-2xl font-black leading-tight text-gray-900 sm:text-3xl">
+                            {{ ($minatResult['has_result'] ?? false) ? 'Ini ringkasan hasil asesmenmu' : 'Ayo mulai kenali potensimu' }}
                         </h2>
 
-                        <p class="mt-2 text-xs font-semibold text-gray-500">
-                            Skor kecocokan
+                        <p class="mt-3 max-w-xl text-sm leading-7 text-gray-600">
+                            @if (($minatResult['has_result'] ?? false) && is_numeric($minatResult['score_percent'] ?? null))
+                                Kamu sudah mengisi {{ $minatResult['answered_count'] ?? 0 }} jawaban Tes Minat Bakat. Skor rata-rata jawaban yang terbaca adalah {{ $minatResult['score_percent'] }} dari 100. Angka ini merangkum jawabanmu, bukan ukuran kecocokan jurusan.
+                            @else
+                                Hasil akan muncul setelah jawaban Tes Minat Bakat tersimpan dan skornya berhasil dibaca oleh sistem.
+                            @endif
                         </p>
+                        @if (!empty($minatResult['submitted_at']))
+                            <p class="mt-4 text-xs font-semibold text-gray-500">Terakhir disimpan {{ \Carbon\Carbon::parse($minatResult['submitted_at'])->format('d M Y, H:i') }}</p>
+                        @endif
+                    </div>
+                    <div class="rounded-3xl border border-white bg-white/90 p-6 shadow-sm sm:p-8">
+                        <div class="flex items-end justify-between gap-4">
+                            <div>
+                                <p class="text-sm font-bold text-gray-500">Skor ringkasan minat</p>
+                                <p class="mt-2 text-5xl font-black tracking-tight text-[#3650A2]">{{ is_numeric($minatResult['score_percent'] ?? null) ? $minatResult['score_percent'].'%' : '—' }}</p>
+                            </div>
+                            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-2xl text-[#3650A2]"><i class="fa-solid fa-chart-simple"></i></div>
+                        </div>
+                        <div class="mt-5 h-3 overflow-hidden rounded-full bg-gray-100">
+                            <div class="h-full rounded-full bg-gradient-to-r from-[#3650A2] to-[#FF7A59]" style="width: {{ is_numeric($minatResult['score_percent'] ?? null) ? max(0, min(100, $minatResult['score_percent'])) : 0 }}%"></div>
+                        </div>
+                        <p class="mt-3 text-xs leading-relaxed text-gray-500">Skor dihitung dari rata-rata nilai jawaban skala 1–5 yang dinormalisasi ke 0–100.</p>
+                    </div>
+                </div>
+                <div class="border-t border-indigo-100 bg-white/70 px-6 py-4 text-xs leading-relaxed text-gray-600 sm:px-9">
+                    <i class="fa-solid fa-circle-info mr-1 text-[#FF7A59]"></i>
+                    <strong class="text-indigo-900">Perlu diketahui:</strong> profil kategori minat, tipe kepribadian, dan rekomendasi jurusan belum ditampilkan sebagai hasil final karena aturan pemetaan skor ke kategori belum tersedia.
+                </div>
+            </section>
 
-                        <div class="mt-2 flex items-center gap-4">
-                            <span class="text-3xl font-black text-[#3650A2]">—</span>
-                            <div class="progress-track flex-1">
-                                <div class="progress-fill" style="width: 0%"></div>
+            {{-- Profil 8 kategori minat MyUniv --}}
+            @php
+                $interestCategoryResults = $interestCategoryResults ?? collect();
+                $hasCategoryScores = collect($interestCategoryResults)->contains(
+                    fn ($category) => is_numeric($category['score_percent'] ?? null)
+                );
+            @endphp
+            <section class="space-y-4">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-900">Profil 8 Kategori Minat</h2>
+                    <p class="mt-1 text-sm leading-relaxed text-gray-600">
+                        Kenali bidang yang kamu sukai. Skor kategori hanya muncul jika jawaban sudah dipetakan ke kategori terkait.
+                    </p>
+                </div>
+
+                @if (!$hasCategoryScores)
+                    <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-900">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-info mt-0.5 text-lg"></i>
+                            <div>
+                                <p class="font-extrabold">Skor 8 kategori belum tersedia</p>
+                                <p class="mt-1">
+                                    Kategori sudah terdaftar, tetapi opsi jawaban soal minat perlu dipetakan ke kategori yang sesuai.
+                                    Karena itu, MyUniv belum menampilkan persentase atau kategori teratas agar hasilnya tidak menyesatkan.
+                                </p>
                             </div>
                         </div>
-
-                        <p class="mt-4 rounded-xl bg-[#F4FAFF] border border-indigo-100 p-3.5 text-xs leading-relaxed text-gray-600 flex items-start gap-2">
-                            <i class="fa-solid fa-circle-info text-[#FF7A59] mt-0.5 shrink-0"></i>
-                            <span>Hasil peminatan utama akan ditampilkan setelah skor asesmen berhasil dihitung oleh sistem.</span>
-                        </p>
                     </div>
+                @endif
 
-                    <div class="flex min-h-40 flex-col items-center justify-center rounded-2xl border border-indigo-100 bg-gradient-to-b from-white to-[#F8FBFF] p-5 text-center shadow-sm">
-                        <div class="w-10 h-10 rounded-full bg-[#FF7A59]/10 text-[#FF7A59] flex items-center justify-center mb-2 font-bold text-sm">
-                            <i class="fa-solid fa-layer-group"></i>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    @forelse ($interestCategoryResults as $category)
+                        @php $categoryScore = $category['score_percent'] ?? null; @endphp
+                        <article class="result-card p-5">
+                            <div class="flex items-start justify-between gap-3">
+                                <h3 class="font-extrabold leading-snug text-gray-900">{{ $category['name'] }}</h3>
+                                <span class="shrink-0 text-sm font-black text-[#3650A2]">
+                                    {{ is_numeric($categoryScore) ? $categoryScore.'%' : 'Belum dihitung' }}
+                                </span>
+                            </div>
+                            <div class="mt-4 progress-track">
+                                <div class="progress-fill" style="width: {{ is_numeric($categoryScore) ? max(0, min(100, $categoryScore)) : 0 }}%"></div>
+                            </div>
+                            <p class="mt-3 text-xs leading-relaxed text-gray-500">
+                                @if (is_numeric($categoryScore))
+                                    Berdasarkan {{ $category['answered_count'] ?? 0 }} jawaban yang dipetakan ke kategori ini.
+                                @else
+                                    Belum ada jawaban yang terpetakan ke kategori ini.
+                                @endif
+                            </p>
+                        </article>
+                    @empty
+                        <div class="rounded-2xl border border-gray-200 bg-white p-5 text-sm text-gray-600 md:col-span-2">
+                            Data kategori minat belum tersedia di database.
                         </div>
-                        <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Kategori</p>
-                        <h3 class="mt-1 text-2xl font-black text-[#3650A2]">
-                            Belum tersedia
-                        </h3>
-                        <p class="mt-1 text-xs text-gray-500 font-medium">
-                            Menunggu hasil asesmen
-                        </p>
-                    </div>
-
+                    @endforelse
                 </div>
-            </div>
+            </section>
 
             {{-- Profil potensi --}}
             <section class="space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-2xl font-black text-gray-900">
-                            Profil Potensimu
+                            Profil Asesmenmu
                         </h2>
                         <p class="mt-1 text-sm text-gray-600">
-                            Ringkasan hasil dari beberapa aspek asesmen.
+                            Status hasil yang sudah tersedia dari setiap aspek asesmen.
                         </p>
                     </div>
                     <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-coralOrange/10 text-[#FF7A59] text-xs font-bold">
-                        <i class="fa-solid fa-chart-pie"></i> Analisis AI
+                        <i class="fa-solid fa-chart-pie"></i> Ringkasan Hasil
                     </span>
                 </div>
 
@@ -217,12 +273,15 @@
                         </h3>
 
                         @php
+                            $profileMetrics = $profileMetrics ?? [];
+                            // Grafik ini hanya untuk ringkasan 4 aspek, bukan rincian 8 kategori minat.
                             $profileMetrics = [
-                                'Minat' => null,
-                                'Bakat' => null,
-                                'Kemampuan' => null,
-                                'Kepribadian' => null,
-                                'Kreativitas' => null,
+                                'Minat Bakat' => is_numeric($minatResult['score_percent'] ?? null)
+                                    ? (int) $minatResult['score_percent']
+                                    : ($profileMetrics['Minat Bakat'] ?? null),
+                                'Kemampuan' => $profileMetrics['Kemampuan'] ?? null,
+                                'Kepribadian' => $profileMetrics['Kepribadian'] ?? null,
+                                'Kreativitas' => $profileMetrics['Kreativitas'] ?? null,
                             ];
                         @endphp
 
@@ -248,7 +307,7 @@
                         </div>
 
                         <p class="mt-6 text-xs leading-relaxed text-gray-500 bg-[#F4FAFF] p-3 rounded-xl border border-indigo-50">
-                            <i class="fa-solid fa-lightbulb text-[#FF7A59] mr-1"></i> Grafik akan terisi secara otomatis setelah nilai setiap aspek selesai dianalisis.
+                            <i class="fa-solid fa-lightbulb text-[#FF7A59] mr-1"></i> Skor hanya ditampilkan jika dapat dihitung dari jawaban tersimpan. Tanda — berarti aspek tersebut belum memiliki skor.
                         </p>
                     </div>
 
@@ -261,19 +320,27 @@
                         <div class="space-y-4 text-sm text-gray-600">
                             <div class="p-3.5 rounded-2xl bg-white border border-gray-100 shadow-2xs">
                                 <p class="font-bold text-indigo-900 text-xs flex items-center gap-1.5 mb-1">
-                                    <i class="fa-solid fa-shield-halved text-emerald-600"></i> Kekuatan utama
+                                    <i class="fa-solid fa-shield-halved text-emerald-600"></i> Yang sudah diketahui
                                 </p>
                                 <p class="leading-relaxed text-xs text-gray-500">
-                                    Belum dapat ditentukan sebelum hasil asesmen dianalisis.
+                                    @if (($minatResult['has_result'] ?? false) && is_numeric($minatResult['score_percent'] ?? null))
+                                        Skor ringkasan jawabanmu adalah {{ $minatResult['score_percent'] }}%. Sistem sudah membaca jawaban, tetapi belum bisa menentukan minat dominan karena pemetaan kategori belum tersedia.
+                                    @else
+                                        Belum ada skor Minat Bakat yang dapat dibaca. Selesaikan asesmen dan pastikan jawaban tersimpan.
+                                    @endif
                                 </p>
                             </div>
 
                             <div class="p-3.5 rounded-2xl bg-white border border-gray-100 shadow-2xs">
                                 <p class="font-bold text-indigo-900 text-xs flex items-center gap-1.5 mb-1">
-                                    <i class="fa-solid fa-seedling text-[#FF7A59]"></i> Area yang dapat dikembangkan
+                                    <i class="fa-solid fa-seedling text-[#FF7A59]"></i> Langkah berikutnya
                                 </p>
                                 <p class="leading-relaxed text-xs text-gray-500">
-                                    Akan disesuaikan dengan hasil dan profil potensimu.
+                                    @if (($kemampuanResult['has_submission'] ?? false) || ($kepribadianResult['has_submission'] ?? false))
+                                        Lanjutkan pengembangan setelah aturan penilaian Kemampuan dan Kepribadian disiapkan. Sistem tidak akan menebak skor yang belum dihitung.
+                                    @else
+                                        Pastikan asesmen lain sudah dikerjakan. Setelah itu, skor dan pemetaan kategori perlu disiapkan agar hasilmu lebih lengkap.
+                                    @endif
                                 </p>
                             </div>
 
@@ -284,6 +351,89 @@
                         </div>
                     </div>
 
+                </div>
+            </section>
+
+            {{-- Rangkuman Tes Kemampuan: 4 subtes dalam satu halaman --}}
+            @php
+                $abilitySubtests = $abilitySubtests ?? [
+                    'numerik' => ['label' => 'Numerik', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
+                    'kreativitas' => ['label' => 'Kreativitas', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
+                    'literasi' => ['label' => 'Literasi', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
+                    'abstrak' => ['label' => 'Abstrak', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
+                ];
+                $statusClass = fn ($status) => str_contains(strtolower($status), 'selesai')
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : (str_contains(strtolower($status), 'menunggu') ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-gray-50 text-gray-600 border-gray-200');
+            @endphp
+
+            <section class="space-y-4">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-900">Tes Kemampuan</h2>
+                    <p class="mt-1 text-sm text-gray-600">Ringkasan 4 subtes dalam satu halaman hasil asesmen.</p>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    @foreach (['numerik', 'kreativitas', 'literasi', 'abstrak'] as $subtestKey)
+                        @php $subtest = $abilitySubtests[$subtestKey] ?? ['label' => ucfirst($subtestKey), 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0]; @endphp
+                        <article class="result-card p-5">
+                            <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-[#3650A2]">
+                                @if ($subtestKey === 'numerik')
+                                    <i class="fa-solid fa-calculator"></i>
+                                @elseif ($subtestKey === 'kreativitas')
+                                    <i class="fa-solid fa-palette"></i>
+                                @elseif ($subtestKey === 'literasi')
+                                    <i class="fa-solid fa-book-open"></i>
+                                @else
+                                    <i class="fa-solid fa-shapes"></i>
+                                @endif
+                            </div>
+                            <h3 class="text-lg font-extrabold text-gray-900">{{ $subtest['label'] }}</h3>
+                            <p class="mt-3 text-2xl font-black text-[#3650A2]">
+                                {{ is_numeric($subtest['score'] ?? null) ? $subtest['score'] : '—' }}
+                            </p>
+                            <span class="mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-bold {{ $statusClass($subtest['status'] ?? 'Belum dikerjakan') }}">
+                                {{ $subtest['status'] ?? 'Belum dikerjakan' }}
+                            </span>
+                            @if (!empty($subtest['answered_count']))
+                                <p class="mt-3 text-xs text-gray-500">{{ $subtest['answered_count'] }} jawaban tersimpan</p>
+                            @endif
+                        </article>
+                    @endforeach
+                </div>
+
+                @php
+                    $drawingImages = $drawingImages ?? [];
+                @endphp
+                <div class="result-card p-5 sm:p-7">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h3 class="text-xl font-extrabold text-gray-900">Jawaban Gambar Kreativitas</h3>
+                            <p class="mt-1 text-sm text-gray-600">Gambar dari soal bertipe Drawing di dalam subtes Kreativitas.</p>
+                        </div>
+                        <span class="text-xs font-bold text-gray-500">{{ count($drawingImages) }} gambar</span>
+                    </div>
+                    @if (count($drawingImages))
+                        <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            @foreach ($drawingImages as $drawing)
+                                <figure class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                                    <img src="{{ $drawing['url'] }}" alt="Jawaban gambar pada subtes Kreativitas" class="h-56 w-full object-contain bg-gray-50" loading="lazy">
+                                    <figcaption class="border-t border-gray-100 p-3 text-xs text-gray-500">
+                                        {{ $drawing['question_label'] ?? 'Soal Kreativitas' }}
+                                        @if (!empty($drawing['submitted_at']))
+                                            <span class="block mt-1">Dikumpulkan {{ $drawing['submitted_at'] }}</span>
+                                        @endif
+                                    </figcaption>
+                                </figure>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="mt-5 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
+                            <i class="fa-regular fa-image text-2xl text-gray-400"></i>
+                            <p class="mt-2 text-sm font-semibold text-gray-600">Belum ada jawaban gambar yang tersedia.</p>
+                            <p class="mt-1 text-xs text-gray-500">Galeri akan menampilkan gambar yang tersimpan pada jawaban asesmen Kreativitas.</p>
+                        </div>
+                    @endif
                 </div>
             </section>
 
@@ -306,18 +456,18 @@
                             </div>
 
                             <h3 class="font-extrabold text-gray-900 text-base">
-                                Menunggu hasil
+                                Belum dapat direkomendasikan
                             </h3>
 
                             <p class="mt-2 text-xs leading-relaxed text-gray-600">
-                                Rekomendasi jurusan akan muncul berdasarkan kesesuaian profil minat dan kemampuan.
+                                Sistem belum memiliki aturan pemetaan hasil asesmen ke jurusan. Rekomendasi akan ditampilkan setelah aturan pemetaan dan data jurusan dihubungkan.
                             </p>
 
                             <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
                                 <span class="text-xs font-bold text-gray-400">
-                                    Skor kecocokan: <span class="text-[#FF7A59]">—</span>
+                                    Skor kecocokan: <span class="text-[#FF7A59]">Belum dihitung</span>
                                 </span>
-                                <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
                             </div>
                         </div>
                     @endfor
