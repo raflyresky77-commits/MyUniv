@@ -25,6 +25,57 @@ class ResultController extends Controller
         $kepribadianResponses = $this->decodeResponses($kepribadianSubmission->responses ?? null);
 
         /*
+|--------------------------------------------------------------------------
+| Mapping ID soal ke teks pertanyaan
+|--------------------------------------------------------------------------
+| Data responses di database tetap menggunakan ID soal.
+| Teks pertanyaan hanya digunakan untuk kebutuhan tampilan.
+*/
+
+$allQuestionIds = array_unique(array_merge(
+    $this->collectQuestionIds($minatResponses),
+    $this->collectQuestionIds($kemampuanResponses),
+    $this->collectQuestionIds($kepribadianResponses)
+));
+
+$questionTexts = [];
+
+if (!empty($allQuestionIds)) {
+    $questionTexts = DB::table('questions')
+        ->whereIn('id', $allQuestionIds)
+        ->pluck('question_text', 'id')
+        ->toArray();
+}
+
+// Format jawaban Minat Bakat dan Kepribadian.
+$minatQuestionResponses = $this->formatQuestionResponses(
+    $minatResponses,
+    $questionTexts
+);
+
+$kepribadianQuestionResponses = $this->formatQuestionResponses(
+    $kepribadianResponses,
+    $questionTexts
+);
+
+// Format jawaban Kemampuan berdasarkan subtes.
+$kemampuanQuestionResponses = [];
+
+foreach (['numerik', 'kreativitas', 'literasi', 'abstrak'] as $subtestKey) {
+    $subtestResponses = $this->extractSubtestResponses(
+        $kemampuanResponses,
+        $subtestKey
+    );
+
+    $kemampuanQuestionResponses[$subtestKey] =
+        $this->formatQuestionResponses(
+    $subtestResponses,
+    $questionTexts
+    );
+        
+}
+
+        /*
          * Subtes kemampuan.
          * Nilai akhir belum dihitung karena rubrik penilaian belum ditetapkan.
          */
@@ -93,8 +144,8 @@ class ResultController extends Controller
                 if ($imageData !== null) {
                     $drawingImages[] = [
                         'url' => $imageData,
-                        'question_label' => 'Soal Kreativitas '
-                            . (is_scalar($questionId) ? $questionId : ''),
+                        'question_label' => $questionTexts[(int) $questionId]
+                            ?? 'Soal Kreativitas ' . $questionId,
                         'submitted_at' => $kemampuanSubmission->submitted_at ?? null,
                     ];
                 }
@@ -310,7 +361,10 @@ class ResultController extends Controller
             'drawingImages',
             'categoryScores',
             'topCategories',
-            'interestCategoryResults'
+            'interestCategoryResults',
+            'minatQuestionResponses',
+            'kemampuanQuestionResponses',
+            'kepribadianQuestionResponses'
         ));
     }
 
@@ -337,5 +391,77 @@ class ResultController extends Controller
         $decoded = json_decode($responses, true);
 
         return is_array($decoded) ? $decoded : [];
+    }
+
+    /**
+ * Mengumpulkan seluruh ID soal dari struktur responses,
+ * termasuk responses yang memiliki struktur bertingkat.
+ */
+private function collectQuestionIds(array $responses): array
+{
+    $ids = [];
+
+    foreach ($responses as $key => $value) {
+        if (is_numeric($key)) {
+            $ids[] = (int) $key;
+        }
+
+        if (is_array($value)) {
+            $ids = array_merge(
+                $ids,
+                $this->collectQuestionIds($value)
+            );
+        }
+    }
+
+    return array_values(array_unique($ids));
+}
+
+/**
+ * Mengubah pasangan ID soal dan jawaban menjadi data
+ * yang siap ditampilkan di halaman hasil.
+ *
+ * Jawaban gambar Base64 tidak dimasukkan ke tabel jawaban
+ * karena sudah ditampilkan melalui galeri gambar kreativitas.
+ */
+private function formatQuestionResponses(
+    array $responses,
+    array $questionTexts
+): array {
+    $formatted = [];
+
+    foreach ($responses as $questionId => $answer) {
+        if (!is_numeric($questionId)) {
+            continue;
+        }
+
+        $questionId = (int) $questionId;
+
+        $questionText = $questionTexts[$questionId]
+            ?? "Pertanyaan tidak ditemukan (ID: {$questionId})";
+
+        $displayAnswer = $answer;
+
+        if (
+            is_string($answer)
+            && str_starts_with($answer, 'data:image/')
+        ) {
+            $displayAnswer = 'Gambar terlampir';
+        } elseif (is_array($answer)) {
+            $displayAnswer = 'Jawaban tersimpan';
+        } elseif (is_bool($answer)) {
+            $displayAnswer = $answer ? 'Ya' : 'Tidak';
+        } elseif ($answer === null || $answer === '') {
+            $displayAnswer = 'Tidak dijawab';
+        }
+
+        $formatted[] = [
+            'question_id' => $questionId,
+            'question_text' => $questionText,
+            'answer' => $displayAnswer,
+        ];
+    }
+
+    return $formatted;
     }
 }

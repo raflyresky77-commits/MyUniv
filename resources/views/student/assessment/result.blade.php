@@ -437,6 +437,162 @@
                 </div>
             </section>
 
+        {{-- Detail Jawaban Tes Minat Bakat --}}
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-black text-gray-900">
+                Detail Jawaban Minat Bakat
+            </h2>
+            <p class="mt-1 text-sm text-gray-600">
+                Daftar pertanyaan dan jawaban yang telah kamu kirim.
+            </p>
+        </div>
+
+        <div class="result-card p-5 sm:p-7">
+            @if (!empty($minatQuestionResponses))
+                <div class="space-y-4">
+                    @foreach ($minatQuestionResponses as $item)
+                        <div class="rounded-xl border border-gray-100 bg-white p-4">
+                            <p class="text-xs font-bold text-[#3650A2]">
+                                Pertanyaan {{ $loop->iteration }}
+                            </p>
+
+                            <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">
+                                {{ $item['question_text'] }}
+                            </p>
+
+                            <div class="mt-3 rounded-lg bg-indigo-50 px-4 py-3">
+                                <p class="text-xs font-bold text-gray-500">
+                                    Jawaban kamu
+                                </p>
+                                <p class="mt-1 text-sm font-bold text-indigo-900">
+                                    {{ $item['answer'] }}
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-sm text-gray-500">
+                    Belum ada jawaban Minat Bakat yang tersedia.
+                </p>
+            @endif
+        </div>
+    </section>
+
+
+    {{-- Detail Jawaban Tes Kemampuan --}}
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-black text-gray-900">
+                Detail Jawaban Tes Kemampuan
+            </h2>
+            <p class="mt-1 text-sm text-gray-600">
+                Pertanyaan dan jawaban dikelompokkan berdasarkan subtes.
+            </p>
+        </div>
+
+        @php
+            $abilityLabels = [
+                'numerik' => 'Numerik',
+                'kreativitas' => 'Kreativitas',
+                'literasi' => 'Literasi',
+                'abstrak' => 'Abstrak',
+            ];
+        @endphp
+
+        @foreach ($abilityLabels as $subtestKey => $subtestLabel)
+            @php
+                $answers = $kemampuanQuestionResponses[$subtestKey] ?? [];
+            @endphp
+
+            <div class="result-card p-5 sm:p-7">
+                <div class="mb-4 flex items-center justify-between gap-3">
+                    <h3 class="text-lg font-extrabold text-gray-900">
+                        {{ $subtestLabel }}
+                    </h3>
+
+                    <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-[#3650A2]">
+                        {{ count($answers) }} jawaban
+                    </span>
+                </div>
+
+                @if (count($answers))
+                    <div class="space-y-4">
+                        @foreach ($answers as $item)
+                            <div class="rounded-xl border border-gray-100 bg-white p-4">
+                                <p class="text-xs font-bold text-[#3650A2]">
+                                    Pertanyaan {{ $loop->iteration }}
+                                </p>
+
+                                <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">
+                                    {{ $item['question_text'] }}
+                                </p>
+
+                                <div class="mt-3 rounded-lg bg-indigo-50 px-4 py-3">
+                                    <p class="text-xs font-bold text-gray-500">
+                                        Jawaban kamu
+                                    </p>
+                                    <p class="mt-1 text-sm font-bold text-indigo-900 break-words">
+                                        {{ $item['answer'] }}
+                                    </p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500">
+                        Belum ada jawaban pada subtes {{ $subtestLabel }}.
+                    </p>
+                @endif
+            </div>
+        @endforeach
+    </section>
+
+
+    {{-- Detail Jawaban Tes Kepribadian --}}
+    <section class="space-y-4">
+        <div>
+            <h2 class="text-2xl font-black text-gray-900">
+                Detail Jawaban Kepribadian & Karier
+            </h2>
+            <p class="mt-1 text-sm text-gray-600">
+                Daftar pernyataan dan jawaban yang kamu pilih.
+            </p>
+        </div>
+
+        <div class="result-card p-5 sm:p-7">
+            @if (!empty($kepribadianQuestionResponses))
+                <div class="space-y-4">
+                    @foreach ($kepribadianQuestionResponses as $item)
+                        <div class="rounded-xl border border-gray-100 bg-white p-4">
+                            <p class="text-xs font-bold text-[#3650A2]">
+                                Pernyataan {{ $loop->iteration }}
+                            </p>
+
+                            <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">
+                                {{ $item['question_text'] }}
+                            </p>
+
+                            <div class="mt-3 rounded-lg bg-indigo-50 px-4 py-3">
+                                <p class="text-xs font-bold text-gray-500">
+                                    Jawaban kamu
+                                </p>
+                                <p class="mt-1 text-sm font-bold text-indigo-900">
+                                    {{ $item['answer'] }}
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-sm text-gray-500">
+                    Belum ada jawaban Kepribadian & Karier yang tersedia.
+                </p>
+            @endif
+        </div>
+    </section>
+
             {{-- Rekomendasi jurusan --}}
             <section class="space-y-4">
                 <div>
