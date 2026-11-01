@@ -96,6 +96,15 @@
         <!-- Bagian yang akan di-capture jadi PNG dibungkus dengan id="captureArea" -->
         <main id="captureArea" class="mx-auto w-full max-w-7xl space-y-8 p-4 sm:p-6 md:p-10 bg-[#F4FAFF]">
 
+            {{-- Tombol kembali ke halaman awal asesmen --}}
+            <div class="no-export-ui no-print">
+                <a href="{{ route('student.assessment.index') }}"
+                   class="inline-flex items-center gap-2 rounded-xl border border-[#3650A2]/20 bg-white px-4 py-2.5 text-sm font-bold text-[#3650A2] shadow-sm transition hover:border-[#3650A2] hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/30">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Kembali ke Halaman Asesmen
+                </a>
+            </div>
+
             {{-- Notifikasi --}}
             @if (session('success'))
                 <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800 shadow-sm flex items-center gap-3">
@@ -274,14 +283,13 @@
 
                         @php
                             $profileMetrics = $profileMetrics ?? [];
-                            // Grafik ini hanya untuk ringkasan 4 aspek, bukan rincian 8 kategori minat.
+                            // Grafik ini hanya untuk ringkasan 3 aspek, bukan rincian 8 kategori minat.
                             $profileMetrics = [
                                 'Minat Bakat' => is_numeric($minatResult['score_percent'] ?? null)
                                     ? (int) $minatResult['score_percent']
                                     : ($profileMetrics['Minat Bakat'] ?? null),
                                 'Kemampuan' => $profileMetrics['Kemampuan'] ?? null,
                                 'Kepribadian' => $profileMetrics['Kepribadian'] ?? null,
-                                'Kreativitas' => $profileMetrics['Kreativitas'] ?? null,
                             ];
                         @endphp
 
@@ -354,11 +362,10 @@
                 </div>
             </section>
 
-            {{-- Rangkuman Tes Kemampuan: 4 subtes dalam satu halaman --}}
+            {{-- Rangkuman Tes Kemampuan: 3 subtes dalam satu halaman --}}
             @php
                 $abilitySubtests = $abilitySubtests ?? [
                     'numerik' => ['label' => 'Numerik', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
-                    'kreativitas' => ['label' => 'Kreativitas', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
                     'literasi' => ['label' => 'Literasi', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
                     'abstrak' => ['label' => 'Abstrak', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
                 ];
@@ -370,18 +377,16 @@
             <section class="space-y-4">
                 <div>
                     <h2 class="text-2xl font-black text-gray-900">Tes Kemampuan</h2>
-                    <p class="mt-1 text-sm text-gray-600">Ringkasan 4 subtes dalam satu halaman hasil asesmen.</p>
+                    <p class="mt-1 text-sm text-gray-600">Ringkasan 3 subtes dalam satu halaman hasil asesmen.</p>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    @foreach (['numerik', 'kreativitas', 'literasi', 'abstrak'] as $subtestKey)
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach (['numerik', 'literasi', 'abstrak'] as $subtestKey)
                         @php $subtest = $abilitySubtests[$subtestKey] ?? ['label' => ucfirst($subtestKey), 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0]; @endphp
                         <article class="result-card p-5">
                             <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-[#3650A2]">
                                 @if ($subtestKey === 'numerik')
                                     <i class="fa-solid fa-calculator"></i>
-                                @elseif ($subtestKey === 'kreativitas')
-                                    <i class="fa-solid fa-palette"></i>
                                 @elseif ($subtestKey === 'literasi')
                                     <i class="fa-solid fa-book-open"></i>
                                 @else
@@ -395,203 +400,166 @@
                             <span class="mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-bold {{ $statusClass($subtest['status'] ?? 'Belum dikerjakan') }}">
                                 {{ $subtest['status'] ?? 'Belum dikerjakan' }}
                             </span>
-                            @if (!empty($subtest['answered_count']))
-                                <p class="mt-3 text-xs text-gray-500">{{ $subtest['answered_count'] }} jawaban tersimpan</p>
+                            @if (is_numeric($subtest['correct_count'] ?? null) && is_numeric($subtest['wrong_count'] ?? null))
+                                <div class="mt-4 grid grid-cols-2 gap-2">
+                                    <div class="rounded-xl bg-emerald-50 border border-emerald-100 px-3 py-2">
+                                        <p class="text-[11px] font-semibold text-emerald-700">Benar</p>
+                                        <p class="text-lg font-black text-emerald-700">
+                                            {{ $subtest['correct_count'] }}/{{ $subtest['total_count'] ?? 0 }}
+                                        </p>
+                                    </div>
+                                    <div class="rounded-xl bg-rose-50 border border-rose-100 px-3 py-2">
+                                        <p class="text-[11px] font-semibold text-rose-700">Salah</p>
+                                        <p class="text-lg font-black text-rose-700">
+                                            {{ $subtest['wrong_count'] }}/{{ $subtest['total_count'] ?? 0 }}
+                                        </p>
+                                    </div>
+                                </div>
+                                @if (!empty($subtest['unanswered_count']))
+                                    <p class="mt-2 text-xs text-gray-500">
+                                        {{ $subtest['unanswered_count'] }} soal belum dijawab
+                                    </p>
+                                @endif
+                            @elseif (!empty($subtest['answered_count']))
+                                <p class="mt-3 text-xs text-gray-500">
+                                    {{ $subtest['answered_count'] }} jawaban tersimpan. Penilaian belum tersedia.
+                                </p>
                             @endif
                         </article>
                     @endforeach
-                </div>
-
-                @php
-                    $drawingImages = $drawingImages ?? [];
-                @endphp
-                <div class="result-card p-5 sm:p-7">
-                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h3 class="text-xl font-extrabold text-gray-900">Jawaban Gambar Kreativitas</h3>
-                            <p class="mt-1 text-sm text-gray-600">Gambar dari soal bertipe Drawing di dalam subtes Kreativitas.</p>
-                        </div>
-                        <span class="text-xs font-bold text-gray-500">{{ count($drawingImages) }} gambar</span>
-                    </div>
-                    @if (count($drawingImages))
-                        <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            @foreach ($drawingImages as $drawing)
-                                <figure class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-                                    <img src="{{ $drawing['url'] }}" alt="Jawaban gambar pada subtes Kreativitas" class="h-56 w-full object-contain bg-gray-50" loading="lazy">
-                                    <figcaption class="border-t border-gray-100 p-3 text-xs text-gray-500">
-                                        {{ $drawing['question_label'] ?? 'Soal Kreativitas' }}
-                                        @if (!empty($drawing['submitted_at']))
-                                            <span class="block mt-1">Dikumpulkan {{ $drawing['submitted_at'] }}</span>
-                                        @endif
-                                    </figcaption>
-                                </figure>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="mt-5 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center">
-                            <i class="fa-regular fa-image text-2xl text-gray-400"></i>
-                            <p class="mt-2 text-sm font-semibold text-gray-600">Belum ada jawaban gambar yang tersedia.</p>
-                            <p class="mt-1 text-xs text-gray-500">Galeri akan menampilkan gambar yang tersimpan pada jawaban asesmen Kreativitas.</p>
-                        </div>
-                    @endif
                 </div>
             </section>
 
         {{-- Detail Jawaban Tes Minat Bakat --}}
     <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-black text-gray-900">
-                Detail Jawaban Minat Bakat
-            </h2>
-            <p class="mt-1 text-sm text-gray-600">
-                Daftar pertanyaan dan jawaban yang telah kamu kirim.
-            </p>
-        </div>
-
-        <div class="result-card p-5 sm:p-7">
-            @if (!empty($minatQuestionResponses))
-                <div class="space-y-4">
-                    @foreach ($minatQuestionResponses as $item)
-                        <div class="rounded-xl border border-gray-100 bg-white p-4">
-                            <p class="text-xs font-bold text-[#3650A2]">
-                                Pertanyaan {{ $loop->iteration }}
-                            </p>
-
-                            <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">
-                                {{ $item['question_text'] }}
-                            </p>
-
-                            <div class="mt-3 rounded-lg bg-indigo-50 px-4 py-3">
-                                <p class="text-xs font-bold text-gray-500">
-                                    Jawaban kamu
-                                </p>
-                                <p class="mt-1 text-sm font-bold text-indigo-900">
-                                    {{ $item['answer'] }}
-                                </p>
-                            </div>
-                        </div>
-                    @endforeach
+        <details class="result-card group p-5 sm:p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                <div>
+                    <h2 class="text-xl font-black text-gray-900">Detail Jawaban Minat Bakat</h2>
+                    <p class="mt-1 text-sm text-gray-600">Daftar pertanyaan dan jawaban yang telah kamu kirim.</p>
                 </div>
-            @else
-                <p class="text-sm text-gray-500">
-                    Belum ada jawaban Minat Bakat yang tersedia.
-                </p>
-            @endif
-        </div>
-    </section>
+                <span class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-50 px-4 py-2.5 text-xs font-extrabold text-[#3650A2] transition group-open:bg-indigo-100">
+                    <span class="group-open:hidden">Lihat selengkapnya</span>
+                    <span class="hidden group-open:inline">Tutup detail</span>
+                    <i class="fa-solid fa-chevron-down transition-transform group-open:rotate-180"></i>
+                </span>
+            </summary>
 
-
-    {{-- Detail Jawaban Tes Kemampuan --}}
-    <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-black text-gray-900">
-                Detail Jawaban Tes Kemampuan
-            </h2>
-            <p class="mt-1 text-sm text-gray-600">
-                Pertanyaan dan jawaban dikelompokkan berdasarkan subtes.
-            </p>
-        </div>
-
-        @php
-            $abilityLabels = [
-                'numerik' => 'Numerik',
-                'kreativitas' => 'Kreativitas',
-                'literasi' => 'Literasi',
-                'abstrak' => 'Abstrak',
-            ];
-        @endphp
-
-        @foreach ($abilityLabels as $subtestKey => $subtestLabel)
-            @php
-                $answers = $kemampuanQuestionResponses[$subtestKey] ?? [];
-            @endphp
-
-            <div class="result-card p-5 sm:p-7">
-                <div class="mb-4 flex items-center justify-between gap-3">
-                    <h3 class="text-lg font-extrabold text-gray-900">
-                        {{ $subtestLabel }}
-                    </h3>
-
-                    <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-[#3650A2]">
-                        {{ count($answers) }} jawaban
-                    </span>
-                </div>
-
-                @if (count($answers))
+            <div class="mt-5 border-t border-indigo-100 pt-5">
+                @if (!empty($minatQuestionResponses))
                     <div class="space-y-4">
-                        @foreach ($answers as $item)
+                        @foreach ($minatQuestionResponses as $item)
                             <div class="rounded-xl border border-gray-100 bg-white p-4">
-                                <p class="text-xs font-bold text-[#3650A2]">
-                                    Pertanyaan {{ $loop->iteration }}
-                                </p>
-
-                                <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">
-                                    {{ $item['question_text'] }}
-                                </p>
-
+                                <p class="text-xs font-bold text-[#3650A2]">Pertanyaan {{ $loop->iteration }}</p>
+                                <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">{{ $item['question_text'] }}</p>
                                 <div class="mt-3 rounded-lg bg-indigo-50 px-4 py-3">
-                                    <p class="text-xs font-bold text-gray-500">
-                                        Jawaban kamu
-                                    </p>
-                                    <p class="mt-1 text-sm font-bold text-indigo-900 break-words">
-                                        {{ $item['answer'] }}
-                                    </p>
+                                    <p class="text-xs font-bold text-gray-500">Jawaban kamu</p>
+                                    <p class="mt-1 text-sm font-bold text-indigo-900">{{ $item['answer'] }}</p>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @else
-                    <p class="text-sm text-gray-500">
-                        Belum ada jawaban pada subtes {{ $subtestLabel }}.
-                    </p>
+                    <p class="text-sm text-gray-500">Belum ada jawaban Minat Bakat yang tersedia.</p>
                 @endif
             </div>
-        @endforeach
+        </details>
     </section>
 
+    {{-- Detail Jawaban Tes Kemampuan --}}
+    <section class="space-y-4">
+        @php
+            $abilityLabels = [
+                'numerik' => 'Numerik',
+                'literasi' => 'Literasi',
+                'abstrak' => 'Abstrak',
+            ];
+            $totalAbilityAnswers = collect($kemampuanQuestionResponses ?? [])->sum(fn ($items) => count($items ?? []));
+        @endphp
+
+        <details class="result-card group p-5 sm:p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                <div>
+                    <h2 class="text-xl font-black text-gray-900">Detail Jawaban Tes Kemampuan</h2>
+                    <p class="mt-1 text-sm text-gray-600">Jawaban dikelompokkan berdasarkan subtes.</p>
+                    <span class="mt-2 inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-[#3650A2]">{{ $totalAbilityAnswers }} jawaban tersimpan</span>
+                </div>
+                <span class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-50 px-4 py-2.5 text-xs font-extrabold text-[#3650A2] transition group-open:bg-indigo-100">
+                    <span class="group-open:hidden">Lihat selengkapnya</span>
+                    <span class="hidden group-open:inline">Tutup detail</span>
+                    <i class="fa-solid fa-chevron-down transition-transform group-open:rotate-180"></i>
+                </span>
+            </summary>
+
+            <div class="mt-5 space-y-3 border-t border-indigo-100 pt-5">
+                @foreach ($abilityLabels as $subtestKey => $subtestLabel)
+                    @php $answers = $kemampuanQuestionResponses[$subtestKey] ?? []; @endphp
+                    <details class="rounded-2xl border border-gray-100 bg-white p-4 group/subtest">
+                        <summary class="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+                            <div>
+                                <h3 class="font-extrabold text-gray-900">{{ $subtestLabel }}</h3>
+                                <span class="text-xs text-gray-500">{{ count($answers) }} jawaban</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-sm text-[#3650A2] transition-transform group-open/subtest:rotate-180"></i>
+                        </summary>
+
+                        <div class="mt-4 space-y-4 border-t border-gray-100 pt-4">
+                            @if (count($answers))
+                                @foreach ($answers as $item)
+                                    <div class="rounded-xl border border-gray-100 bg-[#FBFCFF] p-4">
+                                        <p class="text-xs font-bold text-[#3650A2]">Pertanyaan {{ $loop->iteration }}</p>
+                                        <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">{{ $item['question_text'] }}</p>
+                                        <div class="mt-3 rounded-lg bg-indigo-50 px-4 py-3">
+                                            <p class="text-xs font-bold text-gray-500">Jawaban kamu</p>
+                                            <p class="mt-1 break-words text-sm font-bold text-indigo-900">{{ $item['answer'] }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p class="text-sm text-gray-500">Belum ada jawaban pada subtes {{ $subtestLabel }}.</p>
+                            @endif
+                        </div>
+                    </details>
+                @endforeach
+            </div>
+        </details>
+    </section>
 
     {{-- Detail Jawaban Tes Kepribadian --}}
     <section class="space-y-4">
-        <div>
-            <h2 class="text-2xl font-black text-gray-900">
-                Detail Jawaban Kepribadian & Karier
-            </h2>
-            <p class="mt-1 text-sm text-gray-600">
-                Daftar pernyataan dan jawaban yang kamu pilih.
-            </p>
-        </div>
+        <details class="result-card group p-5 sm:p-6">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                <div>
+                    <h2 class="text-xl font-black text-gray-900">Detail Jawaban Kepribadian & Karier</h2>
+                    <p class="mt-1 text-sm text-gray-600">Daftar pernyataan dan jawaban yang kamu pilih.</p>
+                    <span class="mt-2 inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-[#3650A2]">{{ count($kepribadianQuestionResponses ?? []) }} jawaban tersimpan</span>
+                </div>
+                <span class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-50 px-4 py-2.5 text-xs font-extrabold text-[#3650A2] transition group-open:bg-indigo-100">
+                    <span class="group-open:hidden">Lihat selengkapnya</span>
+                    <span class="hidden group-open:inline">Tutup detail</span>
+                    <i class="fa-solid fa-chevron-down transition-transform group-open:rotate-180"></i>
+                </span>
+            </summary>
 
-        <div class="result-card p-5 sm:p-7">
-            @if (!empty($kepribadianQuestionResponses))
-                <div class="space-y-4">
+            <div class="mt-5 space-y-4 border-t border-indigo-100 pt-5">
+                @if (!empty($kepribadianQuestionResponses))
                     @foreach ($kepribadianQuestionResponses as $item)
                         <div class="rounded-xl border border-gray-100 bg-white p-4">
-                            <p class="text-xs font-bold text-[#3650A2]">
-                                Pernyataan {{ $loop->iteration }}
-                            </p>
-
-                            <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">
-                                {{ $item['question_text'] }}
-                            </p>
-
+                            <p class="text-xs font-bold text-[#3650A2]">Pernyataan {{ $loop->iteration }}</p>
+                            <p class="mt-2 text-sm font-semibold leading-relaxed text-gray-900">{{ $item['question_text'] }}</p>
                             <div class="mt-3 rounded-lg bg-indigo-50 px-4 py-3">
-                                <p class="text-xs font-bold text-gray-500">
-                                    Jawaban kamu
-                                </p>
-                                <p class="mt-1 text-sm font-bold text-indigo-900">
-                                    {{ $item['answer'] }}
-                                </p>
+                                <p class="text-xs font-bold text-gray-500">Jawaban kamu</p>
+                                <p class="mt-1 text-sm font-bold text-indigo-900">{{ $item['answer'] }}</p>
                             </div>
                         </div>
                     @endforeach
-                </div>
-            @else
-                <p class="text-sm text-gray-500">
-                    Belum ada jawaban Kepribadian & Karier yang tersedia.
-                </p>
-            @endif
-        </div>
+                @else
+                    <p class="text-sm text-gray-500">Belum ada jawaban Kepribadian & Karier yang tersedia.</p>
+                @endif
+            </div>
+        </details>
     </section>
+
 
             {{-- Rekomendasi jurusan --}}
             <section class="space-y-4">

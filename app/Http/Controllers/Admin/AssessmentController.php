@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 
 class AssessmentController extends Controller
 {
+    /**
+     * Menampilkan daftar paket asesmen.
+     */
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -26,7 +29,15 @@ class AssessmentController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.assessments.index', compact('assessments'));
+        $interestCategories = DB::table('interest_categories')
+            ->select('id', 'name')
+            ->orderBy('id')
+            ->get();
+
+        return view('admin.assessments.index', compact(
+            'assessments',
+            'interestCategories'
+        ));
     }
 
     public function create()
@@ -34,6 +45,9 @@ class AssessmentController extends Controller
         return view('admin.assessments.create');
     }
 
+    /**
+     * Menyimpan paket asesmen.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -62,6 +76,9 @@ class AssessmentController extends Controller
         return view('admin.assessments.edit', compact('assessment'));
     }
 
+    /**
+     * Memperbarui paket asesmen.
+     */
     public function update(Request $request, int $id)
     {
         $assessment = Assessment::findOrFail($id);
@@ -78,6 +95,9 @@ class AssessmentController extends Controller
             ->with('success', 'Paket asesmen berhasil diperbarui.');
     }
 
+    /**
+     * Menghapus paket asesmen.
+     */
     public function destroy(int $id)
     {
         $assessment = Assessment::findOrFail($id);
@@ -88,7 +108,9 @@ class AssessmentController extends Controller
             ->with('success', 'Paket asesmen berhasil dihapus.');
     }
 
-    /** Mengambil daftar soal untuk modal Kelola Soal. */
+    /**
+     * Mengambil daftar soal untuk modal Kelola Soal.
+     */
     public function questionsIndex(int $assessment)
     {
         $assessmentData = Assessment::findOrFail($assessment);
@@ -102,6 +124,7 @@ class AssessmentController extends Controller
                     'id' => $question->id,
                     'question_text' => $question->question_text,
                     'type' => $question->type,
+                    'category_id' => $question->category_id,
                     'image_url' => $question->image_url,
                     'is_active' => $question->is_active,
                     'options' => $question->options->map(function ($option) {
@@ -115,10 +138,15 @@ class AssessmentController extends Controller
                 ];
             });
 
-        return response()->json(['success' => true, 'questions' => $questions]);
+        return response()->json([
+            'success' => true,
+            'questions' => $questions,
+        ]);
     }
 
-    /** Menampilkan detail satu soal untuk modal edit. */
+    /**
+     * Mengambil detail satu soal untuk modal edit.
+     */
     public function questionShow(int $question)
     {
         $questionData = Question::with('options')->findOrFail($question);
@@ -129,6 +157,7 @@ class AssessmentController extends Controller
                 'id' => $questionData->id,
                 'question_text' => $questionData->question_text,
                 'type' => $questionData->type,
+                'category_id' => $questionData->category_id,
                 'image_url' => $questionData->image_url,
                 'options' => $questionData->options->map(function ($option) {
                     return [
@@ -142,32 +171,55 @@ class AssessmentController extends Controller
         ]);
     }
 
-    /** Menambahkan soal ke paket asesmen. */
+    /**
+     * Menambahkan soal ke paket asesmen.
+     */
     public function storeQuestion(Request $request, int $assessment)
     {
         $assessmentData = Assessment::findOrFail($assessment);
 
         $validated = $request->validate([
             'question_text' => ['required', 'string'],
-            'type' => ['required', 'string', 'in:multiple_choice,likert,preference,drawing,image_choice,visual'],
+            'type' => [
+                'required',
+                'string',
+                'in:multiple_choice,likert,preference,image_choice,visual',
+            ],
             'image_url' => ['nullable', 'url', 'max:2048'],
+            'interest_category_id' => [
+                'nullable',
+                'integer',
+                'exists:interest_categories,id',
+            ],
             'options' => ['nullable', 'array', 'max:10'],
             'options.*.option_text' => ['required', 'string', 'max:1000'],
             'options.*.score' => ['nullable', 'numeric'],
-            'options.*.interest_category_id' => ['nullable', 'integer'],
+            'options.*.interest_category_id' => [
+                'nullable',
+                'integer',
+                'exists:interest_categories,id',
+            ],
         ]);
 
         $type = $validated['type'];
         $options = $validated['options'] ?? [];
 
-        if (in_array($type, ['multiple_choice', 'likert', 'preference', 'image_choice', 'visual'], true) && count($options) < 2) {
+        if (
+            in_array($type, ['multiple_choice', 'likert', 'preference', 'image_choice', 'visual'], true)
+            && count($options) < 2
+        ) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tipe soal ini memerlukan minimal 2 opsi jawaban.',
             ], 422);
         }
 
-        $question = DB::transaction(function () use ($validated, $assessmentData, $type, $options) {
+        $question = DB::transaction(function () use (
+            $validated,
+            $assessmentData,
+            $type,
+            $options
+        ) {
             $question = Question::create([
                 'assessment_id' => $assessmentData->id,
                 'category_id' => 1,
@@ -180,10 +232,12 @@ class AssessmentController extends Controller
 
             foreach ($options as $option) {
                 QuestionOption::create([
+                    // Gunakan $question karena ini variabel soal yang baru dibuat.
                     'question_id' => $question->id,
                     'option_text' => trim($option['option_text']),
                     'score' => $option['score'] ?? 0,
-                    'interest_category_id' => $option['interest_category_id'] ?? null,
+                    'interest_category_id' => $option['interest_category_id']
+                        ?? ($validated['interest_category_id'] ?? null),
                 ]);
             }
 
@@ -194,42 +248,72 @@ class AssessmentController extends Controller
             'success' => true,
             'message' => 'Soal berhasil disimpan.',
             'question' => $question->load('options'),
-            'questions_count' => Question::where('assessment_id', $assessmentData->id)->count(),
+            'questions_count' => Question::where(
+                'assessment_id',
+                $assessmentData->id
+            )->count(),
         ], 201);
     }
 
-    /** Memperbarui soal dan mengganti opsi sesuai data terbaru dari form. */
+    /**
+     * Memperbarui soal dan opsi jawaban.
+     *
+     * Dropdown kategori utama (interest_category_id) diterapkan ke semua
+     * opsi, kecuali opsi yang mengirim kategori masing-masing.
+     */
     public function updateQuestion(Request $request, int $question)
     {
         $questionData = Question::findOrFail($question);
 
         $validated = $request->validate([
             'question_text' => ['required', 'string'],
-            'type' => ['required', 'string', 'in:multiple_choice,likert,preference,drawing,image_choice,visual'],
+            'type' => [
+                'required',
+                'string',
+                'in:multiple_choice,likert,preference,image_choice,visual',
+            ],
             'image_url' => ['nullable', 'url', 'max:2048'],
+            'interest_category_id' => [
+                'nullable',
+                'integer',
+                'exists:interest_categories,id',
+            ],
             'options' => ['nullable', 'array', 'max:10'],
             'options.*.option_text' => ['required', 'string', 'max:1000'],
             'options.*.score' => ['nullable', 'numeric'],
-            'options.*.interest_category_id' => ['nullable', 'integer'],
+            'options.*.interest_category_id' => [
+                'nullable',
+                'integer',
+                'exists:interest_categories,id',
+            ],
         ]);
 
         $type = $validated['type'];
         $options = $validated['options'] ?? [];
 
-        if (in_array($type, ['multiple_choice', 'likert', 'preference', 'image_choice', 'visual'], true) && count($options) < 2) {
+        if (
+            in_array($type, ['multiple_choice', 'likert', 'preference', 'image_choice', 'visual'], true)
+            && count($options) < 2
+        ) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tipe soal ini memerlukan minimal 2 opsi jawaban.',
             ], 422);
         }
 
-        DB::transaction(function () use ($questionData, $validated, $type, $options) {
+        DB::transaction(function () use (
+            $questionData,
+            $validated,
+            $type,
+            $options
+        ) {
             $questionData->update([
                 'question_text' => trim($validated['question_text']),
                 'type' => $type,
                 'image_url' => $validated['image_url'] ?? null,
             ]);
 
+            // Hapus opsi lama dan buat ulang berdasarkan data form.
             $questionData->options()->delete();
 
             foreach ($options as $option) {
@@ -237,7 +321,8 @@ class AssessmentController extends Controller
                     'question_id' => $questionData->id,
                     'option_text' => trim($option['option_text']),
                     'score' => $option['score'] ?? 0,
-                    'interest_category_id' => $option['interest_category_id'] ?? null,
+                    'interest_category_id' => $option['interest_category_id']
+                        ?? ($validated['interest_category_id'] ?? null),
                 ]);
             }
         });
@@ -249,21 +334,29 @@ class AssessmentController extends Controller
         ]);
     }
 
-    /** Menghapus soal. */
+    /**
+     * Menghapus soal.
+     */
     public function questionsDestroy(Request $request, int $question)
     {
         $questionData = Question::findOrFail($question);
         $assessmentId = $questionData->assessment_id;
+
         $questionData->delete();
 
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Pertanyaan berhasil dihapus.',
-                'questions_count' => Question::where('assessment_id', $assessmentId)->count(),
+                'questions_count' => Question::where(
+                    'assessment_id',
+                    $assessmentId
+                )->count(),
             ]);
         }
 
-        return redirect()->route('admin.assessments.index')->with('success', 'Pertanyaan berhasil dihapus.');
+        return redirect()
+            ->route('admin.assessments.index')
+            ->with('success', 'Pertanyaan berhasil dihapus.');
     }
 }

@@ -66,7 +66,7 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'role:siswa'])
+Route::middleware(['auth', 'role:student'])
     ->prefix('student')
     ->name('student.')
     ->group(function () {
@@ -221,3 +221,4 @@ Route::middleware(['auth', 'role:counselor'])
         Route::get('/profile', [CounselorController::class, 'profile'])
             ->name('profile');
     });
+

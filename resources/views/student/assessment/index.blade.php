@@ -178,10 +178,10 @@
 
                 {{-- 2. Tes Kemampuan --}}
                 <x-card
-                    variant="strong-highlight"
-                    class="card-interactive-strong rounded-[40px] p-7 flex flex-col justify-between group relative overflow-hidden border-2 border-[#3650A2]/30 shadow-xl"
+                    variant="strong"
+                    class="card-interactive-strong rounded-[40px] p-7 flex flex-col justify-between group relative overflow-hidden"
                 >
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-orange-100/80 rounded-full blur-3xl group-hover:bg-orange-200 transition-all duration-500"></div>
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-100/60 rounded-full blur-3xl group-hover:bg-indigo-200/90 transition-all duration-500"></div>
 
                     <div class="space-y-5 relative z-10">
                         <div class="flex justify-between items-center border-b border-indigo-100/60 pb-4">
@@ -189,14 +189,14 @@
                                 Modul 02
                             </span>
 
-                            <span class="px-3 py-1 bg-amber-100 text-amber-900 rounded-xl text-[10px] font-extrabold uppercase tracking-wide border border-amber-200 flex items-center gap-1.5 shadow-2xs">
+                            <span class="px-3 py-1 bg-emerald-100/80 text-emerald-800 rounded-xl text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
                                 <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['kemampuan']) ? 'bg-emerald-600' : 'bg-amber-600' }}"></span>
                                 {{ isset($submissions['kemampuan']) ? 'Tersimpan' : 'Belum' }}
                             </span>
                         </div>
 
                         <div class="space-y-2">
-                            <h3 class="text-xl font-black text-gray-900 group-hover:text-[#FF7A59] transition-colors">
+                            <h3 class="text-xl font-black text-gray-900 group-hover:text-[#3650A2] transition-colors">
                                 Tes Kemampuan
                             </h3>
                             <p class="text-xs text-gray-600 leading-relaxed">
@@ -204,23 +204,9 @@
                             </p>
                         </div>
 
-                        <div class="bg-white border border-indigo-100 p-4 rounded-2xl space-y-2.5 shadow-xs">
-                            <div class="flex justify-between items-center">
-                                <ul class="text-xs font-bold text-gray-700 space-y-1">
-                                    <li class="flex items-center gap-2">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#3650A2]"></span>
-                                        Abstrak &amp; Logika
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#3650A2]"></span>
-                                        Numerik
-                                    </li>
-                                </ul>
-
-                                <span class="px-2.5 py-1 bg-indigo-100/80 border border-indigo-200 rounded-xl text-[11px] font-extrabold text-[#3650A2]">
-                                    40 Menit
-                                </span>
-                            </div>
+                        <div class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-2xl space-y-1 shadow-2xs">
+                            <div class="text-xs font-extrabold text-[#3650A2]">{{ isset($submissions['kemampuan']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
+                            <div class="text-[11px] text-gray-500 font-medium">{{ isset($submissions['kepribadian']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['kepribadian']->submitted_at)->format('d/m/Y H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
                         </div>
                     </div>
 
@@ -228,9 +214,9 @@
                         <x-button
                             href="{{ route('student.assessment.kemampuan') }}"
                             variant="primary"
-                            size="lg"
+                            size="md"
                             block
-                            class="w-full text-center px-6 py-3.5 !bg-[#3650A2] hover:!bg-[#FF7A59] active:!bg-[#FF7A59] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 border border-[#3650A2] hover:border-[#FF7A59] shadow-md shadow-indigo-900/20 hover:shadow-orange-500/25 hover:scale-[1.02]"
+                            class="w-full text-center px-5 py-3 !bg-[#3650A2] hover:!bg-[#FF7A59] active:!bg-[#FF7A59] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 border border-[#3650A2] hover:border-[#FF7A59] shadow-md shadow-indigo-900/20 hover:shadow-orange-500/25"
                         >
                             {{ isset($submissions['kemampuan']) ? 'Ulangi Tes' : 'Mulai Tes' }}
                         </x-button>

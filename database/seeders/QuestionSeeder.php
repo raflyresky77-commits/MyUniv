@@ -61,14 +61,7 @@ class QuestionSeeder extends Seeder
             ['subtest' => 'abstract', 'category' => 'Bakat', 'type' => 'image_choice', 'question_text' => 'Pilih potongan jaring-jaring bangun ruang yang tepat.', 'options' => [['text' => 'A', 'score' => 0], ['text' => 'B', 'score' => 1], ['text' => 'C', 'score' => 0], ['text' => 'D', 'score' => 0]]],
             ['subtest' => 'abstract', 'category' => 'Bakat', 'type' => 'image_choice', 'question_text' => 'Analisis matriks gambar kosong dan pilih elemen pengisi yang pas.', 'options' => [['text' => 'A', 'score' => 0], ['text' => 'B', 'score' => 0], ['text' => 'C', 'score' => 1], ['text' => 'D', 'score' => 0]]],
 
-            // --- 5. TES KREATIVITAS (5 Soal) ---
-            ['subtest' => 'creativity', 'category' => 'Bakat', 'type' => 'drawing', 'question_text' => 'Kembangkan gambar dari bentuk lingkaran berikut menjadi sebuah gambar bermakna.'],
-            ['subtest' => 'creativity', 'category' => 'Bakat', 'type' => 'drawing', 'question_text' => 'Kembangkan gambar dari bentuk garis lengkung berikut menjadi sebuah objek/ilustrasi.'],
-            ['subtest' => 'creativity', 'category' => 'Bakat', 'type' => 'drawing', 'question_text' => 'Buatlah gambar kreatif dengan melanjutkan bentuk dasar yang diberikan.'],
-            ['subtest' => 'creativity', 'category' => 'Bakat', 'type' => 'drawing', 'question_text' => 'Gunakan bentuk dasar yang tersedia untuk membuat sebuah ilustrasi unik.'],
-            ['subtest' => 'creativity', 'category' => 'Bakat', 'type' => 'drawing', 'question_text' => 'Kembangkan bentuk yang diberikan menjadi gambar sesuai imajinasi Anda.'],
-
-            // --- 6. TES MINAT BAKAT (10 Soal) ---
+            // --- 5. TES MINAT BAKAT (10 Soal) ---
             ['subtest' => 'interest_talent', 'category' => 'Minat', 'type' => 'preference', 'question_text' => 'Membuat aplikasi atau website.'],
             ['subtest' => 'interest_talent', 'category' => 'Minat', 'type' => 'preference', 'question_text' => 'Menganalisis data dan angka.'],
             ['subtest' => 'interest_talent', 'category' => 'Minat', 'type' => 'preference', 'question_text' => 'Membuat desain grafis atau ilustrasi.'],

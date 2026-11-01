@@ -58,98 +58,73 @@ $kepribadianQuestionResponses = $this->formatQuestionResponses(
     $questionTexts
 );
 
-// Format jawaban Kemampuan berdasarkan subtes.
-$kemampuanQuestionResponses = [];
-
-foreach (['numerik', 'kreativitas', 'literasi', 'abstrak'] as $subtestKey) {
-    $subtestResponses = $this->extractSubtestResponses(
-        $kemampuanResponses,
-        $subtestKey
-    );
-
-    $kemampuanQuestionResponses[$subtestKey] =
-        $this->formatQuestionResponses(
-    $subtestResponses,
-    $questionTexts
-    );
-        
-}
-
-        /*
-         * Subtes kemampuan.
-         * Nilai akhir belum dihitung karena rubrik penilaian belum ditetapkan.
-         */
-        $subtestLabels = [
-            'numerik' => 'Numerik',
-            'kreativitas' => 'Kreativitas',
-            'literasi' => 'Literasi',
-            'abstrak' => 'Abstrak',
+// Kunci jawaban mengikuti pilihan yang benar-benar ditampilkan
+        // pada student/assessment/kemampuan.blade.php.
+        $abilityAnswerKeys = [
+            'numerik' => [
+                1 => 'Rp10.000',
+                2 => '4 Hari',
+                3 => '36',
+                4 => '37',
+                5 => '3 Jam',
+            ],
+            'verbal' => [
+                1 => 'B. Kilat',
+                2 => 'A. Menetap',
+                3 => 'B. Menulis',
+                4 => 'A. Berhasil guna / membawa hasil',
+                5 => 'B. Persamaan / kiasan',
+            ],
+            // Belum diberi kunci karena Blade masih menampilkan placeholder ilustrasi.
+            'abstrak' => [],
         ];
 
+        // Penyimpanan tetap memakai key "verbal"; halaman hasil memakai "literasi".
+        $kemampuanQuestionResponses = [];
         $abilitySubtests = [];
-        $drawingImages = [];
 
-        foreach ($subtestLabels as $key => $label) {
-            $responsesForSubtest = $this->extractSubtestResponses(
-                $kemampuanResponses,
-                $key
+        $subtestConfig = [
+            'numerik' => ['label' => 'Numerik', 'total' => 5],
+            'verbal' => ['label' => 'Literasi', 'total' => 5],
+            'abstrak' => ['label' => 'Abstrak & Logika', 'total' => 6],
+        ];
+
+        foreach ($subtestConfig as $key => $config) {
+            $responsesForSubtest = $this->extractSubtestResponses($kemampuanResponses, $key);
+
+            // Kompatibilitas dengan data lama yang mungkin tersimpan sebagai "literasi".
+            if ($key === 'verbal' && empty($responsesForSubtest)) {
+                $responsesForSubtest = $this->extractSubtestResponses($kemampuanResponses, 'literasi');
+            }
+
+            $displayKey = $key === 'verbal' ? 'literasi' : $key;
+            $kemampuanQuestionResponses[$displayKey] = $this->formatIndexedResponses(
+                $responsesForSubtest,
+                $config['label']
             );
 
-            $hasResponses = count($responsesForSubtest) > 0;
+            $scoreData = $this->scoreAbilitySubtest(
+                $responsesForSubtest,
+                $abilityAnswerKeys[$key],
+                $config['total']
+            );
 
-            $abilitySubtests[$key] = [
-                'label' => $label,
-                'status' => $hasResponses
-                    ? ($key === 'kreativitas' ? 'Menunggu penilaian' : 'Jawaban tersimpan')
-                    : 'Belum dikerjakan',
-                'score' => null,
-                'answered_count' => count($responsesForSubtest),
+            $hasResponses = $scoreData['answered_count'] > 0;
+            $canBeScored = !empty($abilityAnswerKeys[$key]);
+
+            $abilitySubtests[$displayKey] = [
+                'label' => $config['label'],
+                'status' => !$hasResponses
+                    ? 'Belum dikerjakan'
+                    : ($scoreData['answered_count'] === $config['total'] ? 'Selesai' : 'Belum lengkap'),
+                'score' => $canBeScored ? $scoreData['score_percent'] : null,
+                'score_percent' => $canBeScored ? $scoreData['score_percent'] : null,
+                'answered_count' => $scoreData['answered_count'],
+                'correct_count' => $canBeScored ? $scoreData['correct_count'] : null,
+                'wrong_count' => $canBeScored ? $scoreData['wrong_count'] : null,
+                'unanswered_count' => $config['total'] - $scoreData['answered_count'],
+                'total_count' => $config['total'],
             ];
-
-            // Ambil gambar dari jawaban subtes Kreativitas/Drawing.
-            if ($key !== 'kreativitas') {
-                continue;
-            }
-
-            foreach ($responsesForSubtest as $questionId => $answer) {
-                $imageData = null;
-
-                if (is_string($answer) && str_starts_with($answer, 'data:image/')) {
-                    $imageData = $answer;
-                } elseif (is_array($answer)) {
-                    $candidate = $answer['image_data']
-                        ?? $answer['data_url']
-                        ?? $answer['image_url']
-                        ?? $answer['url']
-                        ?? null;
-
-                    if (
-                        is_string($candidate)
-                        && str_starts_with($candidate, 'data:image/')
-                    ) {
-                        $imageData = $candidate;
-                    } elseif (
-                        is_string($candidate)
-                        && filter_var($candidate, FILTER_VALIDATE_URL)
-                        && in_array(
-                            parse_url($candidate, PHP_URL_SCHEME),
-                            ['http', 'https'],
-                            true
-                        )
-                    ) {
-                        $imageData = $candidate;
-                    }
-                }
-
-                if ($imageData !== null) {
-                    $drawingImages[] = [
-                        'url' => $imageData,
-                        'question_label' => $questionTexts[(int) $questionId]
-                            ?? 'Soal Kreativitas ' . $questionId,
-                        'submitted_at' => $kemampuanSubmission->submitted_at ?? null,
-                    ];
-                }
-            }
         }
 
         /*
@@ -307,18 +282,19 @@ foreach (['numerik', 'kreativitas', 'literasi', 'abstrak'] as $subtestKey) {
         $interestCategoryResults = $categoryScores;
 
         /*
-         * Tes Kemampuan: jawaban tersimpan, tetapi belum diberi nilai akhir.
+         * Skor keseluruhan belum dihitung karena subtes abstrak belum memiliki
+         * ilustrasi visual dan kunci jawaban yang dapat diverifikasi.
          */
+        $kemampuanAnsweredCount = array_sum(array_column($abilitySubtests, 'answered_count'));
+
         $kemampuanResult = [
             'responses' => $kemampuanResponses,
             'submitted_at' => $kemampuanSubmission->submitted_at ?? null,
             'has_submission' => $kemampuanSubmission !== null,
-            'answered_count' => count($kemampuanResponses),
+            'answered_count' => $kemampuanAnsweredCount,
             'score' => null,
-            'status' => $kemampuanSubmission !== null
-                ? 'Jawaban tersimpan'
-                : 'Belum dikerjakan',
-            'message' => 'Skor tidak dihitung sampai rubrik penilaian ditetapkan.',
+            'status' => $kemampuanSubmission !== null ? 'Jawaban tersimpan' : 'Belum dikerjakan',
+            'message' => 'Nilai Numerik dan Literasi dihitung dari kunci jawaban pada halaman tes. Nilai Abstrak dan skor keseluruhan menunggu soal visual serta rubrik yang valid.',
         ];
 
         /*
@@ -346,7 +322,6 @@ foreach (['numerik', 'kreativitas', 'literasi', 'abstrak'] as $subtestKey) {
             'Minat Bakat' => $minatScorePercent,
             'Kemampuan' => null,
             'Kepribadian' => null,
-            'Kreativitas' => null,
         ];
 
         return view('student.assessment.result', compact(
@@ -358,7 +333,6 @@ foreach (['numerik', 'kreativitas', 'literasi', 'abstrak'] as $subtestKey) {
             'assessmentCompleted',
             'profileMetrics',
             'abilitySubtests',
-            'drawingImages',
             'categoryScores',
             'topCategories',
             'interestCategoryResults',
@@ -366,6 +340,84 @@ foreach (['numerik', 'kreativitas', 'literasi', 'abstrak'] as $subtestKey) {
             'kemampuanQuestionResponses',
             'kepribadianQuestionResponses'
         ));
+    }
+
+    /**
+     * Format jawaban subtes yang menggunakan nomor urut dari Blade,
+     * bukan question_id dari tabel questions.
+     */
+    private function formatIndexedResponses(array $responses, string $subtestLabel): array
+    {
+        $formatted = [];
+
+        foreach ($responses as $number => $answer) {
+            if (!is_numeric($number) || $answer === null || $answer === '') {
+                continue;
+            }
+
+            $formatted[] = [
+                'question_id' => (int) $number,
+                'question_text' => $subtestLabel . ' - Soal ' . $number,
+                'answer' => is_scalar($answer) ? (string) $answer : 'Jawaban tersimpan',
+            ];
+        }
+
+        return $formatted;
+    }
+
+    /**
+     * Menghitung skor subtes dari kunci jawaban yang tersedia.
+     * Persentase menggunakan total soal, sehingga soal kosong tidak menaikkan nilai.
+     */
+    private function scoreAbilitySubtest(array $responses, array $answerKey, int $totalQuestions): array
+    {
+        $answeredCount = $this->countAnsweredResponses($responses);
+        $correctCount = 0;
+
+        foreach ($answerKey as $questionNumber => $correctAnswer) {
+            $givenAnswer = $responses[$questionNumber] ?? $responses[(string) $questionNumber] ?? null;
+
+            if (
+                is_scalar($givenAnswer)
+                && $this->normalizeAnswer((string) $givenAnswer) === $this->normalizeAnswer($correctAnswer)
+            ) {
+                $correctCount++;
+            }
+        }
+
+        return [
+            'answered_count' => $answeredCount,
+            'correct_count' => $correctCount,
+            'wrong_count' => max(0, $answeredCount - $correctCount),
+            'score_percent' => $totalQuestions > 0
+                ? (int) round(($correctCount / $totalQuestions) * 100)
+                : null,
+        ];
+    }
+
+    private function normalizeAnswer(string $answer): string
+    {
+        $normalized = preg_replace('/\\s+/', ' ', trim($answer));
+
+        return mb_strtolower($normalized ?? '');
+    }
+
+    /**
+     * Menghitung jawaban yang benar-benar memiliki isi.
+     */
+    private function countAnsweredResponses(array $responses): int
+    {
+        return collect($responses)->filter(function ($answer) {
+            if ($answer === null || $answer === '') {
+                return false;
+            }
+
+            if (is_array($answer)) {
+                return count($answer) > 0;
+            }
+
+            return true;
+        })->count();
     }
 
     private function extractSubtestResponses(
@@ -421,8 +473,7 @@ private function collectQuestionIds(array $responses): array
  * Mengubah pasangan ID soal dan jawaban menjadi data
  * yang siap ditampilkan di halaman hasil.
  *
- * Jawaban gambar Base64 tidak dimasukkan ke tabel jawaban
- * karena sudah ditampilkan melalui galeri gambar kreativitas.
+ * Jawaban disiapkan sebagai teks untuk ditampilkan di halaman hasil.
  */
 private function formatQuestionResponses(
     array $responses,
@@ -442,12 +493,7 @@ private function formatQuestionResponses(
 
         $displayAnswer = $answer;
 
-        if (
-            is_string($answer)
-            && str_starts_with($answer, 'data:image/')
-        ) {
-            $displayAnswer = 'Gambar terlampir';
-        } elseif (is_array($answer)) {
+        if (is_array($answer)) {
             $displayAnswer = 'Jawaban tersimpan';
         } elseif (is_bool($answer)) {
             $displayAnswer = $answer ? 'Ya' : 'Tidak';

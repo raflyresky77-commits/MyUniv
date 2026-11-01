@@ -11,11 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Mendaftarkan alias middleware role untuk Laravel 11
+        // Mendaftarkan alias middleware role
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
-    })->create();
+        // Menggunakan mekanisme exception handling bawaan Laravel.
+    })
+    ->create();

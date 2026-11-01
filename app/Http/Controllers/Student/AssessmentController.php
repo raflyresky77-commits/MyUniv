@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\Assessment;
 use App\Models\Question;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AssessmentController extends Controller
 {
     public function index()
     {
         $submissions = DB::table('assessment_submissions')
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->get()
             ->keyBy('assessment_type');
 
@@ -37,7 +38,9 @@ class AssessmentController extends Controller
             ? $assessment->questions
             : collect();
 
-        return view('student.assessment.minat-bakat', compact('questions'));
+        $savedResponses = $this->getSavedResponses('minat_bakat');
+
+        return view('student.assessment.minat-bakat', compact('questions', 'savedResponses'));
     }
 
     public function minatBakatStore(Request $request)
@@ -55,15 +58,13 @@ class AssessmentController extends Controller
 
     public function kemampuan()
     {
-        $drawingQuestions = Question::where('type', 'drawing')
-                ->where('category_id', 2)
-                ->where('is_active', true)
-                ->orderBy('id')
-                ->get();
+        // Ambil jawaban tersimpan siswa. Halaman Kemampuan kini hanya
+        // menggunakan subtes Numerik, Literasi, dan Abstrak & Logika.
+        $savedResponses = $this->getSavedResponses('kemampuan');
 
         return view(
             'student.assessment.kemampuan',
-            compact('drawingQuestions')
+            compact('savedResponses')
         );
     }
 
@@ -89,9 +90,11 @@ class AssessmentController extends Controller
             ->orderBy('id')
             ->get();
 
+        $savedResponses = $this->getSavedResponses('kepribadian');
+
         return view(
             'student.assessment.kepribadian',
-            compact('questions')
+            compact('questions', 'savedResponses')
         );
     }
 
@@ -110,15 +113,40 @@ class AssessmentController extends Controller
     }
 
     /**
+     * Ambil jawaban terakhir siswa agar tetap tampil saat asesmen dibuka ulang.
+     */
+    private function getSavedResponses(string $assessmentType): array
+    {
+        // Ambil submission paling baru agar jawaban lama/duplikat tidak
+        // membuat halaman memulihkan record yang bukan versi terakhir.
+        $submission = DB::table('assessment_submissions')
+            ->where('user_id', Auth::id())
+            ->where('assessment_type', $assessmentType)
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->first();
+
+        $rawResponses = $submission->responses ?? null;
+
+        if (is_array($rawResponses)) {
+            return $rawResponses;
+        }
+
+        if (! is_string($rawResponses) || $rawResponses === '') {
+            return [];
+        }
+
+        $decoded = json_decode($rawResponses, true);
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    /**
      * Simpan atau perbarui jawaban asesmen siswa.
      */
     private function saveAssessmentSubmission(string $assessmentType, array $responses): void
     {
         $now = now();
-
-        $query = DB::table('assessment_submissions')
-            ->where('user_id', auth()->id())
-            ->where('assessment_type', $assessmentType);
 
         $values = [
             'responses' => json_encode($responses, JSON_UNESCAPED_UNICODE),
@@ -126,11 +154,22 @@ class AssessmentController extends Controller
             'updated_at' => $now,
         ];
 
-        if ($query->exists()) {
-            $query->update($values);
+        // Perbarui submission terbaru milik siswa untuk jenis asesmen ini.
+        // Jika belum ada, buat record baru.
+        $submission = DB::table('assessment_submissions')
+            ->where('user_id', Auth::id())
+            ->where('assessment_type', $assessmentType)
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($submission) {
+            DB::table('assessment_submissions')
+                ->where('id', $submission->id)
+                ->update($values);
         } else {
             DB::table('assessment_submissions')->insert(array_merge($values, [
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'assessment_type' => $assessmentType,
                 'created_at' => $now,
             ]));

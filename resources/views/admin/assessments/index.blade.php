@@ -253,13 +253,23 @@
                                 <option value="preference">Skala Kesukaan</option>
                                 <option value="image_choice">Pilihan Gambar</option>
                                 <option value="visual">Penalaran Visual</option>
-                                <option value="drawing">Menggambar</option>
                             </select>
                         </div>
 
                         <div>
                             <label for="questionText" class="block text-xs font-bold text-gray-700 mb-1.5">Pertanyaan / Instruksi</label>
                             <textarea name="question_text" id="questionText" rows="3" required placeholder="Tuliskan pertanyaan atau instruksi..." class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]"></textarea>
+                        </div>
+
+                        <div>
+                            <label for="questionInterestCategory" class="block text-xs font-bold text-gray-700 mb-1.5">Kategori Minat (untuk asesmen minat)</label>
+                            <select name="interest_category_id" id="questionInterestCategory" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#3650A2]">
+                                <option value="">Tidak menggunakan kategori minat</option>
+                                @foreach($interestCategories as $interestCategory)
+                                    <option value="{{ $interestCategory->id }}">{{ $interestCategory->name }}</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-[10px] text-gray-500">Kategori yang dipilih akan diterapkan ke seluruh opsi jawaban pertanyaan ini.</p>
                         </div>
 
                         <div id="questionImageSection" class="hidden">
@@ -329,12 +339,21 @@
                         <option value="preference">Skala Kesukaan</option>
                         <option value="image_choice">Pilihan Gambar</option>
                         <option value="visual">Penalaran Visual</option>
-                        <option value="drawing">Menggambar</option>
                     </select>
                 </div>
                 <div>
                     <label for="editQuestionText" class="block text-xs font-bold text-gray-700 mb-1.5">Pertanyaan / Instruksi</label>
                     <textarea name="question_text" id="editQuestionText" rows="3" required class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs"></textarea>
+                </div>
+                <div>
+                    <label for="editQuestionInterestCategory" class="block text-xs font-bold text-gray-700 mb-1.5">Kategori Minat (untuk asesmen minat)</label>
+                    <select name="interest_category_id" id="editQuestionInterestCategory" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs">
+                        <option value="">Tidak menggunakan kategori minat</option>
+                        @foreach($interestCategories as $interestCategory)
+                            <option value="{{ $interestCategory->id }}">{{ $interestCategory->name }}</option>
+                        @endforeach
+                    </select>
+                    <p class="mt-1 text-[10px] text-gray-500">Kategori yang dipilih akan diterapkan ke seluruh opsi jawaban pertanyaan ini.</p>
                 </div>
                 <div id="editQuestionImageSection" class="hidden">
                     <label for="editQuestionImageUrl" class="block text-xs font-bold text-gray-700 mb-1.5">URL Gambar Soal (opsional)</label>
@@ -488,7 +507,7 @@
             const type = questionTypeSelect.value;
             const usesFixedScale = ['likert', 'preference'].includes(type);
             const usesOptions = ['multiple_choice', 'image_choice', 'visual'].includes(type);
-            const needsImageField = ['image_choice', 'visual', 'drawing'].includes(type);
+            const needsImageField = ['image_choice', 'visual'].includes(type);
 
             answerOptionsSection?.classList.toggle('hidden', !usesOptions);
             fixedScalePreview?.classList.toggle('hidden', !usesFixedScale);
@@ -605,6 +624,30 @@
                 type.className = 'mt-1 text-[10px] text-gray-400';
                 type.textContent = 'Tipe: ' + questionTypeLabel(question.type);
                 content.appendChild(type);
+                // Kategori minat berada pada setiap opsi jawaban, bukan langsung pada data soal.
+                // Tampilkan hanya untuk soal berkategori Minat (category_id = 1).
+                if (Number(question.category_id) === 1) {
+                    const category = document.createElement('p');
+                    const categoryIds = [...new Set(
+                        (question.options || [])
+                            .map(option => option.interest_category_id)
+                            .filter(id => id !== null && id !== undefined && id !== '')
+                            .map(Number)
+                    )];
+                    const categoryNames = categoryIds.map(id => {
+                        const option = document.querySelector(`#questionInterestCategory option[value="${id}"]`);
+                        return option ? option.textContent.trim() : `Kategori #${id}`;
+                    });
+
+                    if (categoryNames.length > 0) {
+                        category.className = 'mt-1 text-[10px] text-emerald-700';
+                        category.textContent = 'Kategori minat: ' + categoryNames.join(', ');
+                    } else {
+                        category.className = 'mt-1 text-[10px] text-amber-600';
+                        category.textContent = 'Kategori minat belum ditentukan';
+                    }
+                    content.appendChild(category);
+                }
                 const actions = document.createElement('div');
                 actions.className = 'shrink-0 flex items-center gap-3';
                 const editButton = document.createElement('button');
@@ -631,7 +674,6 @@
                 preference: 'Skala Kesukaan',
                 image_choice: 'Pilihan Gambar',
                 visual: 'Penalaran Visual',
-                drawing: 'Menggambar'
             };
             return labels[type] || type || '—';
         }
@@ -641,6 +683,7 @@
         const editQuestionType = document.getElementById('editQuestionType');
         const editQuestionText = document.getElementById('editQuestionText');
         const editQuestionImageUrl = document.getElementById('editQuestionImageUrl');
+        const editQuestionInterestCategory = document.getElementById('editQuestionInterestCategory');
         const editQuestionImageSection = document.getElementById('editQuestionImageSection');
         const editAnswerOptionsSection = document.getElementById('editAnswerOptionsSection');
         const editAnswerOptionsList = document.getElementById('editAnswerOptionsList');
@@ -649,7 +692,7 @@
         function updateEditQuestionTypeForm() {
             const type = editQuestionType.value;
             const usesOptions = ['multiple_choice', 'likert', 'preference', 'image_choice', 'visual'].includes(type);
-            const needsImage = ['image_choice', 'visual', 'drawing'].includes(type);
+            const needsImage = ['image_choice', 'visual'].includes(type);
             editAnswerOptionsSection.classList.toggle('hidden', !usesOptions);
             editQuestionImageSection.classList.toggle('hidden', !needsImage);
             editAnswerOptionsList.querySelectorAll('input').forEach(input => {
@@ -707,6 +750,7 @@
                 editQuestionText.value = item.question_text || '';
                 editQuestionType.value = item.type || 'multiple_choice';
                 editQuestionImageUrl.value = item.image_url || '';
+                editQuestionInterestCategory.value = item.interest_category_id ?? item.options?.find(option => option.interest_category_id)?.interest_category_id ?? '';
                 editAnswerOptionsList.replaceChildren();
                 (item.options || []).forEach(option => addEditOptionRow(option));
                 if ((item.options || []).length === 0) {

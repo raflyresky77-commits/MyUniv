@@ -12,6 +12,14 @@ class AssessmentSubtestSeeder extends Seeder
         $types = DB::table('assessment_types')
             ->pluck('id', 'code');
 
+        // Nonaktifkan subtes Kreativitas lama tanpa menghapus record database.
+        if (isset($types['ability'])) {
+            DB::table('assessment_subtests')
+                ->where('assessment_type_id', $types['ability'])
+                ->where('code', 'creativity')
+                ->update(['is_active' => false]);
+        }
+
         $subtests = [
             [
                 'type' => 'personality_career',
@@ -42,14 +50,6 @@ class AssessmentSubtestSeeder extends Seeder
                 'description' => 'Tes kemampuan berpikir abstrak dan mengenali pola.',
                 'sort_order' => 3,
             ],
-            [
-                'type' => 'ability',
-                'name' => 'Kreativitas',
-                'code' => 'creativity',
-                'description' => 'Tes kreativitas melalui aktivitas menggambar atau pengembangan ide.',
-                'sort_order' => 4,
-            ],
-
             [
                 'type' => 'interest_talent',
                 'name' => 'Minat Bakat',

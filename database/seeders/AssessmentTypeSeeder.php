@@ -19,7 +19,7 @@ class AssessmentTypeSeeder extends Seeder
             [
                 'name' => 'Tes Kemampuan',
                 'code' => 'ability',
-                'description' => 'Tes kemampuan yang terdiri dari subtes numerik, verbal, abstrak, dan kreativitas.',
+                'description' => 'Tes kemampuan yang terdiri dari subtes numerik, verbal, dan abstrak.',
                 'is_active' => true,
             ],
             [

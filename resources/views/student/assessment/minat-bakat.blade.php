@@ -173,6 +173,7 @@
                                                     name="responses[{{ $question->id }}]"
                                                     value="{{ $option->score }}"
                                                     class="peer sr-only"
+                                                    @checked((string) old("responses.$question->id", $savedResponses[$question->id] ?? '') === (string) $option->score)
                                                     {{ $loop->first ? 'required' : '' }}
                                                 >
                                                 <span class="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-gray-200 bg-white font-bold text-gray-600 transition peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-300">
