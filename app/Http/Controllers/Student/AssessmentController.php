@@ -83,34 +83,68 @@ class AssessmentController extends Controller
 
 
     public function kepribadian()
-    {
-        $questions = Question::where('subtest_id', 1)
-            ->where('type', 'likert')
-            ->where('is_active', true)
-            ->orderBy('id')
-            ->get();
+{
+    $questions = Question::with('options')
+        ->whereIn('id', array_merge(
+            range(1, 10),
+            range(90, 114)
+        ))
+        ->where('type', 'likert')
+        ->where('is_active', true)
+        ->orderBy('id')
+        ->get();
 
-        $savedResponses = $this->getSavedResponses('kepribadian');
+    $savedResponses = $this->getSavedResponses('kepribadian');
 
-        return view(
-            'student.assessment.kepribadian',
-            compact('questions', 'savedResponses')
-        );
-    }
+    return view(
+        'student.assessment.kepribadian',
+        compact('questions', 'savedResponses')
+    );
+}
 
 
     public function kepribadianStore(Request $request)
-    {
-        $validated = $request->validate([
-            'responses' => 'required|array',
-        ]);
+{
+    $validated = $request->validate([
+        'responses' => 'required|array',
+        'responses.*' => 'required|integer',
+    ]);
 
-        $this->saveAssessmentSubmission('kepribadian', $validated['responses']);
+    $responses = $validated['responses'];
 
-        return redirect()
-            ->route('student.assessment.index')
-            ->with('success', 'Jawaban Tes Kepribadian Karier berhasil disimpan.');
+    // Pastikan semua ID pertanyaan yang diwajibkan sudah dijawab.
+    $questionIds = array_merge(
+        range(1, 10),
+        range(90, 114)
+    );
+
+    if (count($responses) !== count($questionIds) ||
+        array_diff($questionIds, array_map('intval', array_keys($responses)))) {
+        return back()
+            ->withErrors(['responses' => 'Semua pertanyaan wajib dijawab.'])
+            ->withInput();
     }
+
+    // Pastikan option_id benar-benar milik pertanyaan yang dipilih.
+    foreach ($responses as $questionId => $optionId) {
+        $validOption = DB::table('question_options')
+            ->where('id', $optionId)
+            ->where('question_id', $questionId)
+            ->exists();
+
+        if (!$validOption) {
+            return back()
+                ->withErrors(['responses' => 'Pilihan jawaban tidak valid.'])
+                ->withInput();
+        }
+    }
+
+    $this->saveAssessmentSubmission('kepribadian', $responses);
+
+    return redirect()
+        ->route('student.assessment.index')
+        ->with('success', 'Jawaban Tes Kepribadian Karier berhasil disimpan.');
+}
 
     /**
      * Ambil jawaban terakhir siswa agar tetap tampil saat asesmen dibuka ulang.

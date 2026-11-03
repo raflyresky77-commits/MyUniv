@@ -287,31 +287,188 @@ $kepribadianQuestionResponses = $this->formatQuestionResponses(
          */
         $kemampuanAnsweredCount = array_sum(array_column($abilitySubtests, 'answered_count'));
 
-        $kemampuanResult = [
-            'responses' => $kemampuanResponses,
-            'submitted_at' => $kemampuanSubmission->submitted_at ?? null,
-            'has_submission' => $kemampuanSubmission !== null,
-            'answered_count' => $kemampuanAnsweredCount,
-            'score' => null,
-            'status' => $kemampuanSubmission !== null ? 'Jawaban tersimpan' : 'Belum dikerjakan',
-            'message' => 'Nilai Numerik dan Literasi dihitung dari kunci jawaban pada halaman tes. Nilai Abstrak dan skor keseluruhan menunggu soal visual serta rubrik yang valid.',
-        ];
+        $scoredSubtests = collect($abilitySubtests)
+    ->filter(fn ($item) => $item['score_percent'] !== null);
+
+$totalCorrect = $scoredSubtests->sum('correct_count');
+$totalQuestions = $scoredSubtests->sum('total_count');
+
+$kemampuanScore = $totalQuestions > 0
+    ? (int) round(($totalCorrect / $totalQuestions) * 100)
+    : null;
+
+$kemampuanResult = [
+    'responses' => $kemampuanResponses,
+    'submitted_at' => $kemampuanSubmission->submitted_at ?? null,
+    'has_submission' => $kemampuanSubmission !== null,
+    'answered_count' => $kemampuanAnsweredCount,
+    'score' => $kemampuanScore,
+    'score_percent' => $kemampuanScore,
+    'status' => $kemampuanScore !== null
+        ? 'Berhasil dihitung'
+        : ($kemampuanSubmission !== null ? 'Menunggu penilaian' : 'Belum dikerjakan'),
+    'message' => 'Skor dihitung dari subtes yang sudah memiliki kunci jawaban.',
+];
 
         /*
          * Kepribadian & Karier: tidak menebak kategori sebelum aturan pemetaan
          * tiap pertanyaan dan jawabannya tersedia.
          */
-        $kepribadianResult = [
-            'responses' => $kepribadianResponses,
-            'submitted_at' => $kepribadianSubmission->submitted_at ?? null,
-            'has_submission' => $kepribadianSubmission !== null,
-            'answered_count' => count($kepribadianResponses),
-            'category' => null,
-            'status' => $kepribadianSubmission !== null
-                ? 'Menunggu aturan pemetaan kategori'
-                : 'Belum dikerjakan',
-            'message' => 'Kategori belum dihitung karena aturan pemetaan belum tersedia.',
-        ];
+        
+/*
+|--------------------------------------------------------------------------
+| Perhitungan Tes Kepribadian - 35 Pertanyaan
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+|--------------------------------------------------------------------------
+| Perhitungan Tes Kepribadian - 35 Pertanyaan
+|--------------------------------------------------------------------------
+*/
+
+$personalityGroups = [
+    'openness' => [
+        'label' => 'Keterbukaan',
+        'questions' => [3, 9, 90, 91, 92, 93, 94],
+    ],
+    'conscientiousness' => [
+        'label' => 'Kedisiplinan',
+        'questions' => [1, 6, 95, 96, 97, 98, 99],
+    ],
+    'extraversion' => [
+        'label' => 'Ekstraversi',
+        'questions' => [2, 8, 100, 101, 102, 103, 104],
+    ],
+    'agreeableness' => [
+        'label' => 'Keramahan',
+        'questions' => [4, 7, 105, 106, 107, 108, 109],
+    ],
+    'emotional_stability' => [
+        'label' => 'Stabilitas Emosi',
+        'questions' => [5, 10, 110, 111, 112, 113, 114],
+    ],
+];
+
+// Ambil seluruh opsi jawaban untuk 35 pertanyaan.
+// Responses sekarang berisi question_id => question_option_id.
+$personalityQuestionIds = collect($personalityGroups)
+    ->flatMap(fn ($group) => $group['questions'])
+    ->unique()
+    ->values()
+    ->all();
+
+$personalityOptions = DB::table('question_options')
+    ->whereIn('question_id', $personalityQuestionIds)
+    ->get(['id', 'question_id', 'option_text', 'score'])
+    ->keyBy('id');
+
+$personalityScores = [];
+$personalityDetails = [];
+$personalityAnsweredCount = 0;
+$allPersonalityScores = [];
+
+foreach ($personalityGroups as $key => $group) {
+    $scores = [];
+
+    foreach ($group['questions'] as $questionId) {
+        $optionId = $kepribadianResponses[$questionId]
+            ?? $kepribadianResponses[(string) $questionId]
+            ?? null;
+
+        if (!is_numeric($optionId)) {
+            continue;
+        }
+
+        $option = $personalityOptions->get((int) $optionId);
+
+        // Pastikan opsi memang milik pertanyaan yang sedang dihitung.
+        if (
+            !$option ||
+            (int) $option->question_id !== (int) $questionId ||
+            !is_numeric($option->score) ||
+            (float) $option->score < 1 ||
+            (float) $option->score > 5
+        ) {
+            continue;
+        }
+
+        // Skor sudah mengikuti nilai di database,
+        // termasuk pembalikan untuk pertanyaan negatif.
+        $score = (float) $option->score;
+
+        $scores[] = $score;
+        $allPersonalityScores[] = $score;
+        $personalityAnsweredCount++;
+    }
+
+    $answered = count($scores);
+    $total = count($group['questions']);
+
+    $average = $answered > 0
+        ? array_sum($scores) / $answered
+        : null;
+
+    $percent = $average !== null
+        ? (int) round((($average - 1) / 4) * 100)
+        : null;
+
+    $personalityScores[$key] = $percent;
+
+    $personalityDetails[$key] = [
+        'label' => $group['label'],
+        'average' => $average !== null ? round($average, 2) : null,
+        'score_percent' => $percent,
+        'answered_count' => $answered,
+        'total_count' => $total,
+        'status' => $answered === 0
+            ? 'Belum dikerjakan'
+            : ($answered === $total ? 'Selesai' : 'Belum lengkap'),
+    ];
+}
+
+// Skor keseluruhan hanya tersedia jika 35 jawaban valid ditemukan.
+$totalPersonalityQuestions = 35;
+
+$kepribadianScore = $personalityAnsweredCount === $totalPersonalityQuestions
+    ? (int) round(
+        ((array_sum($allPersonalityScores) / $totalPersonalityQuestions) - 1) / 4 * 100
+    )
+    : null;
+
+// Aspek dominan hanya ditentukan jika semua pertanyaan sudah dijawab.
+$dominantPersonality = null;
+
+if ($kepribadianScore !== null) {
+    $rankedPersonality = collect($personalityDetails)
+        ->filter(fn ($item) => $item['score_percent'] !== null)
+        ->sortByDesc('score_percent')
+        ->values();
+
+    $dominantPersonality = $rankedPersonality->first();
+}
+
+$kepribadianResult = [
+    'responses' => $kepribadianResponses,
+    'submitted_at' => $kepribadianSubmission->submitted_at ?? null,
+    'has_submission' => $kepribadianSubmission !== null,
+    'answered_count' => $personalityAnsweredCount,
+    'total_count' => $totalPersonalityQuestions,
+    'score' => $kepribadianScore,
+    'score_percent' => $kepribadianScore,
+    'personality_scores' => $personalityScores,
+    'personality_details' => $personalityDetails,
+    'dominant_personality' => $dominantPersonality,
+    'status' => $kepribadianSubmission === null
+        ? 'Belum dikerjakan'
+        : ($kepribadianScore !== null ? 'Selesai' : 'Belum lengkap'),
+    'message' => $kepribadianScore !== null
+        ? 'Skor kepribadian berhasil dihitung dari 35 jawaban.'
+        : 'Skor akhir tersedia setelah seluruh 35 pertanyaan dijawab.',
+];
+
+
 
         $assessmentCompleted = $minatSubmission !== null
             && $kemampuanSubmission !== null
@@ -319,10 +476,10 @@ $kepribadianQuestionResponses = $this->formatQuestionResponses(
 
         // Hanya berisi metrik aspek asesmen, bukan rincian kategori minat.
         $profileMetrics = [
-            'Minat Bakat' => $minatScorePercent,
-            'Kemampuan' => null,
-            'Kepribadian' => null,
-        ];
+    'Minat Bakat' => $minatScorePercent,
+    'Kemampuan' => $kemampuanScore,
+    'Kepribadian' => $kepribadianScore,
+];
 
         return view('student.assessment.result', compact(
             'minatResult',
