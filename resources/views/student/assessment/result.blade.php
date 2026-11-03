@@ -81,6 +81,8 @@
 
 <body class="text-gray-800 antialiased">
 
+    @include('components.global-loading')
+
     {{-- Sidebar --}}
     <x-student.student-sidebar active="assessment" />
 

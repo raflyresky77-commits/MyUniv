@@ -3,27 +3,24 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    // Menampilkan halaman login
     public function create()
     {
         return view('auth.login');
     }
 
-    // Memproses data login
     public function store(Request $request)
     {
-        // Validasi input login
         $credentials = $request->validate([
             'login' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        // Proses autentikasi pengguna
         if (!Auth::attempt([
             'email' => $credentials['login'],
             'password' => $credentials['password'],
@@ -33,15 +30,19 @@ class LoginController extends Controller
             ])->onlyInput('login');
         }
 
-        // Regenerasi session setelah login berhasil
         $request->session()->regenerate();
 
-        // Ambil role ID pengguna
-        $roleId = (int) Auth::user()->role_id;
+        $user = Auth::user();
+        $roleId = (int) $user->role_id;
 
-        // Tentukan halaman dashboard berdasarkan role
         switch ($roleId) {
             case 1:
+                $student = Student::where('user_id', $user->id)->first();
+
+                if (!$this->profileIsComplete($student)) {
+                    return redirect()->route('student.onboarding.index');
+                }
+
                 return redirect()->route('student.dashboard');
 
             case 2:
@@ -51,9 +52,7 @@ class LoginController extends Controller
                 return redirect()->route('admin.dashboard');
 
             default:
-                // Logout jika role tidak dikenali
                 Auth::logout();
-
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
 
@@ -63,7 +62,20 @@ class LoginController extends Controller
         }
     }
 
-    // Logout session
+    private function profileIsComplete(?Student $student): bool
+    {
+        if (!$student) {
+            return false;
+        }
+
+        return filled($student->nisn)
+            && filled($student->gender)
+            && filled($student->birth_date)
+            && filled($student->address)
+            && filled($student->phone)
+            && filled($student->class);
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();

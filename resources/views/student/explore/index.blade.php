@@ -1,10 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eksplorasi Perguruan Tinggi - MyUniv</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,6 +28,8 @@
     </style>
 </head>
 <body class="bg-[#F4F7FE] text-gray-800 antialiased selection:bg-[#FF7A59] selection:text-white">
+
+    @include('components.global-loading')
 
     <!-- Backdrop Gelap Mobile Sidebar -->
     <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 md:hidden hidden backdrop-blur-xs transition-opacity"></div>
@@ -64,7 +69,7 @@
                 </a>
 
                 <a href="{{ route('student.planning.index') }}" class="flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2] font-semibold text-sm transition-all duration-200 group">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] group-hover:scale-110 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] group-hover:scale-110 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
                     <span>Education Planning</span>
                 </a>
 
@@ -127,7 +132,7 @@
 
                 <div class="relative z-10 max-w-2xl space-y-3">
                     <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-indigo-100">
-                        <svg class="w-3.5 h-3.5 text-[#FF7A59]" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.788 0l7-3a1 1 0 000-1.84l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.17 1 1 0.01-1.98c.35.035.7.093 1.05.17V16.5a1 1 0 001 1h8a1 1 0 001-1v-4.148c.35-.077.7-.135 1.05-.17a1 1 0 01.01 1.98 8.969 8.969 0 01-1.05.17v-4.102l1.69-.723a1 1 0 000-1.84l-7-3a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84z"/></svg>
+                        <svg class="w-3.5 h-3.5 text-[#FF7A59]" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.788 0l7-3a1 1 0 000-1.84l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.17 1 1 0 00-.01-1.98c.35.035.7.093 1.05.17V16.5a1 1 0 001 1h8a1 1 0 001-1v-4.148c.35-.077.7-.135 1.05-.17a1 1 0 01.01 1.98 8.969 8.969 0 00-1.05.17v-4.102l1.69-.723a1 1 0 000-1.84l-7-3a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84z"/></svg>
                         Direktori Kampus PTN &amp; PTS Unggulan (Database Supabase)
                     </span>
                     <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight">Temukan Masa Depanmu di Kampus Impian</h1>
@@ -147,7 +152,7 @@
                 </div>
             </div>
 
-            <!-- List Perguruan Tinggi (Ditarik Dinamis dari Supabase Database) -->
+            <!-- List Perguruan Tinggi -->
             <div class="space-y-6" id="universityList">
 
                 @forelse($universities as $univ)
@@ -156,21 +161,24 @@
                     <!-- Kiri: Foto Kampus / Banner & Tombol Web -->
                     <div class="w-full md:w-5/12 flex flex-col gap-4">
                         <div class="w-full h-48 rounded-2xl relative overflow-hidden shadow-md shrink-0 group bg-gray-200">
+
                             @php
-                                // Nama file gambar kampus diambil dari database.
-                                // File gambar disimpan di public/images/universities/.
-                                $imageName = trim((string) ($univ->image ?? ''));
-                                $imageName = str_replace('\\', '/', $imageName);
-                                $imageName = basename($imageName);
-                                $imageName = $imageName !== '' ? $imageName : 'default.png';
+                                $imageName = trim((string) ($univ->thumbnail ?? ''));
+                                $imageName = basename(str_replace('\\', '/', $imageName));
+
+                                $imageUrl = $imageName !== ''
+                                    ? asset('images/universities/' . $imageName)
+                                    : asset('images/ilustrasi.jpg');
                             @endphp
+
                             <img
-                                src="{{ asset('images/universities/' . $imageName) }}"
+                                src="{{ $imageUrl }}"
                                 alt="{{ $univ->name }}"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                onerror="this.onerror=null; this.src='{{ asset('images/ilustrasi.png') }}';">
+                                onerror="this.onerror=null; this.src='{{ asset('images/ilustrasi.jpg') }}';"
+                            >
 
-                            <!-- Gradient Overlay -->
+                                                        <!-- Gradient Overlay -->
                             <div class="absolute inset-0 bg-gradient-to-t from-[#141F43]/90 via-[#141F43]/30 to-transparent"></div>
 
                             <!-- Badge Atas -->
@@ -184,7 +192,10 @@
                             <div class="absolute bottom-3 left-3 right-3 z-10 text-white">
                                 <h4 class="text-sm font-extrabold tracking-tight drop-shadow-sm">{{ $univ->name }}</h4>
                                 <p class="text-[11px] text-indigo-100 flex items-center gap-1 mt-0.5 font-medium">
-                                    <svg class="w-3 h-3 text-[#FF7A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <svg class="w-3 h-3 text-[#FF7A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
                                     {{ $univ->location }}
                                 </p>
                             </div>
@@ -192,9 +203,11 @@
 
                         <!-- TOMBOL KUNJUNGI WEBSITE -->
                         @if(!empty($univ->website))
-                        <a href="{{ $univ->website }}" target="_blank" class="w-full py-3.5 px-5 bg-gradient-to-r from-[#FF7A59] to-[#FF5233] text-white rounded-2xl text-xs font-black shadow-lg shadow-orange-500/30 hover:opacity-95 hover:scale-[1.02] transition-all flex items-center justify-center gap-2.5 uppercase tracking-wider group">
+                        <a href="{{ $univ->website }}" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 px-5 bg-gradient-to-r from-[#FF7A59] to-[#FF5233] text-white rounded-2xl text-xs font-black shadow-lg shadow-orange-500/30 hover:opacity-95 hover:scale-[1.02] transition-all flex items-center justify-center gap-2.5 uppercase tracking-wider group">
                             <span>Kunjungi Website Resmi</span>
-                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
                         </a>
                         @endif
                     </div>

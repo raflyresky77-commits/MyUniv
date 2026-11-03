@@ -52,6 +52,12 @@
                 'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>',
             ],
             [
+                'key' => 'consultations',
+                'label' => 'Monitoring Konsultasi BK',
+                'url' => route('admin.consultations.index'),
+                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-8 4h5m-9 5h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>',
+            ],
+            [
                 'key' => 'users',
                 'label' => 'Manajemen Pengguna',
                 'url' => route('admin.users.index'),
@@ -221,6 +227,20 @@
                         </div>
                         <div class="mt-6 relative z-10 flex items-center text-xs font-bold text-purple-600 gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
                             Kelola modul &rarr;
+                        </div>
+                    </a>
+
+                    <!-- Konsultasi Guru BK -->
+                    <a href="{{ route('admin.consultations.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
+                        <div class="relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-[#3650A2] flex items-center justify-center mb-5 group-hover:bg-[#3650A2] group-hover:text-white transition-all duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                            </div>
+                            <h4 class="text-base font-extrabold text-gray-900 mb-1.5 group-hover:text-[#3650A2]">Konsultasi Guru BK</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed font-medium">Pantau pengajuan konsultasi dan status penanganan siswa.</p>
+                        </div>
+                        <div class="mt-6 relative z-10 flex items-center text-xs font-bold text-[#3650A2] gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
+                            Lihat pengajuan &rarr;
                         </div>
                     </a>
 

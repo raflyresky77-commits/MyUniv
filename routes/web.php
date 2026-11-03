@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
@@ -13,12 +12,14 @@ use App\Http\Controllers\Student\ExplorationController;
 use App\Http\Controllers\Student\PlanningController;
 use App\Http\Controllers\Student\ConsultationController;
 use App\Http\Controllers\Student\ProfileController;
+use App\Http\Controllers\Student\OnboardingController;
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\MajorController;
+use App\Http\Controllers\Admin\ConsultationController as AdminConsultationController;
 
 use App\Http\Controllers\Counselor\CounselorController;
 
@@ -59,7 +60,6 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
     ->name('password.email');
 
-
 /*
 |--------------------------------------------------------------------------
 | Student / Siswa
@@ -70,6 +70,13 @@ Route::middleware(['auth', 'role:student'])
     ->prefix('student')
     ->name('student.')
     ->group(function () {
+
+        // Onboarding pengguna baru
+        Route::get('/onboarding', [OnboardingController::class, 'index'])
+            ->name('onboarding.index');
+
+        Route::post('/onboarding', [OnboardingController::class, 'store'])
+            ->name('onboarding.store');
 
         Route::get('/dashboard', [StudentDashboardController::class, 'index'])
             ->name('dashboard');
@@ -120,18 +127,41 @@ Route::middleware(['auth', 'role:student'])
         Route::post('/planning', [PlanningController::class, 'store'])
             ->name('planning.store');
 
-        // Konsultasi BK
+        Route::put('/planning/{plan}', [PlanningController::class, 'update'])
+            ->name('planning.update');
+
+        Route::delete('/planning/{plan}', [PlanningController::class, 'destroy'])
+            ->name('planning.destroy');
+
+        Route::put('/planning/target', [PlanningController::class, 'updateTarget'])
+            ->name('planning.target.update');
+
+        Route::post('/planning/{plan}/checklist', [PlanningController::class, 'storeChecklist'])
+            ->name('planning.checklist.store');
+
+        Route::put('/planning/checklist/{checklist}', [PlanningController::class, 'updateChecklistDetails'])
+            ->name('planning.checklist.update-details');
+
+        Route::delete('/planning/checklist/{checklist}', [PlanningController::class, 'destroyChecklist'])
+            ->name('planning.checklist.destroy');
+
+        Route::patch('/planning/checklist/{checklist}', [PlanningController::class, 'updateChecklist'])
+            ->name('planning.checklist.update');
+
+        // Profil Siswa
+        Route::get('/profile', [ProfileController::class, 'index'])
+            ->name('profile.index');
+
+        Route::put('/profile', [ProfileController::class, 'update'])
+            ->name('profile.update');
+
+        // Konsultasi BK Siswa
         Route::get('/consultation', [ConsultationController::class, 'index'])
             ->name('consultation.index');
 
         Route::post('/consultation', [ConsultationController::class, 'store'])
             ->name('consultation.store');
-
-        // Profil Siswa
-        Route::get('/profile', [ProfileController::class, 'index'])
-            ->name('profile.index');
     });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -139,10 +169,10 @@ Route::middleware(['auth', 'role:student'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
+        Route::middleware(['auth', 'role:admin'])
+            ->prefix('admin')
+            ->name('admin.')
+            ->group(function () {
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])
             ->name('dashboard');
@@ -175,6 +205,31 @@ Route::middleware(['auth', 'role:admin'])
             [AdminAssessmentController::class, 'updateQuestion']
         );
 
+        // Import Bank Soal Excel
+        Route::get(
+            'assessments/{assessment}/questions/template',
+            [AdminAssessmentController::class, 'downloadQuestionTemplate']
+        )->name('assessments.questions.template');
+
+        Route::post(
+            'assessments/{assessment}/questions/import/preview',
+            [AdminAssessmentController::class, 'previewQuestionImport']
+        )->name('assessments.questions.import.preview');
+
+        Route::post(
+            'assessments/{assessment}/questions/import/confirm',
+            [AdminAssessmentController::class, 'confirmQuestionImport']
+        )->name('assessments.questions.import.confirm');
+
+
+        // Import Excel Universitas
+        Route::get('universities/import/template', [UniversityController::class, 'downloadImportTemplate'])
+            ->name('universities.import.template');
+        Route::post('universities/import/preview', [UniversityController::class, 'previewImport'])
+            ->name('universities.import.preview');
+        Route::post('universities/import/confirm', [UniversityController::class, 'confirmImport'])
+            ->name('universities.import.confirm');
+
         // Data Perguruan Tinggi
         Route::resource('universities', UniversityController::class);
 
@@ -190,13 +245,25 @@ Route::middleware(['auth', 'role:admin'])
             [UniversityController::class, 'destroyMajor']
         )->name('majors.destroy.custom');
 
+
+        // Import Excel Program Studi
+        Route::get('majors/import/template', [MajorController::class, 'downloadImportTemplate'])
+            ->name('majors.import.template');
+        Route::post('majors/import/preview', [MajorController::class, 'previewImport'])
+            ->name('majors.import.preview');
+        Route::post('majors/import/confirm', [MajorController::class, 'confirmImport'])
+            ->name('majors.import.confirm');
+
         // Manajemen Program Studi
         Route::resource('majors', MajorController::class);
 
         // Manajemen Pengguna
         Route::resource('users', UserController::class);
-    });
 
+        // Monitoring konsultasi BK
+        Route::get('/consultations', [AdminConsultationController::class, 'index'])->name('consultations.index');
+        Route::put('/consultations/{consultation}', [AdminConsultationController::class, 'update'])->name('consultations.update');
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -218,7 +285,9 @@ Route::middleware(['auth', 'role:counselor'])
         Route::get('/consultation', [CounselorController::class, 'consultation'])
             ->name('consultation');
 
+        Route::put('/consultation/{consultation}', [CounselorController::class, 'updateConsultation'])
+            ->name('consultation.update');
+
         Route::get('/profile', [CounselorController::class, 'profile'])
             ->name('profile');
     });
-

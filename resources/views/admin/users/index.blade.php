@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Pengguna - Admin MyUniv</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/js/app.js'])
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -22,6 +25,8 @@
     </style>
 </head>
 <body class="bg-[#F8FBFF] text-gray-800 antialiased min-h-screen">
+
+    @include('components.global-loading')
 
     <x-admin-sidebar active="users" />
 

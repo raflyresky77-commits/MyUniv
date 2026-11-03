@@ -9,7 +9,8 @@
         (request()->routeIs('admin.assessments.*') ? 'assessments' :
         (request()->routeIs('admin.universities.*') ? 'universities' :
         (request()->routeIs('admin.majors.*') ? 'majors' :
-        (request()->routeIs('admin.users.*') ? 'users' : null))))
+        (request()->routeIs('admin.users.*') ? 'users' :
+        (request()->is('admin/consultations*') ? 'consultations' : null)))))
     );
 
     $linkBase = 'group flex items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm font-semibold transition-all duration-200';
@@ -55,6 +56,14 @@
                 @if($active === 'majors') <span class="absolute inset-y-0 left-0 w-1.5 bg-[#FF7A59]"></span> @endif
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zM12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                 <span>Program Studi &amp; Jurusan</span>
+            </a>
+
+            <a href="{{ url('/admin/consultations') }}" class="{{ $linkBase }} {{ $active === 'consultations' ? $linkActive : $linkIdle }}">
+                @if($active === 'consultations') <span class="absolute inset-y-0 left-0 w-1.5 bg-[#FF7A59]"></span> @endif
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-8 4h5m-9 5h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                <span>Monitoring Konsultasi BK</span>
             </a>
 
             <a href="{{ route('admin.users.index') }}" class="{{ $linkBase }} {{ $active === 'users' ? $linkActive : $linkIdle }}">

@@ -15,7 +15,11 @@ class Student extends Model
         'birth_date',
         'address',
         'phone',
-        'school_origin',
+        'class',
+    ];
+
+    protected $casts = [
+        'birth_date' => 'date',
     ];
 
     public function user()

@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Siswa - MyUniv</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -189,8 +191,9 @@
 </head>
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
 
-    <!-- Backdrop dan Sidebar Component -->
-    <div id="sidebarBackdrop" aria-hidden="true" onclick="window.myUnivToggleStudentSidebar ? window.myUnivToggleStudentSidebar(true) : setSidebarOpen(false)" class="fixed inset-0 bg-black/50 z-40 md:hidden hidden backdrop-blur-xs transition-opacity"></div>
+    @include('components.global-loading')
+
+    <!-- Sidebar Component (termasuk backdrop mobile) -->
     <x-student.student-sidebar active="dashboard" />
 
     <!-- Topbar Component -->
@@ -200,30 +203,18 @@
     <div id="dashboardContent" class="md:ml-72 pt-24 min-h-screen flex flex-col">
         <main id="dashboardMain" class="p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto flex-1">
 
-            <!-- FITUR ONBOARDING / PERINGATAN PROFIL BELUM LENGKAP -->
-            @php
-                $isProfileIncomplete = empty($user->phone) || empty($user->class);
-            @endphp
-
-            @if($isProfileIncomplete)
-                <div class="w-[94%] sm:w-[96%] max-w-5xl mx-auto rounded-2xl bg-amber-50 border border-amber-200 px-4 py-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-                    <div class="flex items-center gap-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-extrabold text-amber-900">Lengkapi Data Profil &amp; Onboarding Kamu!</h4>
-                            <p class="text-[11px] text-amber-700 mt-0.5">Nomor telepon atau kelas kamu belum diisi. Lengkapi data diri untuk hasil peminatan dan rekomendasi yang akurat.</p>
-                        </div>
-                    </div>
-                    <a href="{{ route('student.profile.index') }}" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold rounded-xl transition shadow-xs whitespace-nowrap">
-                        Lengkapi Sekarang &rarr;
-                    </a>
-                </div>
-            @endif
-
             <!-- Welcome Header Component -->
             <x-student.welcome-header :name="$user->name ?? 'Siswa'" />
+
+            <!-- DATA RINGKASAN DASHBOARD -->
+            @php
+                $dashboardAssessmentProgress = (int) ($assessmentProgress ?? 0);
+                $dashboardAssessmentProgress = max(0, min(100, $dashboardAssessmentProgress));
+                $hasCompletedAssessment = (bool) ($hasCompletedAssessment ?? false);
+                $dashboardRecommendations = collect($recommendations ?? []);
+            @endphp
+
+            <!-- Welcome Header Component -->
 
             <!-- TOP CARDS: Asesmen (Card Expressive) & Quote Motivasi -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -233,10 +224,10 @@
                     <div class="relative w-24 h-24 flex items-center justify-center shrink-0">
                         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                             <path class="text-gray-200" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                            <path class="text-[#FF7A59]" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            <path class="text-[#FF7A59]" stroke-dasharray="{{ $dashboardAssessmentProgress }}, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
                         </svg>
                         <div class="absolute text-center">
-                            <span class="text-base font-black text-[#3650A2]">0%</span>
+                            <span class="text-base font-black text-[#3650A2]">{{ $dashboardAssessmentProgress }}%</span>
                         </div>
                     </div>
                     <div class="flex-1 text-center sm:text-left space-y-2 relative z-10">
@@ -328,8 +319,6 @@
                         <a href="{{ route('student.exploration.index') }}" class="text-xs font-extrabold text-[#FF7A59] hover:underline">Lihat Semua</a>
                     </div>
 
-                    @php $hasCompletedAssessment = false; @endphp
-
                     @if(!$hasCompletedAssessment)
                         <div class="card-shortcut-gradient rounded-[28px] p-8 text-center space-y-4 border border-indigo-100 bg-white/80">
                             <div class="w-14 h-14 bg-indigo-50 border border-indigo-100 rounded-2xl mx-auto flex items-center justify-center text-[#3650A2]">
@@ -346,28 +335,37 @@
                             </div>
                         </div>
                     @else
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div class="rounded-[24px] overflow-hidden flex flex-col justify-between group bg-white border border-indigo-100 shadow-xs hover:shadow-md transition">
-                                <div class="relative h-36 w-full overflow-hidden bg-gray-100">
-                                    <img src="{{ asset('images/BANNER-ITB.jpg') }}" alt="Banner Kampus" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/10 to-white"></div>
-                                    <div class="absolute -bottom-2 left-4 w-10 h-10 rounded-xl bg-white p-1 shadow-md border border-indigo-100 flex items-center justify-center z-10">
-                                        <img src="{{ asset('images/LOGO-ITB.png') }}" alt="Logo Univ" class="w-full h-full object-contain">
-                                    </div>
-                                    <span class="absolute top-2.5 right-2.5 px-2.5 py-0.5 bg-[#3650A2]/90 backdrop-blur-md text-white text-[9px] font-extrabold rounded-full">Teknologi</span>
-                                </div>
-                                <div class="p-5 pt-4 space-y-3 flex-1 flex flex-col justify-between">
-                                    <div class="space-y-0.5">
-                                        <h4 class="text-xs font-black text-gray-900 group-hover:text-[#3650A2] transition">Teknik Informatika</h4>
-                                        <p class="text-[11px] text-gray-600 line-clamp-2 leading-relaxed">Prospek karier luas di era digital &amp; pengembangan software.</p>
-                                    </div>
-                                    <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
-                                        <span class="text-[11px] font-semibold text-gray-500">Kesesuaian</span>
-                                        <span class="font-black text-white text-[10px] px-2.5 py-1 bg-gradient-strong rounded-lg">88% Match</span>
-                                    </div>
-                                </div>
+                        @if($dashboardRecommendations->isNotEmpty())
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                @foreach($dashboardRecommendations as $recommendation)
+                                    @php
+                                        $recommendedMajor = data_get($recommendation, 'major.name', data_get($recommendation, 'major_name', data_get($recommendation, 'name', 'Program Studi')));
+                                        $recommendedUniversity = data_get($recommendation, 'university.name', data_get($recommendation, 'university_name', 'Universitas'));
+                                        $recommendedDescription = data_get($recommendation, 'description', data_get($recommendation, 'major.description', 'Lihat informasi program studi untuk mengetahui detail lebih lanjut.'));
+                                        $recommendedMatch = data_get($recommendation, 'match_percentage', data_get($recommendation, 'match', null));
+                                    @endphp
+                                    <article class="rounded-[24px] bg-white border border-indigo-100 shadow-xs hover:shadow-md transition p-5 flex flex-col justify-between gap-4">
+                                        <div class="space-y-2">
+                                            <span class="inline-flex px-2.5 py-1 rounded-full bg-indigo-50 text-[#3650A2] text-[9px] font-extrabold">{{ $recommendedUniversity }}</span>
+                                            <h4 class="text-sm font-black text-gray-900">{{ $recommendedMajor }}</h4>
+                                            <p class="text-[11px] text-gray-600 leading-relaxed">{{ $recommendedDescription }}</p>
+                                        </div>
+                                        @if(!is_null($recommendedMatch))
+                                            <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
+                                                <span class="text-[11px] font-semibold text-gray-500">Kesesuaian</span>
+                                                <span class="font-black text-white text-[10px] px-2.5 py-1 bg-gradient-strong rounded-lg">{{ $recommendedMatch }}% Match</span>
+                                            </div>
+                                        @endif
+                                    </article>
+                                @endforeach
                             </div>
-                        </div>
+                        @else
+                            <div class="rounded-[24px] border border-indigo-100 bg-white/80 p-7 text-center space-y-2">
+                                <h4 class="text-sm font-black text-[#3650A2]">Asesmen sudah selesai!</h4>
+                                <p class="text-xs text-gray-500 leading-relaxed">Rekomendasi belum tersedia untuk ditampilkan. Kamu tetap bisa menjelajahi informasi universitas dan program studi.</p>
+                                <a href="{{ route('student.exploration.index') }}" class="inline-flex mt-2 px-4 py-2 bg-[#3650A2] hover:bg-[#1E2D62] text-white text-xs font-bold rounded-xl transition">Jelajahi Kampus &rarr;</a>
+                            </div>
+                        @endif
                     @endif
                 </div>
 
@@ -430,50 +428,6 @@
     </div>
 
     <script>
-        // Gunakan kontrol sidebar dari komponen bersama agar class/state tidak bentrok.
-        function setSidebarOpen(open) {
-            if (typeof window.myUnivToggleStudentSidebar === 'function') {
-                if (open) {
-                    const sidebar = document.getElementById('mobileSidebar');
-                    if (sidebar && !sidebar.classList.contains('is-open')) window.myUnivToggleStudentSidebar();
-                } else {
-                    window.myUnivToggleStudentSidebar(true);
-                }
-                return;
-            }
-            const sidebar = document.getElementById('mobileSidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            if (!sidebar) return;
-            const shouldOpen = Boolean(open) && window.innerWidth < 768;
-            sidebar.classList.toggle('is-open', shouldOpen);
-            sidebar.setAttribute('aria-hidden', String(!shouldOpen));
-            if (backdrop) {
-                backdrop.classList.toggle('is-visible', shouldOpen);
-                backdrop.classList.toggle('hidden', !shouldOpen);
-                backdrop.setAttribute('aria-hidden', String(!shouldOpen));
-            }
-            document.body.classList.toggle('overflow-hidden', shouldOpen);
-        }
-
-        function toggleSidebar() {
-            if (typeof window.myUnivToggleStudentSidebar === 'function') {
-                window.myUnivToggleStudentSidebar();
-                return;
-            }
-            const sidebar = document.getElementById('mobileSidebar');
-            setSidebarOpen(!(sidebar && sidebar.classList.contains('is-open')));
-        }
-
-        function initializeSidebar() { setSidebarOpen(false); }
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeSidebar, { once: true });
-        } else {
-            initializeSidebar();
-        }
-        document.addEventListener('keydown', function (event) {
-            if (event.key === 'Escape') setSidebarOpen(false);
-        });
-
         const articlesData = {
             jalur: {
                 category: "Jalur Masuk",

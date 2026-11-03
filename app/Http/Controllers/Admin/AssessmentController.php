@@ -8,6 +8,8 @@ use App\Models\Question;
 use App\Models\QuestionOption;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Exports\QuestionTemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AssessmentController extends Controller
 {
@@ -358,5 +360,221 @@ class AssessmentController extends Controller
         return redirect()
             ->route('admin.assessments.index')
             ->with('success', 'Pertanyaan berhasil dihapus.');
+    }
+
+    /**
+     * Mengunduh template Excel Bank Soal.
+     */
+    public function downloadQuestionTemplate(int $assessment)
+    {
+        Assessment::findOrFail($assessment);
+
+        return Excel::download(
+            new QuestionTemplateExport(),
+            'template-bank-soal.xlsx'
+        );
+    }
+
+    /**
+     * Membaca dan memvalidasi file Excel sebelum disimpan.
+     */
+    public function previewQuestionImport(Request $request, int $assessment)
+    {
+        Assessment::findOrFail($assessment);
+
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
+        ]);
+
+        // Baca isi sheet sebagai array mentah agar tidak bergantung pada
+        // properti custom di class QuestionImport atau heading-row mapping.
+        $sheets = Excel::toArray([], $request->file('file'));
+        $sheet = $sheets[0] ?? [];
+
+        if (count($sheet) < 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File Excel tidak memiliki baris data. Pastikan baris pertama berisi header dan baris berikutnya berisi soal.',
+                'total_questions' => 0,
+                'questions' => [],
+                'errors' => ['File Excel belum memiliki data soal.'],
+            ], 422);
+        }
+
+        // Normalisasi nama header, termasuk spasi dan BOM dari file CSV/Excel.
+        $headers = array_map(function ($header) {
+            $header = preg_replace('/^\xEF\xBB\xBF/', '', (string) $header);
+            return strtolower(trim($header));
+        }, $sheet[0]);
+
+        $preparedRows = [];
+        $errors = [];
+
+        foreach (array_slice($sheet, 1) as $index => $values) {
+            $rowNumber = $index + 2;
+            $values = array_pad($values, count($headers), null);
+            $row = [];
+
+            foreach ($headers as $columnIndex => $header) {
+                if ($header !== '') {
+                    $row[$header] = $values[$columnIndex] ?? null;
+                }
+            }
+
+            // Abaikan baris yang seluruh selnya kosong.
+            $hasData = collect($values)->contains(function ($value) {
+                return $value !== null && trim((string) $value) !== '';
+            });
+
+            if (!$hasData) {
+                continue;
+            }
+
+            $questionText = trim((string) ($row['question_text'] ?? ''));
+            $type = trim((string) ($row['type'] ?? ''));
+            $imageUrl = trim((string) ($row['image_url'] ?? ''));
+
+            if ($questionText === '') {
+                $errors[] = "Baris {$rowNumber}: Pertanyaan wajib diisi.";
+            }
+
+            if (!in_array($type, [
+                'multiple_choice',
+                'likert',
+                'preference',
+                'image_choice',
+                'visual',
+            ], true)) {
+                $errors[] = "Baris {$rowNumber}: Tipe soal tidak valid.";
+            }
+
+            if ($imageUrl !== '' && !filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                $errors[] = "Baris {$rowNumber}: URL gambar tidak valid.";
+            }
+
+            $options = [];
+
+            for ($i = 1; $i <= 10; $i++) {
+                $optionText = trim((string) ($row["option_{$i}"] ?? ''));
+                $score = $row["score_{$i}"] ?? null;
+                $interestCategoryId = $row["interest_category_{$i}"] ?? null;
+
+                if ($optionText === '') {
+                    if (($score !== null && $score !== '') || ($interestCategoryId !== null && $interestCategoryId !== '')) {
+                        $errors[] = "Baris {$rowNumber}: Data skor atau kategori opsi {$i} tidak memiliki teks pilihan.";
+                    }
+                    continue;
+                }
+
+                if ($score !== null && $score !== '' && !is_numeric($score)) {
+                    $errors[] = "Baris {$rowNumber}: Skor opsi {$i} harus berupa angka.";
+                }
+
+                if (
+                    $interestCategoryId !== null &&
+                    $interestCategoryId !== '' &&
+                    (
+                        !is_numeric($interestCategoryId) ||
+                        !DB::table('interest_categories')->where('id', $interestCategoryId)->exists()
+                    )
+                ) {
+                    $errors[] = "Baris {$rowNumber}: ID kategori opsi {$i} tidak ditemukan.";
+                }
+
+                $options[] = [
+                    'option_text' => $optionText,
+                    'score' => ($score !== null && $score !== '') ? $score : 0,
+                    'interest_category_id' => ($interestCategoryId !== null && $interestCategoryId !== '')
+                        ? $interestCategoryId
+                        : null,
+                ];
+            }
+
+            if (count($options) < 2) {
+                $errors[] = "Baris {$rowNumber}: Minimal harus memiliki 2 pilihan jawaban.";
+            }
+
+            $preparedRows[] = [
+                'question_text' => $questionText,
+                'type' => $type,
+                'image_url' => $imageUrl !== '' ? $imageUrl : null,
+                'options' => $options,
+            ];
+        }
+
+        if (empty($preparedRows)) {
+            $errors[] = 'File Excel belum memiliki data soal.';
+        }
+
+        $sessionKey = "question_import_{$assessment}_" . auth()->id();
+
+        session()->put($sessionKey, [
+            'rows' => $preparedRows,
+            'errors' => $errors,
+        ]);
+
+        return response()->json([
+            'success' => empty($errors),
+            'message' => empty($errors)
+                ? 'File berhasil divalidasi. Periksa preview sebelum menyimpan.'
+                : 'Ditemukan kesalahan pada file Excel.',
+            'total_questions' => count($preparedRows),
+            'questions' => $preparedRows,
+            'errors' => $errors,
+        ], empty($errors) ? 200 : 422);
+    }
+
+    /**
+     * Menyimpan soal hasil import setelah Admin mengonfirmasi.
+     */
+    public function confirmQuestionImport(int $assessment)
+    {
+        $assessmentData = Assessment::findOrFail($assessment);
+
+        $sessionKey = "question_import_{$assessment}_" . auth()->id();
+        $importData = session()->get($sessionKey);
+
+        if (!$importData || !empty($importData['errors']) || empty($importData['rows'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data import tidak tersedia atau masih memiliki kesalahan. Silakan upload ulang.',
+            ], 422);
+        }
+
+        $totalQuestions = count($importData['rows']);
+
+        DB::transaction(function () use ($importData, $assessmentData) {
+            foreach ($importData['rows'] as $row) {
+                $question = Question::create([
+                    'assessment_id' => $assessmentData->id,
+                    'category_id' => 1,
+                    'subtest_id' => null,
+                    'question_text' => $row['question_text'],
+                    'type' => $row['type'],
+                    'is_active' => true,
+                    'image_url' => $row['image_url'],
+                ]);
+
+                foreach ($row['options'] as $option) {
+                    QuestionOption::create([
+                        'question_id' => $question->id,
+                        'option_text' => $option['option_text'],
+                        'score' => $option['score'],
+                        'interest_category_id' => $option['interest_category_id'],
+                    ]);
+                }
+            }
+        });
+
+        session()->forget($sessionKey);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$totalQuestions} soal berhasil diimpor.",
+            'questions_count' => Question::where(
+                'assessment_id',
+                $assessmentData->id
+            )->count(),
+        ]);
     }
 }

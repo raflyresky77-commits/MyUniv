@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyUniv - Platform Peminatan & Karir</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -56,6 +58,8 @@
     </style>
 </head>
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
+
+    @include('components.global-loading')
 
     <!-- Backdrop Gelap saat Sidebar Mobile Terbuka -->
     <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-transparent z-40 md:hidden hidden transition-opacity"></div>
@@ -169,6 +173,17 @@
                 </div>
             @endif
 
+            @if ($errors->any())
+                <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm">
+                    <p class="font-bold mb-2">Profil belum berhasil disimpan:</p>
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- Banner reusable MyUniv -->
             <x-student.banner
                 eyebrow="Pengaturan Akun"
@@ -186,7 +201,7 @@
                     </div>
                     <div class="space-y-1.5">
                         <h3 class="text-lg sm:text-xl font-black text-gray-900 tracking-tight" id="cardName">{{ $user->name ?? 'Anggia Tresa Putri' }}</h3>
-                        <p class="text-xs font-semibold text-gray-500">Siswa &bull; <span class="text-[#3650A2] font-bold" id="cardClass">{{ $user->class ?? 'XII RPL' }}</span></p>
+                        <p class="text-xs font-semibold text-gray-500">Siswa &bull; <span class="text-[#3650A2] font-bold" id="cardClass">{{ $student->class ?? 'Belum diisi' }}</span></p>
                         <div>
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200/80 text-[10px] font-extrabold rounded-full tracking-wider uppercase shadow-2xs">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -217,27 +232,35 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <label class="block text-xs font-extrabold text-gray-600">Nama Lengkap</label>
-                        <input type="text" id="displayField-name" value="{{ $user->name ?? 'Anggia Tresa Putri' }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
+                        <input type="text" value="{{ $user->name }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
                     </div>
-
                     <div class="space-y-2">
-                        <label class="block text-xs font-extrabold text-gray-600">No. Telepon</label>
-                        <input type="text" id="displayField-phone" value="{{ $user->phone ?? '081234567890' }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
+                        <label class="block text-xs font-extrabold text-gray-600">Email</label>
+                        <input type="email" value="{{ $user->email }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
                     </div>
-
+                    <div class="space-y-2">
+                        <label class="block text-xs font-extrabold text-gray-600">Nomor Telepon</label>
+                        <input type="text" value="{{ $student->phone }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
+                    </div>
                     <div class="space-y-2">
                         <label class="block text-xs font-extrabold text-gray-600">Kelas</label>
-                        <input type="text" id="displayField-class" value="{{ $user->class ?? 'XII RPL' }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
+                        <input type="text" value="{{ $student->class }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
                     </div>
-
                     <div class="space-y-2">
-                        <label class="block text-xs font-extrabold text-gray-600">Status Akun</label>
-                        <input type="text" value="Aktif &amp; Terhubung" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-emerald-600 focus:outline-none">
+                        <label class="block text-xs font-extrabold text-gray-600">NISN</label>
+                        <input type="text" value="{{ $student->nisn }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
                     </div>
-
-                    <div class="space-y-2 sm:col-span-2">
-                        <label class="block text-xs font-extrabold text-gray-600">Email</label>
-                        <input type="email" id="displayField-email" value="{{ $user->email ?? 'anggia@myuniv.test' }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
+                    <div class="space-y-2">
+                        <label class="block text-xs font-extrabold text-gray-600">Gender</label>
+                        <input type="text" value="{{ $student->gender }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-extrabold text-gray-600">Birth Date</label>
+                        <input type="text" value="{{ $student->birth_date?->format('d/m/Y') }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs font-extrabold text-gray-600">Kota / Daerah Domisili</label>
+                        <input type="text" value="{{ $student->address }}" readonly class="input-custom w-full px-4.5 py-3.5 rounded-2xl bg-white/80 border border-indigo-100 text-xs font-semibold text-gray-800 focus:outline-none">
                     </div>
                 </div>
             </x-card>
@@ -272,30 +295,68 @@
             </div>
 
             <!-- Form Edit dengan Penanganan JavaScript/AJAX Langsung -->
-            <form id="profileEditForm" onsubmit="handleProfileUpdate(event)" class="space-y-4">
+            <form id="profileEditForm"
+                action="{{ route('student.profile.update') }}"
+                method="POST"
+                class="space-y-4">
                 @csrf
+                @method('PUT')
 
-                <div class="space-y-1.5">
-                    <label class="block text-xs font-extrabold text-gray-700">Nama Lengkap</label>
-                    <input type="text" id="inputName" name="name" value="{{ $user->name ?? 'Anggia Tresa Putri' }}" required class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
-                </div>
-
-                <div class="space-y-1.5">
-                    <label class="block text-xs font-extrabold text-gray-700">Email</label>
-                    <input type="email" id="inputEmail" name="email" value="{{ $user->email ?? 'anggia@myuniv.test' }}" required class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-4 max-h-[65vh] overflow-y-auto pr-1">
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-extrabold text-gray-700">No. Telepon</label>
-                        <input type="text" id="inputPhone" name="phone" value="{{ $user->phone ?? '081234567890' }}" class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
+                        <label class="block text-xs font-extrabold text-gray-700">Nama Lengkap</label>
+                        <input type="text" name="name" value="{{ old('name', $user->name) }}" required
+                            class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
                     </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-extrabold text-gray-700">Email</label>
+                        <input type="email" value="{{ $user->email }}" readonly
+                            class="input-custom w-full px-4 py-3 rounded-xl bg-gray-100 border border-gray-200 text-xs font-semibold text-gray-500 focus:outline-none">
+                        <p class="text-[10px] text-gray-400">Email terhubung otomatis dengan akun login dan tidak perlu diubah di sini.</p>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-extrabold text-gray-700">Nomor Telepon</label>
+                        <input type="text" name="phone" value="{{ old('phone', $student->phone) }}" required
+                            class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
+                    </div>
+
                     <div class="space-y-1.5">
                         <label class="block text-xs font-extrabold text-gray-700">Kelas</label>
-                        <input type="text" id="inputClass" name="class" value="{{ $user->class ?? 'XII RPL' }}" class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
+                        <input type="text" name="class" value="{{ old('class', $student->class) }}" placeholder="Contoh: XII RPL-2" required
+                            class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
+                        <p class="text-[10px] text-gray-400">Contoh format penulisan: XII RPL-2.</p>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-extrabold text-gray-700">NISN</label>
+                        <input type="text" name="nisn" inputmode="numeric" maxlength="10" value="{{ old('nisn', $student->nisn) }}" required
+                            class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-extrabold text-gray-700">Gender</label>
+                        <select name="gender" required class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
+                            <option value="">Pilih gender</option>
+                            <option value="Laki-laki" @selected(old('gender', $student->gender) === 'Laki-laki')>Laki-laki</option>
+                            <option value="Perempuan" @selected(old('gender', $student->gender) === 'Perempuan')>Perempuan</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-extrabold text-gray-700">Birth Date / Tanggal Lahir</label>
+                        <input type="date" name="birth_date" value="{{ old('birth_date', $student->birth_date?->format('Y-m-d')) }}" max="{{ now()->toDateString() }}" required
+                            class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="block text-xs font-extrabold text-gray-700">Kota / Daerah Domisili</label>
+                        <input type="text" name="address" value="{{ old('address', $student->address) }}" placeholder="Contoh: Bandung" required
+                            class="input-custom w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-xs font-semibold text-gray-800 focus:outline-none">
+                        <p class="text-[10px] text-gray-400">Cukup isi kota atau daerah domisili, tidak perlu alamat rumah lengkap.</p>
                     </div>
                 </div>
-
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                     <x-button type="button" onclick="closeEditModal()" variant="outline" size="md" class="px-5 py-2.5 rounded-xl !bg-gray-100 hover:!bg-gray-200 !text-gray-600 text-xs font-bold transition">
                         Batal
@@ -338,45 +399,7 @@
             container.classList.add('scale-95');
         }
 
-        // Fungsi Fungsional Tombol Simpan Perubahan (Client & Server Ready)
-        function handleProfileUpdate(event) {
-            event.preventDefault();
 
-            const name = document.getElementById('inputName').value;
-            const email = document.getElementById('inputEmail').value;
-            const phone = document.getElementById('inputPhone').value;
-            const cls = document.getElementById('inputClass').value;
-
-            const saveBtn = document.getElementById('saveButton');
-            saveBtn.innerHTML = `<span>Menyimpan...</span>`;
-            saveBtn.disabled = true;
-
-            setTimeout(() => {
-                document.getElementById('displayField-name').value = name;
-                document.getElementById('displayField-email').value = email;
-                document.getElementById('displayField-phone').value = phone;
-                document.getElementById('displayField-class').value = cls;
-
-                document.getElementById('cardName').innerText = name;
-                document.getElementById('cardClass').innerText = cls;
-                document.getElementById('headerName').innerText = name;
-                document.getElementById('headerAvatar').innerText = name.substring(0, 2).toUpperCase();
-
-                saveBtn.innerHTML = `<span>Simpan Perubahan</span>`;
-                saveBtn.disabled = false;
-                closeEditModal();
-
-                const alertBox = document.getElementById('alertSuccess');
-                alertBox.classList.remove('hidden');
-                alertBox.classList.add('flex');
-
-                setTimeout(() => {
-                    alertBox.classList.remove('flex');
-                    alertBox.classList.add('hidden');
-                }, 4000);
-
-            }, 600);
-        }
     </script>
 </body>
 </html>

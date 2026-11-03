@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Bank Soal - MyUniv</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/js/app.js'])
+
     <!-- Tambahan CDN SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,6 +31,8 @@
     </style>
 </head>
 <body class="bg-[#F8FBFF] text-gray-800 antialiased">
+
+    @include('components.global-loading')
 
     <!-- Floating Toast Notification (Pop-up Sukses/Error) -->
     @if(session('success'))
@@ -307,6 +312,67 @@
                 </div>
 
                 <div class="space-y-3">
+
+                    <!-- Panel Import Excel Bank Soal -->
+                    <div class="bg-white p-5 rounded-2xl border border-indigo-100 shadow-xs space-y-4">
+                        <div>
+                            <h4 class="text-xs font-extrabold text-[#3650A2] uppercase tracking-wider">
+                                Import Bank Soal dari Excel
+                            </h4>
+                            <p class="text-[11px] text-gray-500 mt-1">
+                                Tambahkan banyak soal sekaligus menggunakan file Excel.
+                            </p>
+                        </div>
+
+                        <a id="downloadQuestionTemplate"
+                        href="#"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold hover:bg-indigo-100 transition">
+                            Download Template Excel
+                        </a>
+
+                        <form id="questionImportForm" class="space-y-3">
+                            @csrf
+
+                            <div>
+                                <label for="questionImportFile"
+                                    class="block text-xs font-bold text-gray-700 mb-1.5">
+                                    Pilih File Excel
+                                </label>
+
+                                <input type="file"
+                                    id="questionImportFile"
+                                    name="file"
+                                    accept=".xlsx,.xls,.csv"
+                                    required
+                                    class="w-full text-xs border border-gray-200 rounded-xl p-3 bg-gray-50">
+                            </div>
+
+                            <button type="submit"
+                                    id="previewImportButton"
+                                    class="px-5 py-2.5 bg-[#3650A2] text-white text-xs font-bold rounded-xl hover:bg-indigo-900 transition">
+                                Upload & Preview
+                            </button>
+                        </form>
+
+                        <div id="questionImportPreview" class="hidden space-y-3">
+                            <div id="questionImportSummary"
+                                class="text-xs font-semibold text-gray-700"></div>
+
+                            <div id="questionImportErrors"
+                                class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 space-y-1">
+                            </div>
+
+                            <div id="questionImportQuestions"
+                                class="max-h-60 overflow-y-auto space-y-2">
+                            </div>
+
+                            <button type="button"
+                                    id="confirmQuestionImport"
+                                    class="hidden px-5 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-xl hover:bg-emerald-700 transition">
+                                Konfirmasi & Simpan Semua Soal
+                            </button>
+                        </div>
+                    </div>
                     <h4 class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">Daftar Pertanyaan Tersimpan</h4>
                     <div id="questionsListContainer" class="space-y-2" aria-live="polite">
                         <div class="p-4 bg-white border border-gray-200 rounded-xl text-xs text-gray-500">
@@ -460,6 +526,170 @@
         let currentStoreUrl = null;
         let currentDeleteBase = null;
         let currentUpdateBase = null;
+        let currentImportPreviewValid = false;
+
+        const importForm = document.getElementById('questionImportForm');
+        const importFile = document.getElementById('questionImportFile');
+        const importPreview = document.getElementById('questionImportPreview');
+        const importSummary = document.getElementById('questionImportSummary');
+        const importErrors = document.getElementById('questionImportErrors');
+        const importQuestions = document.getElementById('questionImportQuestions');
+        const confirmImportButton = document.getElementById('confirmQuestionImport');
+        const previewImportButton = document.getElementById('previewImportButton');
+
+        function getImportUrl(action) {
+            return `/admin/assessments/${currentAssessmentId}/questions/import/${action}`;
+        }
+
+        function resetImportPreview() {
+            currentImportPreviewValid = false;
+            importPreview?.classList.add('hidden');
+            confirmImportButton?.classList.add('hidden');
+            importErrors?.classList.add('hidden');
+            importQuestions?.replaceChildren();
+            if (importSummary) importSummary.textContent = '';
+        }
+
+        importFile?.addEventListener('change', resetImportPreview);
+
+        importForm?.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            if (!currentAssessmentId || !importFile.files.length) return;
+
+            const formData = new FormData(this);
+
+            previewImportButton.disabled = true;
+            previewImportButton.textContent = 'Memeriksa File...';
+
+            resetImportPreview();
+
+            window.MyUnivLoading?.show();
+
+            try {
+                const response = await fetch(getImportUrl('preview'), {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                importPreview.classList.remove('hidden');
+                importSummary.textContent =
+                    `Total soal ditemukan: ${data.total_questions || 0}`;
+
+                if (data.errors?.length) {
+                    importErrors.classList.remove('hidden');
+                    importErrors.replaceChildren();
+
+                    data.errors.forEach(error => {
+                        const item = document.createElement('p');
+                        item.textContent = error;
+                        importErrors.appendChild(item);
+                    });
+                }
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'File Excel memiliki kesalahan.');
+                }
+
+                currentImportPreviewValid = true;
+
+                data.questions.forEach((question, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs';
+
+                    const title = document.createElement('p');
+                    title.className = 'font-bold text-gray-800';
+                    title.textContent = `${index + 1}. ${question.question_text}`;
+
+                    const detail = document.createElement('p');
+                    detail.className = 'text-gray-500 mt-1';
+                    detail.textContent =
+                        `${question.type} • ${question.options.length} opsi jawaban`;
+
+                    item.append(title, detail);
+                    importQuestions.appendChild(item);
+                });
+
+                confirmImportButton.classList.remove('hidden');
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Import gagal',
+                    text: error.message
+                });
+            } finally {
+                window.MyUnivLoading?.hide();
+                previewImportButton.disabled = false;
+                previewImportButton.textContent = 'Upload & Preview';
+            }
+        });
+
+        confirmImportButton?.addEventListener('click', async function () {
+            if (!currentImportPreviewValid) return;
+
+            const result = await Swal.fire({
+                icon: 'question',
+                title: 'Simpan soal?',
+                text: 'Semua soal pada preview akan dimasukkan ke paket asesmen ini.',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Simpan',
+                cancelButtonText: 'Batal'
+            });
+
+            if (!result.isConfirmed) return;
+
+            this.disabled = true;
+            this.textContent = 'Menyimpan...';
+
+            window.MyUnivLoading?.show();
+
+            try {
+                const response = await fetch(getImportUrl('confirm'), {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': importForm.querySelector('[name="_token"]').value
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Gagal menyimpan soal.');
+                }
+
+                currentImportPreviewValid = false;
+                importForm.reset();
+                resetImportPreview();
+
+                await loadQuestions();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Import Berhasil!',
+                    text: data.message
+                });
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Import Gagal',
+                    text: error.message
+                });
+            } finally {
+                window.MyUnivLoading?.hide();
+                this.disabled = false;
+                this.textContent = 'Konfirmasi & Simpan Semua Soal';
+            }
+        });
 
         const manageModal = document.getElementById('manageQuestionsModal');
         const questionForm = document.getElementById('addQuestionForm');
@@ -568,20 +798,35 @@
         updateQuestionTypeForm();
 
         document.querySelectorAll('.manage-questions-btn').forEach(button => {
-            button.addEventListener('click', async function () {
-                currentAssessmentId = this.dataset.id;
-                currentListUrl = this.dataset.listUrl;
-                currentStoreUrl = this.dataset.storeUrl;
-                currentDeleteBase = this.dataset.deleteBase;
-                currentUpdateBase = this.dataset.deleteBase;
-                document.getElementById('modalAssessmentTitle').textContent = 'Kelola Soal: ' + this.dataset.title;
-                questionForm.action = currentStoreUrl;
-                questionForm.reset();
-                updateQuestionTypeForm();
-                manageModal.classList.remove('hidden');
-                await loadQuestions();
-            });
+        button.addEventListener('click', async function () {
+            currentAssessmentId = this.dataset.id;
+            currentListUrl = this.dataset.listUrl;
+            currentStoreUrl = this.dataset.storeUrl;
+            currentDeleteBase = this.dataset.deleteBase;
+            currentUpdateBase = this.dataset.deleteBase;
+
+            // Atur URL template sesuai asesmen yang dipilih
+            const templateLink = document.getElementById('downloadQuestionTemplate');
+            if (templateLink) {
+                templateLink.href = `/admin/assessments/${currentAssessmentId}/questions/template`;
+            }
+
+            // Reset form dan preview import
+            importForm?.reset();
+            resetImportPreview();
+
+            document.getElementById('modalAssessmentTitle').textContent =
+                'Kelola Soal: ' + this.dataset.title;
+
+            questionForm.action = currentStoreUrl;
+            questionForm.reset();
+            updateQuestionTypeForm();
+
+            manageModal.classList.remove('hidden');
+
+            await loadQuestions();
         });
+    });
 
         function closeManageQuestionsModal() {
             manageModal?.classList.add('hidden');
@@ -590,6 +835,8 @@
         async function loadQuestions() {
             if (!questionsContainer || !currentListUrl) return;
             questionsContainer.innerHTML = '<div class="p-4 bg-white border rounded-xl text-xs text-gray-500">Memuat daftar soal...</div>';
+            window.MyUnivLoading?.show();
+
             try {
                 const response = await fetch(currentListUrl, {
                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
@@ -599,6 +846,8 @@
                 renderQuestions(data.questions || []);
             } catch (error) {
                 questionsContainer.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600">${escapeHtml(error.message)}</div>`;
+            } finally {
+                window.MyUnivLoading?.hide();
             }
         }
 
@@ -739,6 +988,8 @@
         editQuestionType?.addEventListener('change', updateEditQuestionTypeForm);
 
         async function openEditQuestionModal(question) {
+            window.MyUnivLoading?.show();
+
             try {
                 const response = await fetch(`${currentUpdateBase}/${question.id}`, {
                     headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
@@ -760,6 +1011,8 @@
                 editQuestionModal.classList.remove('hidden');
             } catch (error) {
                 Swal.fire({ icon: 'error', title: 'Gagal membuka edit soal', text: error.message });
+            } finally {
+                window.MyUnivLoading?.hide();
             }
         }
 
@@ -776,6 +1029,8 @@
                 Swal.fire({ icon: 'warning', title: 'Opsi belum cukup', text: 'Tipe soal ini memerlukan minimal 2 opsi.' }); return;
             }
             button.disabled = true; button.textContent = 'Menyimpan...';
+            window.MyUnivLoading?.show();
+
             try {
                 const response = await fetch(this.action, {
                     method: 'POST',
@@ -788,7 +1043,11 @@
                 Swal.fire({ icon: 'success', title: 'Berhasil!', text: data.message || 'Soal berhasil diperbarui.', timer: 1500, showConfirmButton: false });
             } catch (error) {
                 Swal.fire({ icon: 'error', title: 'Gagal menyimpan perubahan', text: error.message });
-            } finally { button.disabled = false; button.textContent = 'Simpan Perubahan'; }
+            } finally {
+                window.MyUnivLoading?.hide();
+                button.disabled = false;
+                button.textContent = 'Simpan Perubahan';
+            }
         });
 
         questionForm?.addEventListener('submit', async function (event) {
@@ -800,6 +1059,8 @@
 
             submitButton.disabled = true;
             submitButton.textContent = 'Menyimpan...';
+            window.MyUnivLoading?.show();
+
             try {
                 const response = await fetch(currentStoreUrl || this.action, {
                     method: 'POST',
@@ -818,6 +1079,7 @@
             } catch (error) {
                 Swal.fire({ icon: 'error', title: 'Gagal menyimpan', text: error.message });
             } finally {
+                window.MyUnivLoading?.hide();
                 submitButton.disabled = false;
                 submitButton.textContent = 'Simpan Soal';
             }
@@ -830,6 +1092,9 @@
             });
             if (!result.isConfirmed) return;
             const token = questionForm.querySelector('[name="_token"]')?.value;
+
+            window.MyUnivLoading?.show();
+
             try {
                 const response = await fetch(`${currentDeleteBase}/${questionId}`, {
                     method: 'DELETE',
@@ -841,6 +1106,8 @@
                 Swal.fire({ icon: 'success', title: 'Terhapus!', text: data.message || 'Soal berhasil dihapus.', timer: 1500, showConfirmButton: false });
             } catch (error) {
                 Swal.fire({ icon: 'error', title: 'Gagal menghapus', text: error.message });
+            } finally {
+                window.MyUnivLoading?.hide();
             }
         }
 

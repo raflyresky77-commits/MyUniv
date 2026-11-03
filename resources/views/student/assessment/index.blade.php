@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -62,6 +61,8 @@
 </head>
 
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
+
+    @include('components.global-loading')
 
     @php
         // Nilai default agar halaman tetap aman saat variabel belum dikirim controller.

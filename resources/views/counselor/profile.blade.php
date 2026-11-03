@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil - Dashboard Guru BK - MyUniv</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F7FE; }
@@ -27,6 +31,9 @@
     </style>
 </head>
 <body class="bg-[#F4F7FE] min-h-screen text-gray-800 flex antialiased">
+
+    @include('components.global-loading')
+
     {{-- Komponen navigasi bersama Guru BK --}}
     <x-counselor.sidebar active="profile" />
 
@@ -51,37 +58,55 @@
                     </span>
                     <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-sm">Profil Guru BK</h2>
                     <p class="text-gray-200 text-sm sm:text-base leading-relaxed font-medium drop-shadow">
-                        Informasi akun dan pengaturan profil profesional Bu Eli Asrifah S. Pd.
+                        Informasi akun dan pengaturan profil profesional {{ $user->name ?? 'Guru BK' }}.
                     </p>
                 </div>
             </div>
 
             <!-- Kartu Detail Profil -->
             <div class="glass-card p-6 sm:p-8 rounded-[32px] space-y-6 max-w-3xl">
-                <div class="flex items-center gap-5 pb-6 border-b border-gray-200/80">
-                    <div class="w-20 h-20 rounded-2xl bg-gradient-strong text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-indigo-900/20">EA</div>
-                    <div>
-                        <h3 class="text-xl font-extrabold text-gray-900 tracking-tight">Eli Asrifah S. Pd.</h3>
-                        <p class="text-xs font-semibold text-indigo-600 mt-0.5">Guru Bimbingan Konseling (BK)</p>
-                    </div>
+            <div class="flex items-center gap-5 pb-6 border-b border-gray-200/80">
+                <div class="w-20 h-20 rounded-2xl bg-gradient-strong text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-indigo-900/20">
+                    {{ strtoupper(substr($user->name ?? 'G', 0, 2)) }}
                 </div>
 
-                <div class="space-y-4 text-sm">
-                    <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
-                        <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Peran / Role Sistem</span>
-                        <span class="font-extrabold text-[#3650A2] px-3 py-1 bg-indigo-50 rounded-xl w-fit">Counselor</span>
-                    </div>
-                    <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
-                        <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Status Akun</span>
-                        <span class="font-extrabold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-xs w-fit">Aktif & Terverifikasi</span>
-                    </div>
-                    <div class="flex flex-col sm:flex-row sm:justify-between py-3 gap-1">
-                        <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Institusi Mitra</span>
-                        <span class="font-extrabold text-gray-800">SMK Budi Bakti Ciwidey</span>
-                    </div>
+                <div>
+                    <h3 class="text-xl font-extrabold text-gray-900 tracking-tight">
+                        {{ $user->name ?? 'Guru BK' }}
+                    </h3>
+                    <p class="text-xs font-semibold text-indigo-600 mt-0.5">
+                        Guru Bimbingan Konseling (BK)
+                    </p>
                 </div>
             </div>
 
+            <div class="space-y-4 text-sm">
+                <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
+                    <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Email Akun</span>
+                    <span class="font-semibold text-gray-800">{{ $user->email ?? '-' }}</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
+                    <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Peran / Role Sistem</span>
+                    <span class="font-extrabold text-[#3650A2] px-3 py-1 bg-indigo-50 rounded-xl w-fit">Counselor</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
+                    <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">NIP</span>
+                    <span class="font-semibold text-gray-800">{{ $teacher->nip ?? 'Belum diisi' }}</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
+                    <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Nomor Telepon</span>
+                    <span class="font-semibold text-gray-800">{{ $teacher->phone ?? 'Belum diisi' }}</span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
+                    <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Institusi</span>
+                    <span class="font-extrabold text-gray-800">SMK Budi Bakti Ciwidey</span>
+                </div>
+            </div>
+        </div>
         </main>
     </div>
 </body>

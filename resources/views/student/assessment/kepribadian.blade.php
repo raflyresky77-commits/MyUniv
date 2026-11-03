@@ -52,6 +52,8 @@
 
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
 
+    @include('components.global-loading')
+
     {{-- Backdrop dikelola oleh komponen sidebar reusable. --}}
 
     {{-- Sidebar siswa --}}

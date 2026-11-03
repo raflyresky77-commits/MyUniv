@@ -14,8 +14,11 @@
     <!-- Memuat Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    @vite(['resources/js/app.js'])
+
     <!-- Memuat CSS tambahan dari masing-masing halaman -->
     @stack('styles')
+
 </head>
 
 <!--
@@ -24,10 +27,13 @@
 -->
 <body class="@yield('body-class', 'min-h-screen')">
 
+    @include('components.global-loading')
+
     <!-- Tempat konten utama dari masing-masing halaman -->
     @yield('content')
 
     <!-- Memuat JavaScript tambahan dari masing-masing halaman -->
     @stack('scripts')
+
 </body>
 </html>

@@ -9,28 +9,49 @@ class EducationPlan extends Model
 {
     use HasFactory;
 
-    /**
-     * Nama tabel yang digunakan di database.
-     * Sesuai dengan spesifikasi PRD untuk perencanaan studi siswa.
-     */
     protected $table = 'education_plans';
 
-    /**
-     * Atribut yang dapat diisi secara massal (mass assignable).
-     */
     protected $fillable = [
-        'user_id',
+        'student_id',
         'title',
-        'target_date',
-        'status', // pending, in_progress, completed
+        'description',
+        'target_major_id',
+        'alternative_major_id',
+        'target_university_id',
+        'alternative_university_id',
+        'admission_path',
+        'career',
+        'status',
         'notes',
     ];
 
-    /**
-     * Relasi kebalikannya: Rencana pendidikan ini milik siapa (User).
-     */
-    public function user()
+    public function student()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Student::class);
+    }
+
+    public function targetMajor()
+    {
+        return $this->belongsTo(Major::class, 'target_major_id');
+    }
+
+    public function alternativeMajor()
+    {
+        return $this->belongsTo(Major::class, 'alternative_major_id');
+    }
+
+    public function targetUniversity()
+    {
+        return $this->belongsTo(University::class, 'target_university_id');
+    }
+
+    public function alternativeUniversity()
+    {
+        return $this->belongsTo(University::class, 'alternative_university_id');
+    }
+
+    public function checklists()
+    {
+        return $this->hasMany(PlanChecklist::class, 'plan_id');
     }
 }

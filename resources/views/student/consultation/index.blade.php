@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Konsultasi BK - MyUniv</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,6 +37,8 @@
     </style>
 </head>
 <body class="bg-[#F4F7FE] text-gray-800 antialiased">
+
+    @include('components.global-loading')
 
     <!-- Backdrop Mobile Sidebar -->
     <div id="sidebarBackdrop" onclick="closeSidebar()" class="fixed inset-0 z-40 hidden bg-transparent md:hidden transition-none" style="background: transparent !important; opacity: 1 !important; backdrop-filter: none !important;" aria-hidden="true"></div>
@@ -71,128 +75,63 @@
                 </div>
             </section>
 
-            <!-- GRID UTAMA: Daftar Jadwal & Info Guru BK -->
+            @if (session('success'))
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-700">{{ session('success') }}</div>
+            @endif
+            @if ($errors->any())
+                <div class="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700">
+                    <p class="font-bold">Pengajuan belum dapat dikirim:</p>
+                    <ul class="mt-1 list-disc pl-5">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                <!-- Kolom Kiri & Tengah: Riwayat / Jadwal Konsultasi Aktif (2 Kolom) -->
-                <div class="lg:col-span-2 space-y-6">
+                <section class="lg:col-span-2 space-y-5">
                     <div class="flex items-center justify-between px-2">
-                        <div>
-                            <span class="text-[10px] font-black text-[#FF7A59] uppercase tracking-widest block">Status Sesi</span>
-                            <h3 class="text-xl font-black text-[#3650A2]">Jadwal Konsultasi Anda</h3>
-                        </div>
-                        <span class="text-xs font-semibold text-gray-500">Total: 2 Sesi</span>
+                        <div><span class="text-[10px] font-black text-[#FF7A59] uppercase tracking-widest">Status Sesi</span><h3 class="text-xl font-black text-[#3650A2]">Jadwal Konsultasi Anda</h3></div>
+                        <span class="text-xs font-semibold text-gray-500">Total: {{ $consultations->count() }} pengajuan</span>
                     </div>
 
-                    <div class="space-y-4">
-                        <!-- Sesi 1: Status Disetujui / Mendatang (Online) -->
-                        <x-card variant="strong" class="card-interactive-strong !rounded-[40px] !p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group relative overflow-hidden">
-                            <div aria-hidden="true" class="absolute right-0 top-0 bottom-0 w-3 bg-[#FF7A59] pointer-events-none"></div>
-                            <div class="flex items-start gap-4">
-                                <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center text-[#3650A2] shrink-0 font-bold shadow-sm">
-                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <h4 class="text-base font-black text-gray-900 group-hover:text-[#3650A2] transition">Diskusi Jalur SNBP &amp; Nilai Rapor</h4>
-                                        <span class="px-3 py-0.5 bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-extrabold rounded-full">Disetujui</span>
-                                        <!-- Badge Metode -->
-                                        <span class="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold rounded-md">💻 Online</span>
-                                    </div>
-                                    <p class="text-xs text-gray-600">Guru Pembimbing: <strong class="text-gray-800">Drs. H. Ahmad Supriatna, M.Pd.</strong></p>
-                                    <div class="flex items-center gap-4 text-xs font-semibold text-gray-500 pt-1">
-                                        <span class="flex items-center gap-1"><svg class="w-4 h-4 text-[#3650A2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> Rabu, 14 Okt 2026</span>
-                                        <span class="flex items-center gap-1"><svg class="w-4 h-4 text-[#FF7A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 10.00 WIB</span>
-                                    </div>
-                                </div>
+                    @forelse ($consultations as $consultation)
+                        <x-card variant="strong" class="!rounded-3xl !p-6 space-y-3">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h4 class="font-black text-gray-900">{{ $consultation->topic }}</h4>
+                                @php($statusLabels = ['pending' => 'Menunggu', 'approved' => 'Disetujui', 'rejected' => 'Ditolak', 'completed' => 'Selesai'])
+                                <span class="rounded-full px-3 py-1 text-[10px] font-extrabold {{ $consultation->status === 'approved' ? 'bg-emerald-50 text-emerald-700' : ($consultation->status === 'rejected' ? 'bg-red-50 text-red-700' : ($consultation->status === 'completed' ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-700')) }}">{{ $statusLabels[$consultation->status] ?? ucfirst($consultation->status) }}</span>
+                                <span class="rounded-lg bg-indigo-50 px-2.5 py-1 text-[10px] font-bold text-indigo-700">{{ $consultation->method === 'online' ? 'Online' : 'Offline' }}</span>
                             </div>
-                            <div class="shrink-0 w-full sm:w-auto flex sm:flex-col justify-end">
-                                <a href="#" class="w-full sm:w-auto text-center px-5 py-2.5 bg-[#3650A2] hover:bg-[#1E2D62] text-white text-xs font-extrabold rounded-xl transition shadow-md shadow-indigo-900/20">
-                                    Masuk Ruangan &rarr;
-                                </a>
-                            </div>
+                            <p class="text-xs text-gray-600">Guru BK: <strong>{{ $consultation->teacher?->user?->name ?? 'Belum tersedia' }}</strong></p>
+                            <p class="text-xs text-gray-500">Jadwal yang diajukan: {{ $consultation->scheduled_at?->translatedFormat('l, d F Y') ?? 'Belum ditentukan' }} · {{ $consultation->scheduled_at?->format('H:i') ?? '-' }} WIB</p>
+                            @if ($consultation->message)<p class="rounded-xl bg-gray-50 p-3 text-xs text-gray-600">{{ $consultation->message }}</p>@endif
+                            @foreach ($consultation->responses as $response)
+                                <div class="rounded-xl border border-indigo-100 bg-indigo-50/60 p-3 text-xs space-y-1">
+                                    <p class="font-bold text-[#3650A2]">Tanggapan Guru BK</p>
+                                    @if ($response->responses)<p>{{ $response->responses }}</p>@endif
+                                    @if ($response->recommendation)<p><strong>Rekomendasi:</strong> {{ $response->recommendation }}</p>@endif
+                                </div>
+                            @endforeach
                         </x-card>
+                    @empty
+                        <div class="rounded-3xl border border-dashed border-indigo-200 bg-white p-10 text-center">
+                            <p class="font-bold text-gray-700">Belum ada pengajuan konsultasi</p><p class="mt-1 text-xs text-gray-500">Ajukan konsultasi dengan Guru BK melalui tombol Buat Jadwal Baru.</p>
+                        </div>
+                    @endforelse
+                </section>
 
-                        <!-- Sesi 2: Status Menunggu / Pending (Offline) -->
-                        <x-card variant="strong" class="card-interactive-strong !rounded-[40px] !p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 group relative overflow-hidden">
-                            <div aria-hidden="true" class="absolute right-0 top-0 bottom-0 w-3 bg-amber-400 pointer-events-none"></div>
-                            <div class="flex items-start gap-4">
-                                <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200/80 flex items-center justify-center text-[#3650A2] shrink-0 font-bold shadow-sm">
-                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                </div>
-                                <div class="space-y-1.5">
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <h4 class="text-base font-black text-gray-900 group-hover:text-[#3650A2] transition">Konsultasi Pemilihan Jurusan Kuliah</h4>
-                                        <span class="px-3 py-0.5 bg-amber-50 text-amber-600 border border-amber-200 text-[10px] font-extrabold rounded-full">Menunggu Konfirmasi</span>
-                                        <!-- Badge Metode -->
-                                        <span class="px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold rounded-md">🏫 Offline (Tatap Muka di Ruang BK)</span>
-                                    </div>
-                                    <p class="text-xs text-gray-600">Guru Pembimbing: <strong class="text-gray-800">Siti Maryam, S.Pd.</strong></p>
-                                    <div class="flex items-center gap-4 text-xs font-semibold text-gray-500 pt-1">
-                                        <span class="flex items-center gap-1"><svg class="w-4 h-4 text-[#3650A2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> Jum'at, 16 Okt 2026</span>
-                                        <span class="flex items-center gap-1"><svg class="w-4 h-4 text-[#FF7A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 13.30 WIB</span>
-                                    </div>
-                                </div>
+                <aside class="space-y-4">
+                    <div class="section-bg rounded-3xl p-6 space-y-4">
+                        <h3 class="font-black text-[#3650A2]">Guru BK Sekolah</h3>
+                        @forelse ($teachers as $teacher)
+                            <div class="rounded-2xl border border-indigo-100 bg-white p-4">
+                                <p class="text-sm font-extrabold text-gray-900">{{ $teacher->user->name }}</p>
+                                <p class="mt-1 text-xs text-gray-500">{{ $teacher->phone ?: 'Kontak belum tersedia' }}</p>
                             </div>
-                            <div class="shrink-0 w-full sm:w-auto flex sm:flex-col justify-end">
-                                <x-button type="button" variant="secondary" class="w-full sm:w-auto text-xs rounded-xl">
-                                    Batalkan
-                                </x-button>
-                            </div>
-                        </x-card>
+                        @empty
+                            <p class="text-xs text-gray-500">Data Guru BK belum tersedia. Silakan hubungi administrator sekolah.</p>
+                        @endforelse
+                        <div class="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4 text-xs leading-relaxed text-gray-600">Pengajuan akan berstatus Menunggu sampai Guru BK memberikan konfirmasi. Pantau tanggapan melalui halaman ini.</div>
                     </div>
-                </div>
-
-                <!-- Kolom Kanan: Profil Guru BK & Catatan Penting -->
-                <div class="space-y-6">
-                    <div class="section-bg rounded-[32px] p-6 space-y-5 shadow-xs">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-base font-black text-[#3650A2]">Guru BK Sekolah</h3>
-                            <span class="text-[10px] font-extrabold text-[#FF7A59] uppercase tracking-wider">SMK Budi Bakti</span>
-                        </div>
-
-                        <!-- Daftar Guru (Menampilkan jam operasional/ketersediaan yang disinkronkan dari dashboard guru) -->
-                        <div class="space-y-3">
-                            <x-card variant="strong" class="card-interactive-strong !rounded-[28px] !p-4 flex items-start gap-3.5 group">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-strong text-white flex items-center justify-center font-black text-sm shrink-0 shadow-sm mt-0.5">
-                                    AH
-                                </div>
-                                <div class="overflow-hidden flex-1">
-                                    <h4 class="text-xs font-black text-gray-900 truncate">Drs. H. Ahmad Supriatna, M.Pd.</h4>
-                                    <p class="text-[11px] text-indigo-500 font-bold">Koordinator BK</p>
-                                    <div class="mt-1 flex items-center justify-between">
-                                        <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-extrabold rounded-md">Online / Siap Konsul</span>
-                                        <span class="text-[10px] font-bold text-gray-500">08:00 - 15:00 WIB</span>
-                                    </div>
-                                </div>
-                            </x-card>
-
-                            <x-card variant="strong" class="card-interactive-strong !rounded-[28px] !p-4 flex items-start gap-3.5 group">
-                                <div class="w-12 h-12 rounded-xl bg-[#3650A2] text-white flex items-center justify-center font-black text-sm shrink-0 shadow-sm mt-0.5">
-                                    SM
-                                </div>
-                                <div class="overflow-hidden flex-1">
-                                    <h4 class="text-xs font-black text-gray-900 truncate">Siti Maryam, S.Pd.</h4>
-                                    <p class="text-[11px] text-indigo-500 font-bold">Guru BK Kelas XII</p>
-                                    <div class="mt-1 flex items-center justify-between">
-                                        <span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[9px] font-extrabold rounded-md">Online / Siap Konsul</span>
-                                        <span class="text-[10px] font-bold text-gray-500">09:00 - 14:00 WIB</span>
-                                    </div>
-                                </div>
-                            </x-card>
-                        </div>
-
-                        <!-- Info / Panduan Singkat -->
-                        <div class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-xs text-gray-600 space-y-2">
-                            <p class="font-bold text-[#3650A2] flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-[#FF7A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                Catatan Konsultasi
-                            </p>
-                            <p class="leading-relaxed">Pastikan hadir tepat waktu sesuai jadwal yang disetujui guru pembimbing dan siapkan pertanyaan atau topik yang ingin dibahas sebelumnya.</p>
-                        </div>
-                    </div>
-                </div>
-
+                </aside>
             </div>
         </main>
     </div>
@@ -217,8 +156,9 @@
                     <label class="block text-xs font-extrabold text-gray-700 mb-1.5">Pilih Guru Pembimbing</label>
                     <select name="teacher_id" class="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required>
                         <option value="">-- Pilih Guru BK --</option>
-                        <option value="1">Drs. H. Ahmad Supriatna, M.Pd. (08:00 - 15:00 WIB)</option>
-                        <option value="2">Siti Maryam, S.Pd. (09:00 - 14:00 WIB)</option>
+                        @foreach ($teachers as $teacher)
+                            <option value="{{ $teacher->id }}" @selected(old('teacher_id') == $teacher->id)>{{ $teacher->user->name }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -257,6 +197,11 @@
                 <div>
                     <label class="block text-xs font-extrabold text-gray-700 mb-1.5">Topik / Permasalahan yang Didiskusikan</label>
                     <textarea name="topic" rows="3" placeholder="Tuliskan topik atau pertanyaan singkat..." class="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-extrabold text-gray-700 mb-1.5">Keterangan tambahan (opsional)</label>
+                    <textarea name="message" rows="2" maxlength="3000" placeholder="Ceritakan hal yang ingin disampaikan kepada Guru BK..." class="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]">{{ old('message') }}</textarea>
                 </div>
 
                 <div class="pt-2 flex justify-end gap-3">
