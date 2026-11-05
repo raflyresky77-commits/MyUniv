@@ -956,14 +956,14 @@
             <!-- Cards Grid Container -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
 
-                <!-- Card 1: Tes Psikotes -->
+                <!-- Card 1: Tes Peminatan -->
                 <div class="arrow-card-outer bg-brand-indigo p-[2px] transition-transform duration-300 hover:-translate-y-1 drop-shadow-md">
                     <div class="arrow-card-inner bg-white h-full p-6 pr-12 text-left flex flex-col justify-between">
                         <div>
                             <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-6 text-brand-indigo">
                                 <i data-lucide="file-text" class="w-5 h-5"></i>
                             </div>
-                            <h3 class="text-lg font-bold text-brand-indigo mb-2">Tes Psikotes</h3>
+                            <h3 class="text-lg font-bold text-brand-indigo mb-2">Tes Peminatan</h3>
                             <p class="text-xs text-brand-textGray leading-relaxed mb-6">
                                 Uji minat, bakat, kemampuan, dan kepribadian diri secara mendalam.
                             </p>
@@ -1177,7 +1177,7 @@
                         1
                     </div>
                     <div class="text-coralOrange text-2xl mb-2"><i class="fa-solid fa-clipboard-question"></i></div>
-                    <h4 class="font-bold text-indigoPrimary text-sm mb-1">Hasil Tes Psikotes</h4>
+                    <h4 class="font-bold text-indigoPrimary text-sm mb-1">Hasil Tes Peminatan</h4>
                     <p class="text-[11px] text-gray-500">Isi asesmen minat dan bakat mandiri.</p>
                 </div>
 
@@ -1799,7 +1799,7 @@
 
                 <div class="bg-white rounded-xl border border-indigoPrimary/10 p-4 cursor-pointer faq-item shadow-sm">
                     <div class="flex justify-between items-center font-bold text-indigoPrimary text-sm sm:text-base">
-                        <span>Apakah tes psikotes peminatan ini gratis?</span>
+                        <span>Apakah tes peminatan ini gratis?</span>
                         <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
                     </div>
                     <p class="text-xs sm:text-sm text-gray-500 mt-3 hidden leading-relaxed">
@@ -2215,7 +2215,7 @@
                 botBubble.innerHTML = `
                     <div class="w-7 h-7 rounded-full bg-indigoPrimary text-white flex items-center justify-center shrink-0 font-bold text-[10px]">🐉</div>
                     <div class="bg-white border border-indigoPrimary/10 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-700 leading-relaxed">
-                        Terima kasih pertanyaannya! Mauny menyarankan kamu untuk mencoba fitur <strong>Tes Psikotes</strong> atau mengecek halaman <strong>Rekomendasi Kampus</strong> untuk informasi lebih detail.
+                        Terima kasih pertanyaannya! Mauny menyarankan kamu untuk mencoba fitur <strong>Tes Peminatan</strong> atau mengecek halaman <strong>Rekomendasi Kampus</strong> untuk informasi lebih detail.
                     </div>
                 `;
                 chatMessages.appendChild(botBubble);

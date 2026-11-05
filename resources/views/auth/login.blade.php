@@ -299,9 +299,10 @@
                     <a href="{{ route('register') }}" class="font-semibold text-white underline hover:text-[#FF7A59] transition">Register Now</a>
                 </div>
 
-                <div class="login-footer mt-10 sm:mt-12 pt-4 border-t border-white/15 flex justify-between items-center text-[10px] sm:text-[11px] text-[#C9D7EE]">
-                    <a href="#" class="hover:underline">Terms and Services</a>
-                    <a href="#" class="hover:underline">Have a problem? Contact us</a>
+                    <div class="login-footer mt-10 sm:mt-12 pt-4 border-t border-white/15 flex justify-between items-center text-[10px] sm:text-[11px] text-[#C9D7EE]">
+                        <a href="{{ route('terms') }}" class="hover:underline">Terms and Services</a>
+                        <a href="#" class="hover:underline">Have a problem? Contact us</a>
+                    </div>
                 </div>
             </section>
         </div>

@@ -30,7 +30,7 @@
         }
     </style>
 </head>
-<body class="bg-[#F4F7FE] min-h-screen text-gray-800 flex antialiased">
+<body class="bg-[#F4F7FE] min-h-screen min-w-0 text-gray-800 flex antialiased">
 
     @include('components.global-loading')
 
@@ -38,15 +38,15 @@
     <x-counselor.sidebar active="profile" />
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-h-screen md:ml-72">
+    <div class="flex-1 min-w-0 flex flex-col min-h-screen lg:ml-72">
         {{-- Komponen topbar bersama Guru BK --}}
         <x-counselor.topbar title="Profil" subtitle="Panel Guru BK" />
 
         <!-- Page Body Content -->
-        <main class="p-6 md:p-10 space-y-8 max-w-7xl w-full mx-auto flex-1">
+        <main class="w-full min-w-0 max-w-7xl mx-auto flex-1 space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-10">
 
             <!-- Hero Banner dengan Foto Kampus -->
-            <div class="relative rounded-[40px] overflow-hidden px-8 sm:px-12 py-12 sm:py-16 shadow-lg border border-indigo-100 flex flex-col justify-center">
+            <div class="relative min-w-0 rounded-[24px] sm:rounded-[40px] overflow-hidden px-5 sm:px-8 lg:px-12 py-8 sm:py-12 lg:py-16 shadow-lg border border-indigo-100 flex flex-col justify-center">
                 <div class="absolute inset-0 z-0">
                     <img src="{{ asset('images/banner-gurubk3.png') }}" alt="Background Kampus" class="w-full h-full object-cover object-center filter scale-105">
                 </div>
@@ -64,8 +64,8 @@
             </div>
 
             <!-- Kartu Detail Profil -->
-            <div class="glass-card p-6 sm:p-8 rounded-[32px] space-y-6 max-w-3xl">
-            <div class="flex items-center gap-5 pb-6 border-b border-gray-200/80">
+            <div class="glass-card w-full min-w-0 max-w-3xl p-4 sm:p-6 lg:p-8 rounded-[24px] sm:rounded-[32px] space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5 pb-6 border-b border-gray-200/80">
                 <div class="w-20 h-20 rounded-2xl bg-gradient-strong text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-indigo-900/20">
                     {{ strtoupper(substr($user->name ?? 'G', 0, 2)) }}
                 </div>
@@ -83,7 +83,7 @@
             <div class="space-y-4 text-sm">
                 <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">
                     <span class="text-gray-400 font-bold uppercase tracking-wider text-xs">Email Akun</span>
-                    <span class="font-semibold text-gray-800">{{ $user->email ?? '-' }}</span>
+                    <span class="min-w-0 max-w-full break-all font-semibold text-gray-800">{{ $user->email ?? '-' }}</span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-100 gap-1">

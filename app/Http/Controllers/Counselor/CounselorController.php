@@ -56,10 +56,8 @@ class CounselorController extends Controller
 
     public function exploration()
     {
-        // Mengambil universitas beserta relasi jurusannya.
-        $universities = University::with('majors')
-            ->latest()
-            ->get();
+        // Data eksplorasi menggunakan sumber dan relasi yang sama dengan halaman Student.
+        $universities = University::with('majors')->get();
 
         return view('counselor.exploration', compact('universities'));
     }

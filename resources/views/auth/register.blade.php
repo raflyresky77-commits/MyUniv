@@ -352,10 +352,10 @@
                     </a>
                 </div>
 
-                <div class="mt-6 pt-3 border-t border-white/15 flex justify-between items-center text-[10px] sm:text-[11px] text-[#C9D7EE]">
-                    <a href="#" class="hover:underline">Terms and Services</a>
-                    <a href="#" class="hover:underline">Have a problem? Contact us</a>
-                </div>
+                    <div class="mt-6 pt-3 border-t border-white/15 flex justify-between items-center text-[10px] sm:text-[11px] text-[#C9D7EE]">
+                        <a href="{{ route('terms') }}" class="hover:underline">Terms and Services</a>
+                        <a href="//wa.me/6283801528378" class="hover:underline">Have a problem? Contact us</a>
+                    </div>
 
             </section>
 

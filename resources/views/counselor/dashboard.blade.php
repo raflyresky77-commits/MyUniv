@@ -96,7 +96,7 @@
         }
     </style>
 </head>
-<body class="bg-[#F4F7FE] text-gray-800 antialiased">
+<body class="bg-[#F4F7FE] min-w-0 text-gray-800 antialiased">
 
     @include('components.global-loading')
 
@@ -105,11 +105,11 @@
     <x-counselor.topbar title="Beranda" subtitle="Panel Guru BK" />
 
     <!-- Main Content Area -->
-    <div class="md:ml-72 pt-28 min-h-screen flex flex-col">
-        <main class="p-6 md:p-10 space-y-8 max-w-7xl w-full mx-auto flex-1">
+    <div class="min-h-screen min-w-0 flex flex-col pt-8 lg:ml-72">
+        <main class="w-full min-w-0 max-w-7xl mx-auto flex-1 space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-10 pt-4 sm:pt-5 lg:pt-6 pb-4 sm:pb-6 lg:pb-10">
 
             <!-- Hero Banner dengan Foto Kampus & Gradasi Transparan -->
-            <div class="relative rounded-[40px] overflow-hidden px-8 sm:px-12 py-12 sm:py-16 shadow-lg border border-indigo-100 flex flex-col justify-center">
+            <div class="relative min-w-0 rounded-[24px] sm:rounded-[40px] overflow-hidden px-5 sm:px-8 lg:px-12 py-8 sm:py-12 lg:py-16 shadow-lg border border-indigo-100 flex flex-col justify-center">
                 <!-- Background Image Kampus -->
                 <div class="absolute inset-0 z-0">
                     <img src="{{ asset('images/banner-dashboardc.png') }}" alt="Background Kampus" class="w-full h-full object-cover object-center filter scale-105">
@@ -130,7 +130,7 @@
             </div>
 
             <!-- Grid Statistik (Jadwal Hari Ini & Jadwal Aktif) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <!-- Jadwal Hari Ini -->
                 <x-card variant="interactive" class="glass-card card-delay-1 p-6 sm:p-7 !rounded-[32px] flex items-center justify-between">
                     <div>
@@ -157,11 +157,11 @@
             </div>
 
             <!-- Konten Utama: Jadwal Terdekat & Akses Cepat -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
                 <!-- Bagian Kiri: Jadwal Terdekat -->
                 <div class="lg:col-span-2 space-y-4">
-                    <div class="flex items-center justify-between px-1 mb-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 px-1 mb-2">
                         <h3 class="text-lg font-black text-[#3650A2] tracking-tight">Jadwal Terdekat</h3>
                         <span class="text-xs font-bold text-gray-400">Daftar sesi konsultasi terdekat</span>
                     </div>
@@ -174,7 +174,7 @@
                             @endphp
 
                             <x-card variant="interactive" class="glass-card p-5 !rounded-[24px] flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
-                                <div class="flex items-center gap-4">
+                                <div class="flex min-w-0 items-start sm:items-center gap-3 sm:gap-4">
                                     <div class="w-11 h-11 rounded-2xl {{ $isOnline ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-indigo-50 text-[#3650A2] border-indigo-100' }} flex items-center justify-center font-bold border">
                                         @if ($isOnline)
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -188,7 +188,7 @@
                                     </div>
 
                                     <div>
-                                        <h4 class="text-sm font-extrabold text-gray-900 group-hover:text-[#3650A2] transition">
+                                        <h4 class="min-w-0 break-words text-sm font-extrabold text-gray-900 group-hover:text-[#3650A2] transition">
                                             {{ $consultation->scheduled_at?->translatedFormat('l, d F Y') ?? '-' }}
                                             ·
                                             {{ $consultation->scheduled_at?->format('H:i') ?? '-' }}

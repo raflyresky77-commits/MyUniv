@@ -1,9 +1,13 @@
 @props([
     'title' => 'Beranda',
     'subtitle' => 'Panel Guru BK',
+    'offsetSidebar' => false,
 ])
 
-<header class="sticky top-0 z-40 flex w-full shrink-0 items-center justify-between border-b border-[#E2E8F0] bg-white/90 px-4 py-4 shadow-sm backdrop-blur-md sm:px-6 md:px-10 md:py-5">
+<header @class([
+    'sticky top-0 z-40 flex w-full shrink-0 items-center justify-between border-b border-[#E2E8F0] bg-white/90 px-4 py-4 shadow-sm backdrop-blur-md sm:px-6 md:px-10 md:py-5',
+    'md:ml-72 md:w-[calc(100%-18rem)]' => $offsetSidebar,
+])>
     <div class="flex min-w-0 items-center gap-3">
         <button
             type="button"

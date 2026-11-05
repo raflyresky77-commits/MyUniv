@@ -18,7 +18,7 @@
         .glass-card:hover { transform: translateY(-2px); border-color: #FF7A59; box-shadow: 0 25px 50px -12px rgba(255,122,89,.15); }
     </style>
 </head>
-<body class="bg-[#F4F7FE] min-h-screen text-gray-800 antialiased">
+<body class="bg-[#F4F7FE] min-h-screen min-w-0 text-gray-800 antialiased">
 
     @include('components.global-loading')
 
@@ -27,7 +27,7 @@
     <div class="flex min-h-screen min-w-0 flex-col md:ml-72">
         <x-counselor.topbar title="Konsultasi BK" subtitle="Manajemen Konsultasi Siswa" />
 
-        <main id="consultationPageContent" class="p-6 md:p-10 space-y-8 max-w-7xl w-full mx-auto flex-1">
+        <main id="consultationPageContent" class="w-full min-w-0 max-w-7xl mx-auto flex-1 space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-10">
             @if(session('success'))
                 <div class="mb-4 rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-sm font-semibold text-emerald-700">
                     {{ session('success') }}
@@ -45,7 +45,7 @@
             @endif
             <!-- Konten utama ini menjadi area scroll; banner ikut tergulir bersama statistik dan tabel. -->
             <!-- Hero Banner dengan Foto Kampus -->
-            <div class="relative rounded-[40px] overflow-hidden px-8 sm:px-12 py-12 sm:py-16 shadow-lg border border-indigo-100 flex flex-col justify-center">
+            <div class="relative min-w-0 rounded-[24px] sm:rounded-[40px] overflow-hidden px-5 sm:px-8 lg:px-12 py-8 sm:py-12 lg:py-16 shadow-lg border border-indigo-100 flex flex-col justify-center">
                 <div class="absolute inset-0 z-0">
                     <img src="{{ asset('images/banner-consultation.png') }}" alt="Background Kampus" class="w-full h-full object-cover object-center filter scale-105">
                 </div>
@@ -88,7 +88,7 @@
             </div>
 
             <!-- Tabel Daftar Permintaan / Sesi Konsultasi -->
-            <div class="glass-card p-6 sm:p-8 rounded-[32px] space-y-6">
+            <div class="glass-card min-w-0 p-4 sm:p-6 lg:p-8 rounded-[24px] sm:rounded-[32px] space-y-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-xl font-extrabold text-[#3650A2] tracking-tight">Daftar Permintaan & Riwayat Konsultasi</h3>
@@ -110,7 +110,7 @@
 
                 <!-- Tabel Data -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full min-w-[680px] text-left border-collapse">
                         <thead>
                             <tr class="border-b border-gray-200/80 text-[11px] font-black text-indigo-400 uppercase tracking-wider">
                                 <th class="pb-3.5 px-4">Nama Siswa</th>
@@ -206,8 +206,8 @@
 
 
         <!-- Modal Detail & Aksi Konsultasi -->
-        <div id="consultationModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-xs p-4">
-            <div class="bg-white rounded-[32px] max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-indigo-100 transform transition-all">
+        <div id="consultationModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-xs p-3 sm:p-4">
+            <div class="bg-white rounded-[24px] sm:rounded-[32px] max-w-lg w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 shadow-2xl border border-indigo-100 transform transition-all">
 
                 <div class="flex items-center justify-between border-b border-gray-100 pb-4">
                     <h3 class="text-lg font-extrabold text-[#3650A2]">Detail Konsultasi Siswa</h3>
@@ -261,7 +261,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end gap-3 pt-5 mt-5 border-t border-gray-100">
+                    <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-5 mt-5 border-t border-gray-100">
                         <button type="button" onclick="closeDetailModal()" class="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-600 text-xs font-extrabold hover:bg-gray-200 transition">
                             Tutup
                         </button>

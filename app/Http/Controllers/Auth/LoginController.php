@@ -17,12 +17,12 @@ class LoginController extends Controller
     public function store(Request $request)
     {
         $credentials = $request->validate([
-            'login' => ['required', 'email'],
+            'login'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
         if (!Auth::attempt([
-            'email' => $credentials['login'],
+            'email'    => $credentials['login'],
             'password' => $credentials['password'],
         ])) {
             return back()->withErrors([
@@ -32,13 +32,17 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        $user = Auth::user();
+        $user   = Auth::user();
         $roleId = (int) $user->role_id;
 
         switch ($roleId) {
             case 1:
-                $student = Student::where('user_id', $user->id)->first();
+                // Cari atau buatkan data Student jika belum ada
+                $student = Student::firstOrCreate([
+                    'user_id' => $user->id,
+                ]);
 
+                // Jika profil belum lengkap, paksa ke Onboarding
                 if (!$this->profileIsComplete($student)) {
                     return redirect()->route('student.onboarding.index');
                 }

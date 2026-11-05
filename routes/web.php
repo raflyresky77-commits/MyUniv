@@ -34,6 +34,11 @@ Route::get('/', function () {
     return view('landing');
 });
 
+// Halaman Syarat & Ketentuan (Terms)
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');
+
 // Register
 Route::get('/register', [RegisterController::class, 'create'])
     ->name('register');
@@ -169,10 +174,10 @@ Route::middleware(['auth', 'role:student'])
 |--------------------------------------------------------------------------
 */
 
-        Route::middleware(['auth', 'role:admin'])
-            ->prefix('admin')
-            ->name('admin.')
-            ->group(function () {
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])
             ->name('dashboard');

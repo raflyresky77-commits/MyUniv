@@ -22,43 +22,114 @@
             </button>
         </div>
 
+        <style>
+            /* Styling terisolasi untuk navigasi Counselor; tidak mengubah konten halaman. */
+            #counselorSidebar .counselor-nav-link {
+                position: relative;
+                isolation: isolate;
+                display: flex;
+                align-items: center;
+                gap: 0.875rem;
+                overflow: hidden;
+                border-radius: 1rem;
+                padding: 0.875rem 1rem;
+                color: #4B5563 !important;
+                background: transparent !important;
+                font-size: 0.875rem;
+                font-weight: 600;
+                text-decoration: none;
+                transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+            }
+
+            #counselorSidebar .counselor-nav-link[data-active="true"] {
+                color: #FFFFFF !important;
+                background: linear-gradient(135deg, #3650A2 0%, #22346E 100%) !important;
+                font-weight: 700 !important;
+                box-shadow: 0 10px 20px rgba(54, 80, 162, 0.18) !important;
+            }
+
+            #counselorSidebar .counselor-nav-link[data-active="true"]::before {
+                content: "";
+                position: absolute;
+                z-index: 0;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                width: 6px;
+                border-radius: 0 6px 6px 0;
+                background: #FF7A59;
+            }
+
+            #counselorSidebar .counselor-nav-link > svg,
+            #counselorSidebar .counselor-nav-link > span {
+                position: relative;
+                z-index: 1;
+            }
+
+            #counselorSidebar .counselor-nav-link[data-active="true"] > span,
+            #counselorSidebar .counselor-nav-link[data-active="true"] > svg {
+                color: #FFFFFF !important;
+                stroke: #FFFFFF !important;
+            }
+
+            #counselorSidebar .counselor-nav-link[data-active="false"] > span {
+                color: #4B5563 !important;
+            }
+
+            #counselorSidebar .counselor-nav-link[data-active="false"] > svg {
+                color: #9CA3AF !important;
+                stroke: #9CA3AF !important;
+            }
+
+            #counselorSidebar .counselor-nav-link[data-active="false"]:hover {
+                color: #3650A2 !important;
+                background: #F0F5FF !important;
+            }
+
+            #counselorSidebar .counselor-nav-link[data-active="false"]:hover > span,
+            #counselorSidebar .counselor-nav-link[data-active="false"]:hover > svg {
+                color: #3650A2 !important;
+                stroke: #3650A2 !important;
+            }
+        </style>
+
         <nav class="space-y-2 p-5" aria-label="Navigasi Guru BK">
             <div class="px-4 py-2 text-[10px] font-extrabold uppercase tracking-widest text-indigo-400">Menu Utama</div>
 
-            <a href="{{ route('counselor.dashboard') }}" @class([
-                'group relative flex items-center gap-3.5 overflow-hidden rounded-2xl px-4 py-4 text-sm transition-all duration-300',
-                'bg-gradient-to-br from-[#2B4185] to-[#141F43] font-bold text-white shadow-lg shadow-indigo-900/25' => $active === 'dashboard',
-                'font-semibold text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2]' => $active !== 'dashboard',
-            ])>
-                @if($active === 'dashboard')<span class="absolute bottom-0 left-0 top-0 w-2 bg-[#FF7A59]"></span>@endif
-                <svg class="ml-1 h-5 w-5 shrink-0 {{ $active === 'dashboard' ? 'text-white' : 'text-gray-400 group-hover:text-[#3650A2]' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12l2-2 7-7 7 7 2 2M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0h6m-6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <a href="{{ route('counselor.dashboard') }}"
+               class="counselor-nav-link"
+               data-active="{{ $active === 'dashboard' ? 'true' : 'false' }}">
+                <svg class="ml-1 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path d="M3 12l2-2 7-7 7 7 2 2M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0h6m-6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
                 <span>Beranda</span>
             </a>
 
-            <a href="{{ route('counselor.exploration') }}" @class([
-                'group flex items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm transition-all duration-200',
-                'bg-gradient-to-br from-[#2B4185] to-[#141F43] font-bold text-white shadow-lg shadow-indigo-900/20' => $active === 'exploration',
-                'font-semibold text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2]' => $active !== 'exploration',
-            ])>
-                <svg class="h-5 w-5 shrink-0 {{ $active === 'exploration' ? 'text-white' : 'text-gray-400 group-hover:text-[#3650A2]' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7" stroke-width="2"/><path d="m20 20-4-4" stroke-width="2" stroke-linecap="round"/></svg>
+            <a href="{{ route('counselor.exploration') }}"
+               class="counselor-nav-link"
+               data-active="{{ $active === 'exploration' ? 'true' : 'false' }}">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7" stroke-width="2"/>
+                    <path d="m20 20-4-4" stroke-width="2" stroke-linecap="round"/>
+                </svg>
                 <span>Eksplorasi</span>
             </a>
 
-            <a href="{{ route('counselor.consultation') }}" @class([
-                'group flex items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm transition-all duration-200',
-                'bg-gradient-to-br from-[#2B4185] to-[#141F43] font-bold text-white shadow-lg shadow-indigo-900/20' => $active === 'consultation',
-                'font-semibold text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2]' => $active !== 'consultation',
-            ])>
-                <svg class="h-5 w-5 shrink-0 {{ $active === 'consultation' ? 'text-white' : 'text-gray-400 group-hover:text-[#3650A2]' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <a href="{{ route('counselor.consultation') }}"
+               class="counselor-nav-link"
+               data-active="{{ $active === 'consultation' ? 'true' : 'false' }}">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
                 <span>Konsultasi BK</span>
             </a>
 
-            <a href="{{ route('counselor.profile') }}" @class([
-                'group flex items-center gap-3.5 rounded-2xl px-4 py-3.5 text-sm transition-all duration-200',
-                'bg-gradient-to-br from-[#2B4185] to-[#141F43] font-bold text-white shadow-lg shadow-indigo-900/20' => $active === 'profile',
-                'font-semibold text-gray-600 hover:bg-[#EEF3FF] hover:text-[#3650A2]' => $active !== 'profile',
-            ])>
-                <svg class="h-5 w-5 shrink-0 {{ $active === 'profile' ? 'text-white' : 'text-gray-400 group-hover:text-[#3650A2]' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <a href="{{ route('counselor.profile') }}"
+               class="counselor-nav-link"
+               data-active="{{ $active === 'profile' ? 'true' : 'false' }}">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
                 <span>Profil</span>
             </a>
         </nav>
