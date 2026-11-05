@@ -468,7 +468,135 @@ $kepribadianResult = [
         : 'Skor akhir tersedia setelah seluruh 35 pertanyaan dijawab.',
 ];
 
+        // ======================================================
+// REKOMENDASI 3 JURUSAN DARI 3 HASIL ASESMEN
+// ======================================================
 
+// 1. Skor minat berdasarkan kategori jurusan.
+$interestScoreByCategory = collect($categoryScores)
+    ->keyBy('id')
+    ->map(fn ($item) => $item['score_percent']);
+
+// 2. Aturan awal kategori jurusan -> subtes kemampuan.
+$majorAbilityMapping = [
+    1 => ['numerik', 'abstrak'],       // Teknologi & Komputer
+    2 => ['numerik', 'literasi'],      // Bisnis & Ekonomi
+    3 => ['numerik', 'abstrak'],       // Sains & Matematika
+    4 => ['numerik', 'literasi'],      // Kesehatan
+    5 => ['literasi'],                 // Sosial & Humaniora
+    6 => ['literasi'],                 // Bahasa & Komunikasi
+    7 => ['abstrak', 'literasi'],      // Seni & Desain
+    8 => ['literasi', 'numerik'],      // Pendidikan
+];
+
+// 3. Aturan awal kategori jurusan -> aspek kepribadian.
+$majorPersonalityMapping = [
+    1 => ['openness', 'conscientiousness'],
+    2 => ['extraversion', 'conscientiousness'],
+    3 => ['openness', 'conscientiousness'],
+    4 => ['agreeableness', 'conscientiousness'],
+    5 => ['agreeableness', 'extraversion'],
+    6 => ['extraversion', 'openness'],
+    7 => ['openness'],
+    8 => ['agreeableness', 'conscientiousness'],
+];
+
+// Helper untuk mengambil rata-rata skor yang tersedia.
+$averageAvailableScores = function (array $scores): ?float {
+    $validScores = array_values(array_filter(
+        $scores,
+        fn ($score) => $score !== null && is_numeric($score)
+    ));
+
+    return count($validScores) > 0
+        ? array_sum($validScores) / count($validScores)
+        : null;
+};
+
+// 4. Ambil semua jurusan dari database.
+$allMajors = DB::table('majors')
+    ->whereNotNull('category_id')
+    ->get(['id', 'name', 'description', 'category_id']);
+
+$recommendedMajors = $allMajors->map(function ($major) use (
+    $interestScoreByCategory,
+    $majorAbilityMapping,
+    $majorPersonalityMapping,
+    $abilitySubtests,
+    $personalityScores,
+    $averageAvailableScores
+) {
+    $categoryId = (int) $major->category_id;
+
+    // Skor minat.
+    $interestScore = $interestScoreByCategory->get($categoryId);
+
+    // Skor kemampuan dari subtes yang relevan.
+    $abilityKeys = $majorAbilityMapping[$categoryId] ?? [];
+
+    $abilityValues = [];
+
+    foreach ($abilityKeys as $key) {
+        $abilityValues[] = $abilitySubtests[$key]['score_percent'] ?? null;
+    }
+
+    $abilityScore = $averageAvailableScores($abilityValues);
+
+    // Skor kepribadian dari aspek yang relevan.
+    $personalityKeys = $majorPersonalityMapping[$categoryId] ?? [];
+
+    $personalityValues = [];
+
+    foreach ($personalityKeys as $key) {
+        $personalityValues[] = $personalityScores[$key] ?? null;
+    }
+
+    $personalityScore = $averageAvailableScores($personalityValues);
+
+    // Bobot: Minat 50%, Kemampuan 25%, Kepribadian 25%.
+    // Jika salah satu hasil belum tersedia, bobot dihitung ulang
+    // hanya dari komponen yang tersedia.
+    $components = [];
+
+    if ($interestScore !== null) {
+        $components[] = ['score' => $interestScore, 'weight' => 50];
+    }
+
+    if ($abilityScore !== null) {
+        $components[] = ['score' => $abilityScore, 'weight' => 25];
+    }
+
+    if ($personalityScore !== null) {
+        $components[] = ['score' => $personalityScore, 'weight' => 25];
+    }
+
+    $totalWeight = array_sum(array_column($components, 'weight'));
+
+    $matchScore = $totalWeight > 0
+        ? array_sum(array_map(
+            fn ($item) => $item['score'] * $item['weight'],
+            $components
+        )) / $totalWeight
+        : null;
+
+    return [
+        'id' => $major->id,
+        'name' => $major->name,
+        'description' => $major->description,
+        'category_id' => $categoryId,
+        'interest_score' => $interestScore,
+        'ability_score' => $abilityScore,
+        'personality_score' => $personalityScore,
+        'match_score' => $matchScore !== null
+            ? (int) round($matchScore)
+            : null,
+    ];
+})
+    ->filter(fn ($major) => $major['match_score'] !== null)
+    ->sortByDesc('match_score')
+    ->take(3)
+    ->values()
+    ->all();
 
         $assessmentCompleted = $minatSubmission !== null
             && $kemampuanSubmission !== null
@@ -482,21 +610,22 @@ $kepribadianResult = [
 ];
 
         return view('student.assessment.result', compact(
-            'minatResult',
-            'kemampuanResult',
-            'kepribadianResult',
-            'kemampuanResponses',
-            'kepribadianResponses',
-            'assessmentCompleted',
-            'profileMetrics',
-            'abilitySubtests',
-            'categoryScores',
-            'topCategories',
-            'interestCategoryResults',
-            'minatQuestionResponses',
-            'kemampuanQuestionResponses',
-            'kepribadianQuestionResponses'
-        ));
+    'minatResult',
+    'kemampuanResult',
+    'kepribadianResult',
+    'kemampuanResponses',
+    'kepribadianResponses',
+    'assessmentCompleted',
+    'profileMetrics',
+    'abilitySubtests',
+    'categoryScores',
+    'topCategories',
+    'interestCategoryResults',
+    'minatQuestionResponses',
+    'kemampuanQuestionResponses',
+    'kepribadianQuestionResponses',
+    'recommendedMajors'
+));
     }
 
     /**

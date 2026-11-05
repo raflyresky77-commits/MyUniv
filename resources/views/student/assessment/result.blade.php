@@ -563,42 +563,80 @@
     </section>
 
 
-            {{-- Rekomendasi jurusan --}}
-            <section class="space-y-4">
-                <div>
-                    <h2 class="text-2xl font-black text-gray-900">
-                        Rekomendasi Jurusan
-                    </h2>
-                    <p class="mt-1 text-sm text-gray-600">
-                        Jurusan yang akan disesuaikan dengan hasil asesmenmu.
-                    </p>
+           {{-- Rekomendasi jurusan --}}
+<section class="space-y-4">
+    <div>
+        <h2 class="text-2xl font-black text-gray-900">
+            Rekomendasi Jurusan
+        </h2>
+        <p class="mt-1 text-sm text-gray-600">
+            Tiga jurusan dengan skor kecocokan tertinggi berdasarkan gabungan hasil asesmenmu.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        @forelse ($recommendedMajors as $major)
+            <div class="result-card p-5 group">
+                <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#3650A2] to-[#5B6DCD] text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-graduation-cap text-base"></i>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    @for ($i = 0; $i < 3; $i++)
-                        <div class="result-card p-5 group">
-                            <div class="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#3650A2] to-[#5B6DCD] text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-                                <i class="fa-solid fa-graduation-cap text-base"></i>
-                            </div>
+                <h3 class="font-extrabold text-gray-900 text-base">
+                    {{ $major['name'] }}
+                </h3>
 
-                            <h3 class="font-extrabold text-gray-900 text-base">
-                                Belum dapat direkomendasikan
-                            </h3>
+                <p class="mt-2 text-xs leading-relaxed text-gray-600">
+                    {{ $major['description'] ?: 'Belum ada deskripsi untuk jurusan ini.' }}
+                </p>
 
-                            <p class="mt-2 text-xs leading-relaxed text-gray-600">
-                                Sistem belum memiliki aturan pemetaan hasil asesmen ke jurusan. Rekomendasi akan ditampilkan setelah aturan pemetaan dan data jurusan dihubungkan.
-                            </p>
+                <div class="mt-4 space-y-2">
+                    <div class="flex justify-between text-xs">
+                        <span class="font-semibold text-gray-500">
+                            Kecocokan keseluruhan
+                        </span>
+                        <span class="font-extrabold text-[#3650A2]">
+                            {{ $major['match_score'] }}%
+                        </span>
+                    </div>
 
-                            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                                <span class="text-xs font-bold text-gray-400">
-                                    Skor kecocokan: <span class="text-[#FF7A59]">Belum dihitung</span>
-                                </span>
-                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                            </div>
+                    <div class="h-2 overflow-hidden rounded-full bg-gray-100">
+                        <div
+                            class="h-full rounded-full bg-gradient-to-r from-[#3650A2] to-[#5B6DCD]"
+                            style="width: {{ $major['match_score'] }}%">
                         </div>
-                    @endfor
+                    </div>
                 </div>
-            </section>
+
+                <div class="mt-4 border-t border-gray-100 pt-3 space-y-2">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Minat Bakat</span>
+                        <span class="font-bold text-gray-700">
+                            {{ $major['interest_score'] !== null ? round($major['interest_score']) . '%' : 'Belum tersedia' }}
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Kemampuan</span>
+                        <span class="font-bold text-gray-700">
+                            {{ $major['ability_score'] !== null ? round($major['ability_score']) . '%' : 'Belum tersedia' }}
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500">Kepribadian</span>
+                        <span class="font-bold text-gray-700">
+                            {{ $major['personality_score'] !== null ? round($major['personality_score']) . '%' : 'Belum tersedia' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-800 md:col-span-3">
+                Rekomendasi jurusan belum tersedia. Pastikan hasil Minat Bakat, Kemampuan, dan Kepribadian sudah tersimpan dan memiliki skor yang dapat dihitung.
+            </div>
+        @endforelse
+    </div>
+</section>
 
             {{-- Tombol interaktif (Disembunyikan saat di-generate jadi gambar agar bersih) --}}
             <div class="result-card bg-gradient-to-br from-[#F8FBFF] to-[#EDF4FF] p-6 sm:p-8 border border-indigo-100 no-print shadow-md">
