@@ -32,7 +32,13 @@
 
     {{-- Navigasi khusus Guru BK; konten Explore tetap sama dengan halaman siswa --}}
     <x-counselor.sidebar active="exploration" />
-    <x-counselor.topbar title="Eksplorasi" subtitle="Perguruan Tinggi & Jurusan" />
+
+    {{-- Topbar menyesuaikan posisi sidebar desktop --}}
+    <x-counselor.topbar
+        title="Eksplorasi"
+        subtitle="Perguruan Tinggi & Jurusan"
+        :offset-sidebar="true"
+    />
 
     <!-- Main Content Area: konten bersama Student dan Counselor -->
     <div class="min-h-screen min-w-0 flex flex-col pt-8 md:ml-72">

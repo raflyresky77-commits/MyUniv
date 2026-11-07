@@ -168,10 +168,10 @@
                     <span class="text-xs font-bold text-gray-400">Pilih menu untuk mulai mengelola</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-stretch">
 
                     <!-- Bank Soal Asesmen -->
-                    <a href="{{ route('admin.assessments.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-orange-500/10 hover:border-[#FF7A59]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <a href="{{ route('admin.assessments.index') }}" class="glass-card min-h-[220px] p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-orange-500/10 hover:border-[#FF7A59]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute -right-8 -top-8 w-32 h-32 bg-orange-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
                         <div class="relative z-10">
                             <div class="w-12 h-12 rounded-2xl bg-orange-50 text-[#FF7A59] flex items-center justify-center mb-5 group-hover:bg-[#FF7A59] group-hover:text-white transition-all duration-300 shadow-sm">
@@ -186,7 +186,7 @@
                     </a>
 
                     <!-- Data Universitas -->
-                    <a href="{{ route('admin.universities.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <a href="{{ route('admin.universities.index') }}" class="glass-card min-h-[220px] p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
                         <div class="relative z-10">
                             <div class="w-12 h-12 rounded-2xl bg-blue-50 text-[#3650A2] flex items-center justify-center mb-5 group-hover:bg-[#3650A2] group-hover:text-white transition-all duration-300 shadow-sm">
@@ -201,7 +201,7 @@
                     </a>
 
                     <!-- Program Studi & Jurusan -->
-                    <a href="{{ route('admin.majors.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <a href="{{ route('admin.majors.index') }}" class="glass-card min-h-[220px] p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
                         <div class="relative z-10">
                             <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-[#3650A2] flex items-center justify-center mb-5 group-hover:bg-[#3650A2] group-hover:text-white transition-all duration-300 shadow-sm">
@@ -216,7 +216,7 @@
                     </a>
 
                     <!-- Manajemen Pengguna -->
-                    <a href="{{ route('admin.users.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-500/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <a href="{{ route('admin.users.index') }}" class="glass-card min-h-[220px] p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-500/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
                         <div class="absolute -right-8 -top-8 w-32 h-32 bg-purple-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
                         <div class="relative z-10">
                             <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-5 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300 shadow-sm">
@@ -231,7 +231,7 @@
                     </a>
 
                     <!-- Konsultasi Guru BK -->
-                    <a href="{{ route('admin.consultations.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <a href="{{ route('admin.consultations.index') }}" class="glass-card min-h-[220px] p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden">
                         <div class="relative z-10">
                             <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-[#3650A2] flex items-center justify-center mb-5 group-hover:bg-[#3650A2] group-hover:text-white transition-all duration-300">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
@@ -245,7 +245,7 @@
                     </a>
 
                     <!-- Widget Aktivitas Sistem (Live Status) -->
-                    <div class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-white via-white to-emerald-50/40 md:col-span-2 lg:col-span-2">
+                    <div class="glass-card min-h-[220px] p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-white via-white to-emerald-50/40">
                         <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-emerald-200/50 rounded-full blur-2xl pointer-events-none"></div>
                         <div class="relative z-10">
                             <div class="flex items-center justify-between mb-5">

@@ -196,7 +196,7 @@
                 </div>
                 <div class="border-t border-indigo-100 bg-white/70 px-6 py-4 text-xs leading-relaxed text-gray-600 sm:px-9">
                     <i class="fa-solid fa-circle-info mr-1 text-[#FF7A59]"></i>
-                    <strong class="text-indigo-900">Perlu diketahui:</strong> profil kategori minat, tipe kepribadian, dan rekomendasi jurusan belum ditampilkan sebagai hasil final karena aturan pemetaan skor ke kategori belum tersedia.
+                    <strong class="text-indigo-900">Perlu diketahui:</strong> hasil asesmen dan rekomendasi jurusan merupakan bahan pertimbangan awal. Periksa kembali informasi program studi dan perguruan tinggi sebelum menentukan pilihan.
                 </div>
             </section>
 
@@ -628,6 +628,70 @@
                             {{ $major['personality_score'] !== null ? round($major['personality_score']) . '%' : 'Belum tersedia' }}
                         </span>
                     </div>
+                </div>
+
+                {{-- Perguruan tinggi yang memiliki relasi dengan jurusan ini --}}
+                <div class="mt-5 border-t border-gray-100 pt-4">
+                    <h4 class="text-xs font-extrabold uppercase tracking-wide text-indigo-900">
+                        Perguruan Tinggi dengan Jurusan Ini
+                    </h4>
+
+                    @if (!empty($major['universities']))
+                        <ul class="mt-3 space-y-3">
+                            @foreach ($major['universities'] as $university)
+                                <li class="rounded-xl border border-indigo-50 bg-white p-3">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-gray-900">
+                                                {{ $university['name'] }}
+                                            </p>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                {{ $university['type'] ?: 'Jenis belum tersedia' }}
+                                                @if (!empty($university['location']))
+                                                    · {{ $university['location'] }}
+                                                @endif
+                                            </p>
+                                        </div>
+                                        @if (!empty($university['ranking']))
+                                            <span class="shrink-0 rounded-lg bg-indigo-50 px-2 py-1 text-[10px] font-bold text-[#3650A2]">
+                                                Peringkat {{ $university['ranking'] }}
+                                            </span>
+                                        @endif
+                                    </div>
+
+                                    <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-gray-500">
+                                        @if (!empty($university['university_accreditation']))
+                                            <span>Akreditasi kampus: {{ $university['university_accreditation'] }}</span>
+                                        @endif
+                                        @if (!empty($university['major_accreditation']))
+                                            <span>Akreditasi prodi: {{ $university['major_accreditation'] }}</span>
+                                        @endif
+                                    </div>
+
+                                    @if (!empty($university['website']))
+                                        <a href="{{ $university['website'] }}" target="_blank" rel="noopener noreferrer"
+                                           class="mt-2 inline-flex text-xs font-bold text-[#3650A2] underline underline-offset-2 hover:text-[#FF7A59]">
+                                            Kunjungi situs resmi
+                                        </a>
+                                    @endif
+
+                                    @if (!empty($university['ranking_source']) || !empty($university['ranking_year']))
+                                        <p class="mt-1 text-[10px] text-gray-400">
+                                            Sumber ranking: {{ $university['ranking_source'] ?: 'Belum dicantumkan' }}
+                                            @if (!empty($university['ranking_year']))
+                                                · Tahun {{ $university['ranking_year'] }}
+                                            @endif
+                                        </p>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="mt-2 rounded-xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-500">
+                            Belum ada data perguruan tinggi yang terhubung dengan jurusan ini.
+                            Kamu bisa melihat informasi lebih lanjut melalui menu Eksplorasi.
+                        </p>
+                    @endif
                 </div>
             </div>
         @empty

@@ -98,6 +98,17 @@ class MajorController extends Controller
         $errors = [];
         $seen = [];
 
+        // Ambil referensi sekali saja. Hindari query database berulang
+        // untuk setiap baris Excel, terutama saat database berada di Supabase.
+        $universitiesByName = University::query()
+            ->get(['id', 'name'])
+            ->keyBy(fn ($university) => mb_strtolower(trim($university->name)));
+
+        $validCategoryIds = DB::table('interest_categories')
+            ->pluck('id')
+            ->map(fn ($id) => (string) $id)
+            ->flip();
+
         foreach (array_slice($sheet, 1) as $index => $values) {
             $values = array_pad($values, count($headers), null);
             $row = array_combine($headers, array_slice($values, 0, count($headers)));
@@ -111,14 +122,14 @@ class MajorController extends Controller
             if ($universityName === '') $errors[] = "Baris {$rowNumber}: university_name wajib diisi.";
 
             $university = $universityName !== ''
-                ? University::whereRaw('LOWER(name) = ?', [mb_strtolower($universityName)])->first()
+                ? $universitiesByName->get(mb_strtolower($universityName))
                 : null;
             if ($universityName !== '' && !$university) {
                 $errors[] = "Baris {$rowNumber}: universitas '{$universityName}' tidak ditemukan. Tambahkan/import universitas lebih dahulu.";
             }
 
             $categoryId = trim((string) ($row['category_id'] ?? ''));
-            if ($categoryId !== '' && !DB::table('interest_categories')->where('id', $categoryId)->exists()) {
+            if ($categoryId !== '' && !$validCategoryIds->has($categoryId)) {
                 $errors[] = "Baris {$rowNumber}: category_id {$categoryId} tidak ditemukan pada interest_categories.";
             }
 
@@ -165,62 +176,241 @@ class MajorController extends Controller
     public function confirmImport()
     {
         $rows = session('major_import_preview');
+
         if (!$rows) {
-            if (request()->expectsJson()) return response()->json(['message' => 'Preview import sudah kedaluwarsa. Silakan upload ulang.'], 422);
-            return redirect()->route('admin.majors.index')->withErrors(['file' => 'Preview import sudah kedaluwarsa. Silakan upload ulang.']);
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Preview import sudah kedaluwarsa. Silakan upload ulang.'], 422);
+            }
+
+            return redirect()->route('admin.majors.index')
+                ->withErrors(['file' => 'Preview import sudah kedaluwarsa. Silakan upload ulang.']);
         }
 
         $errors = session('major_import_errors', []);
+
         if (!empty($errors)) {
-            if (request()->expectsJson()) return response()->json(['message' => 'Preview memiliki kesalahan. Perbaiki file lalu upload kembali.', 'errors' => $errors], 422);
-            return redirect()->route('admin.majors.index')->withErrors(['file' => 'Preview memiliki kesalahan. Perbaiki file lalu upload kembali.']);
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'message' => 'Preview memiliki kesalahan. Perbaiki file lalu upload kembali.',
+                    'errors' => $errors,
+                ], 422);
+            }
+
+            return redirect()->route('admin.majors.index')
+                ->withErrors(['file' => 'Preview memiliki kesalahan. Perbaiki file lalu upload kembali.']);
         }
 
         $created = 0;
         $linked = 0;
         $alreadyLinked = 0;
 
-        DB::transaction(function () use ($rows, &$created, &$linked, &$alreadyLinked) {
-            foreach ($rows as $item) {
-                $data = $item['data'];
-                $major = Major::whereRaw('LOWER(name) = ?', [mb_strtolower($data['name'])])->first();
+        try {
+            DB::transaction(function () use ($rows, &$created, &$linked, &$alreadyLinked) {
+                /*
+                 * 1. Kelompokkan prodi berdasarkan nama (case-insensitive).
+                 * Satu prodi dapat terhubung ke beberapa universitas.
+                 */
+                $majorPayloads = [];
+                $universityIds = [];
 
-                if (!$major) {
-                    $major = Major::create([
-                        'name' => $data['name'],
-                        'description' => $data['description'],
-                        'category_id' => $data['category_id'],
-                    ]);
-                    $created++;
-                } else {
-                    $update = [];
-                    if ($data['description'] !== null) $update['description'] = $data['description'];
-                    if ($data['category_id'] !== null) $update['category_id'] = $data['category_id'];
-                    if ($update) $major->update($update);
+                foreach ($rows as $item) {
+                    $data = $item['data'];
+                    $key = mb_strtolower(trim($data['name']));
+
+                    if (!isset($majorPayloads[$key])) {
+                        $majorPayloads[$key] = [
+                            'name' => $data['name'],
+                            'description' => $data['description'],
+                            'category_id' => $data['category_id'],
+                        ];
+                    } else {
+                        // Pertahankan perilaku lama: nilai kosong tidak menimpa data yang sudah ada.
+                        if ($majorPayloads[$key]['description'] === null && $data['description'] !== null) {
+                            $majorPayloads[$key]['description'] = $data['description'];
+                        }
+                        if ($majorPayloads[$key]['category_id'] === null && $data['category_id'] !== null) {
+                            $majorPayloads[$key]['category_id'] = $data['category_id'];
+                        }
+                    }
+
+                    $universityIds[] = (int) $item['university_id'];
                 }
 
-                $university = University::findOrFail($item['university_id']);
-                $pivotExists = $university->majors()->where('majors.id', $major->id)->exists();
+                $majorKeys = array_keys($majorPayloads);
+                $universityIds = array_values(array_unique($universityIds));
 
-                if ($pivotExists) {
-                    $pivotUpdate = [];
-                    if ($data['accreditation'] !== null) $pivotUpdate['accreditation'] = $data['accreditation'];
-                    if ($data['additional_info'] !== null) $pivotUpdate['additional_info'] = $data['additional_info'];
-                    if ($pivotUpdate) $university->majors()->updateExistingPivot($major->id, $pivotUpdate);
-                    $alreadyLinked++;
-                } else {
-                    $university->majors()->attach($major->id, [
-                        'accreditation' => $data['accreditation'],
-                        'additional_info' => $data['additional_info'],
-                    ]);
-                    $linked++;
+                /*
+                 * 2. Ambil semua prodi yang sudah ada dalam satu query.
+                 */
+                $existingMajors = Major::query()
+                    ->whereIn(DB::raw('LOWER(name)'), $majorKeys)
+                    ->get(['id', 'name', 'description', 'category_id']);
+
+                $majorsByName = $existingMajors->keyBy(
+                    fn ($major) => mb_strtolower(trim($major->name))
+                );
+
+                /*
+                 * 3. Insert prodi baru secara batch.
+                 */
+                $newMajorRows = [];
+                $now = now();
+
+                foreach ($majorPayloads as $key => $data) {
+                    if (!$majorsByName->has($key)) {
+                        $newMajorRows[] = [
+                            'name' => $data['name'],
+                            'description' => $data['description'],
+                            'category_id' => $data['category_id'],
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
+                    }
                 }
+
+                foreach (array_chunk($newMajorRows, 200) as $chunk) {
+                    DB::table('majors')->insert($chunk);
+                }
+
+                $created = count($newMajorRows);
+
+                /*
+                 * 4. Ambil ulang ID prodi baru sekaligus.
+                 */
+                if ($newMajorRows) {
+                    $newMajors = Major::query()
+                        ->whereIn(DB::raw('LOWER(name)'), array_keys(array_intersect_key(
+                            $majorPayloads,
+                            array_fill_keys(array_keys($majorPayloads), true)
+                        )))
+                        ->get(['id', 'name', 'description', 'category_id']);
+
+                    foreach ($newMajors as $major) {
+                        $key = mb_strtolower(trim($major->name));
+                        if (!$majorsByName->has($key)) {
+                            $majorsByName->put($key, $major);
+                        }
+                    }
+                }
+
+                /*
+                 * 5. Perbarui data prodi lama hanya jika file memberi nilai.
+                 * Update ini hanya dilakukan untuk prodi yang memang sudah ada.
+                 */
+                foreach ($majorPayloads as $key => $data) {
+                    $major = $majorsByName->get($key);
+                    if (!$major) {
+                        throw new \RuntimeException("Prodi '{$data['name']}' gagal ditemukan setelah proses insert.");
+                    }
+
+                    $updates = [];
+                    if ($data['description'] !== null && $data['description'] !== $major->description) {
+                        $updates['description'] = $data['description'];
+                    }
+                    if ($data['category_id'] !== null && (int) $data['category_id'] !== (int) $major->category_id) {
+                        $updates['category_id'] = $data['category_id'];
+                    }
+
+                    if ($updates) {
+                        $updates['updated_at'] = now();
+                        DB::table('majors')->where('id', $major->id)->update($updates);
+                        foreach ($updates as $column => $value) {
+                            if ($column !== 'updated_at') {
+                                $major->{$column} = $value;
+                            }
+                        }
+                    }
+                }
+
+                /*
+                 * 6. Ambil semua relasi pivot yang relevan dalam satu query.
+                 */
+                $majorIds = $majorsByName->pluck('id')->map(fn ($id) => (int) $id)->unique()->values()->all();
+
+                $existingPivots = DB::table('university_majors')
+                    ->whereIn('university_id', $universityIds)
+                    ->whereIn('major_id', $majorIds)
+                    ->get(['university_id', 'major_id', 'accreditation', 'additional_info']);
+
+                $pivotMap = [];
+                foreach ($existingPivots as $pivot) {
+                    $pivotMap[$pivot->university_id . ':' . $pivot->major_id] = $pivot;
+                }
+
+                /*
+                 * 7. Siapkan seluruh relasi dan simpan dengan upsert batch.
+                 * Nilai null dari file tidak menghapus nilai pivot lama.
+                 */
+                $pivotRows = [];
+
+                foreach ($rows as $item) {
+                    $data = $item['data'];
+                    $majorKey = mb_strtolower(trim($data['name']));
+                    $major = $majorsByName->get($majorKey);
+                    $universityId = (int) $item['university_id'];
+                    $majorId = (int) $major->id;
+                    $pivotKey = $universityId . ':' . $majorId;
+                    $existingPivot = $pivotMap[$pivotKey] ?? null;
+
+                    if ($existingPivot) {
+                        $alreadyLinked++;
+                        $accreditation = $data['accreditation'] !== null
+                            ? $data['accreditation']
+                            : $existingPivot->accreditation;
+                        $additionalInfo = $data['additional_info'] !== null
+                            ? $data['additional_info']
+                            : $existingPivot->additional_info;
+                    } else {
+                        $linked++;
+                        $accreditation = $data['accreditation'];
+                        $additionalInfo = $data['additional_info'];
+                    }
+
+                    $pivotRows[$pivotKey] = [
+                        'university_id' => $universityId,
+                        'major_id' => $majorId,
+                        'accreditation' => $accreditation,
+                        'additional_info' => $additionalInfo,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+
+                foreach (array_chunk(array_values($pivotRows), 200) as $chunk) {
+                    DB::table('university_majors')->upsert(
+                        $chunk,
+                        ['university_id', 'major_id'],
+                        ['accreditation', 'additional_info', 'updated_at']
+                    );
+                }
+            }, 3);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'message' => 'Import gagal disimpan. Tidak ada perubahan yang disimpan. Periksa laravel.log untuk detail error.',
+                ], 500);
             }
-        });
+
+            return redirect()->route('admin.majors.index')
+                ->withErrors(['file' => 'Import gagal disimpan. Tidak ada perubahan yang disimpan. Periksa laravel.log untuk detail error.']);
+        }
 
         session()->forget(['major_import_preview', 'major_import_errors']);
+
         $message = "Import prodi selesai: {$created} prodi baru, {$linked} relasi baru, {$alreadyLinked} relasi sudah ada/diperbarui.";
-        if (request()->expectsJson()) return response()->json(['success' => true, 'message' => $message, 'created' => $created, 'linked' => $linked, 'already_linked' => $alreadyLinked]);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'created' => $created,
+                'linked' => $linked,
+                'already_linked' => $alreadyLinked,
+            ]);
+        }
+
         return redirect()->route('admin.majors.index')->with('success', $message);
     }
 

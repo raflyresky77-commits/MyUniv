@@ -314,7 +314,7 @@ $kemampuanResult = [
          * Kepribadian & Karier: tidak menebak kategori sebelum aturan pemetaan
          * tiap pertanyaan dan jawabannya tersedia.
          */
-        
+
 /*
 |--------------------------------------------------------------------------
 | Perhitungan Tes Kepribadian - 35 Pertanyaan
@@ -597,6 +597,42 @@ $recommendedMajors = $allMajors->map(function ($major) use (
     ->take(3)
     ->values()
     ->all();
+
+        // Ambil perguruan tinggi yang benar-benar memiliki relasi ke jurusan
+        // melalui pivot university_majors. Data uji import tidak ditampilkan.
+        $recommendedMajors = collect($recommendedMajors)
+            ->map(function ($major) {
+                $major['universities'] = DB::table('university_majors as um')
+                    ->join('universities as u', 'u.id', '=', 'um.university_id')
+                    ->where('um.major_id', $major['id'])
+                    ->where('u.name', 'not like', '%Uji Import%')
+                    ->where(function ($query) {
+                        $query->whereNull('u.branch_notes')
+                            ->orWhere('u.branch_notes', 'not like', '%DATA UJI IMPORT%');
+                    })
+                    ->orderByRaw('CASE WHEN u.ranking IS NULL THEN 1 ELSE 0 END')
+                    ->orderBy('u.ranking')
+                    ->orderBy('u.name')
+                    ->get([
+                        'u.id',
+                        'u.name',
+                        'u.type',
+                        'u.location',
+                        'u.website',
+                        'u.ranking',
+                        'u.ranking_source',
+                        'u.ranking_year',
+                        'u.accreditation as university_accreditation',
+                        'u.branch_notes',
+                        'um.accreditation as major_accreditation',
+                        'um.additional_info',
+                    ])
+                    ->map(fn ($university) => (array) $university)
+                    ->all();
+
+                return $major;
+            })
+            ->all();
 
         $assessmentCompleted = $minatSubmission !== null
             && $kemampuanSubmission !== null

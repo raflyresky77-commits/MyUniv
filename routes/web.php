@@ -290,6 +290,14 @@ Route::middleware(['auth', 'role:counselor'])
         Route::get('/consultation', [CounselorController::class, 'consultation'])
             ->name('consultation');
 
+        // Hasil asesmen seluruh siswa terdaftar.
+        Route::get('/assessment-results', [CounselorController::class, 'assessmentResults'])
+            ->name('assessment-results.index');
+
+        Route::get('/assessment-results/{student}', [CounselorController::class, 'assessmentResultDetail'])
+            ->whereNumber('student')
+            ->name('assessment-results.show');
+
         Route::put('/consultation/{consultation}', [CounselorController::class, 'updateConsultation'])
             ->name('consultation.update');
 
