@@ -43,17 +43,14 @@
 
             <!-- Pesan Sukses / Notifikasi Status (Laravel Standard) -->
             @if (session('status'))
-                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold leading-relaxed">
+                <div class="alert alert-success">
                     {{ session('status') }}
                 </div>
             @endif
-
             <!-- Notifikasi Error Validasi -->
             @if ($errors->any())
-                <div class="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold space-y-1">
-                    @foreach ($errors->all() as $error)
-                        <p>• {{ $error }}</p>
-                    @endforeach
+                <div class="alert alert-danger">
+                    {{ $errors->first() }}
                 </div>
             @endif
 

@@ -240,9 +240,19 @@
                                     <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $qNum }} dari 16</h3>
                                     <span class="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">Abstrak</span>
                                 </div>
-                                <p class="text-sm sm:text-base font-bold text-gray-800">{{ $questionText }}</p>
-                                <div class="p-6 bg-indigo-50/40 rounded-2xl border border-indigo-100 text-center font-bold text-indigo-900 text-sm tracking-wide shadow-inner">
-                                    [ Ilustrasi Pola Matriks Visual #{{ $index + 1 }} ]
+                                        <p class="text-sm sm:text-base font-bold text-gray-800">{{ $questionText }}</p>
+                                        <div class="p-4 bg-indigo-50/40 rounded-2xl border border-indigo-100 flex justify-center items-center">
+                                        <img
+                                            src="https://erlcsoyhstijixsjykmm.supabase.co/storage/v1/object/public/assessment-images/AB-{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.png"
+                                            alt="Ilustrasi soal abstrak {{ $index + 1 }}"
+                                            class="w-full max-w-2xl h-auto object-contain rounded-xl"
+                                            loading="lazy"
+                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                                        >
+
+                                        <p class="hidden text-sm text-gray-400 font-medium">
+                                            Gambar soal belum tersedia.
+                                        </p>
                                 </div>
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
                                     @foreach(['A', 'B', 'C', 'D'] as $opt)

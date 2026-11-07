@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
 {
-    // Tambahkan kata kunci public di sini
     public function index()
     {
         return view('auth.forgot-password');
@@ -23,6 +23,17 @@ class ForgotPasswordController extends Controller
             'email.exists' => 'Email tidak terdaftar di sistem kami.',
         ]);
 
-        return back()->with('status', 'Tautan pemulihan kata sandi telah dikirim ke email Anda.');
+        // Mengirim email reset password
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('status', 'Tautan reset password berhasil dikirim ke email Anda.');
+        }
+
+        return back()->withErrors([
+            'email' => __($status),
+        ]);
     }
 }

@@ -2,8 +2,9 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Student\AssessmentController as StudentAssessmentController;
@@ -58,12 +59,29 @@ Route::post('/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-// Forgot Password
+// ========================================
+// FORGOT PASSWORD & RESET PASSWORD
+// ========================================
+
+// Menampilkan halaman lupa password
 Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])
+    ->middleware('guest')
     ->name('password.request');
 
+// Mengirim link reset password melalui email
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->middleware('guest')
     ->name('password.email');
+
+// Menampilkan halaman untuk membuat password baru
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'show'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+// Memvalidasi token dan menyimpan password baru
+Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.update');
 
 /*
 |--------------------------------------------------------------------------
