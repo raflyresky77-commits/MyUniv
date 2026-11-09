@@ -1,276 +1,297 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes Minat Bakat - MyUniv</title>
 
-@section('title', 'Admin Dashboard - MyUniv')
-@section('body-class', 'bg-[#F8FBFF] text-gray-800 antialiased')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-@push('styles')
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-        html { min-height: 100%; overflow-y: auto; }
-        body {
-            min-height: 100vh;
-            height: auto;
-            overflow-x: hidden;
-            overflow-y: auto;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #F4F7FE; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .bg-gradient-strong { background: linear-gradient(135deg, #3650A2 0%, #1E2D62 100%); }
+        .bg-gradient-coral { background: linear-gradient(135deg, #FF7A59 0%, #E85D3A 100%); }
+        .card-glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 245, 255, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(54, 80, 162, 0.12);
+            box-shadow: 0 20px 40px -15px rgba(54, 80, 162, 0.08);
         }
-        .bg-gradient-myuniv { background: linear-gradient(135deg, #3650A2 0%, #22346E 100%); }
-        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
-</style>
-@endpush
-
-@section('content')
-
-    <!-- Backdrop untuk menutup sidebar saat pengguna mengetuk area luar di mobile -->
-    <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-xs transition-opacity hidden"></div>
-
-    @php
-        $sidebarMenus = [
-            [
-                'key' => 'dashboard',
-                'label' => 'Dashboard Utama',
-                'url' => route('admin.dashboard'),
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2v-2z"/></svg>',
-            ],
-            [
-                'key' => 'assessments',
-                'label' => 'Bank Soal Asesmen',
-                'url' => route('admin.assessments.index'),
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>',
-            ],
-            [
-                'key' => 'universities',
-                'label' => 'Data Perguruan Tinggi',
-                'url' => route('admin.universities.index'),
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>',
-            ],
-            [
-                'key' => 'majors',
-                'label' => 'Program Studi & Jurusan',
-                'url' => route('admin.majors.index'),
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>',
-            ],
-            [
-                'key' => 'consultations',
-                'label' => 'Monitoring Konsultasi BK',
-                'url' => route('admin.consultations.index'),
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8m-8 4h8m-8 4h5m-9 5h14a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>',
-            ],
-            [
-                'key' => 'users',
-                'label' => 'Manajemen Pengguna',
-                'url' => route('admin.users.index'),
-                'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-[#3650A2] transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
-            ],
-        ];
-    @endphp
-
-    {{-- Sidebar --}}
-    <x-sidebar :menus="$sidebarMenus" active="dashboard" title="MyUniv" logo="images/icon.png">
-        <form action="{{ route('logout') }}" method="POST" class="w-full">
-            @csrf
-            <button type="submit" class="flex min-h-12 w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-bold text-red-600 transition hover:bg-red-50/80 focus:outline-none focus:ring-2 focus:ring-red-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                </svg>
-                <span>Keluar Sistem</span>
-            </button>
-        </form>
-    </x-sidebar>
-
-    <!-- Top Navbar -->
-    <header class="bg-white/90 backdrop-blur-md border-b border-[#E2E8F0] px-4 sm:px-6 lg:px-10 py-4 sm:py-5 flex justify-between items-center fixed top-0 right-0 left-0 md:left-72 z-40 shadow-sm">
-        <div class="flex min-w-0 items-center gap-2 sm:gap-3">
-            <button type="button" onclick="toggleSidebar()" class="md:hidden relative z-50 p-2.5 rounded-xl text-gray-700 bg-gray-100 hover:bg-indigo-50 hover:text-[#3650A2] transition focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
-            <span class="text-[10px] sm:text-xs font-extrabold px-2.5 sm:px-3.5 py-1.5 bg-indigo-50 text-[#3650A2] rounded-xl tracking-wide border border-indigo-100/50">Panel Kontrol</span>
-            <span class="text-gray-300 font-light hidden sm:inline">/</span>
-            <h1 class="text-sm font-black text-gray-800 tracking-tight hidden lg:inline">Ringkasan Admin</h1>
-        </div>
-
-        <div class="flex shrink-0 items-center gap-2 sm:gap-4">
-            <div class="text-right hidden sm:block">
-                <div class="text-sm font-extrabold text-gray-900 leading-tight">Administrator Utama</div>
-                <div class="text-xs font-semibold text-gray-400">admin@myuniv.test</div>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-gradient-myuniv text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-200/50">AD</div>
-        </div>
-    </header>
-
-    <!-- Main Content Wrapper -->
-    <div class="md:ml-72 min-h-screen pt-24 pb-16">
-        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8 pb-20 space-y-8">
-
-            <!-- Hero Banner -->
-            <div class="bg-gradient-myuniv text-white p-8 sm:p-12 rounded-[32px] shadow-2xl shadow-indigo-950/20 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border border-white/10">
-                <div class="absolute -right-16 -top-16 w-80 h-80 bg-[#FF7A59]/40 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute right-40 -bottom-20 w-72 h-72 bg-blue-400/30 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute left-1/2 top-0 w-40 h-40 bg-indigo-500/30 rounded-full blur-2xl pointer-events-none"></div>
-
-                <div class="relative z-10 max-w-xl">
-                    <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-white/15 backdrop-blur-md text-white text-xs font-extrabold rounded-full mb-5 shadow-lg border border-white/20">
-                        <span class="w-2 h-2 rounded-full bg-[#FF7A59] animate-ping"></span>
-                        <span>MyUniv Enterprise Control Center</span>
-                    </div>
-                    <h2 class="text-3xl sm:text-5xl font-black tracking-tight mb-4 leading-tight text-white drop-shadow-md">Selamat Datang, Admin!</h2>
-                    <p class="text-indigo-100 text-sm sm:text-base leading-relaxed font-medium opacity-95">Kelola penuh seluruh data perguruan tinggi, program studi, asesmen psikometrik siswa, dan basis data platform dengan performa tinggi.</p>
-                </div>
-
-                <div class="relative z-10 flex flex-col sm:flex-row md:flex-col gap-3.5 w-full md:w-auto">
-                    <div class="bg-white/15 backdrop-blur-xl p-5 rounded-2xl border border-white/25 shadow-xl flex items-center gap-4 min-w-[220px]">
-                        <div class="w-12 h-12 rounded-xl bg-[#FF7A59] text-white flex items-center justify-center font-bold shadow-lg shadow-orange-500/30">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        </div>
-                        <div>
-                            <span class="text-[11px] text-indigo-200 font-bold uppercase tracking-wider block">Database Status</span>
-                            <span class="text-sm font-black text-emerald-300 flex items-center gap-1.5 mt-0.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Supabase Optimal
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="bg-white/10 backdrop-blur-xl p-4 rounded-2xl border border-white/15 flex items-center justify-between text-xs font-bold text-indigo-100 px-5">
-                        <span>Sistem Keamanan</span>
-                        <span class="bg-white/20 px-2.5 py-1 rounded-lg text-white font-extrabold tracking-wide">Role-Based</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modul Manajemen: Grid Utama 3 Kolom yang Seragam dan Sejajar -->
-            <div>
-                <div class="flex items-center justify-between mb-5">
-                    <h3 class="text-lg font-extrabold text-[#3650A2] tracking-tight">Modul Manajemen</h3>
-                    <span class="text-xs font-bold text-gray-400">Pilih menu untuk mulai mengelola</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                    <!-- 1. Bank Soal Asesmen -->
-                    <a href="{{ route('admin.assessments.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-orange-500/10 hover:border-[#FF7A59]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden h-full">
-                        <div class="absolute -right-8 -top-8 w-32 h-32 bg-orange-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-orange-50 text-[#FF7A59] flex items-center justify-center mb-5 group-hover:bg-[#FF7A59] group-hover:text-white transition-all duration-300 shadow-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                            </div>
-                            <h4 class="text-base font-extrabold text-gray-900 mb-1.5 group-hover:text-[#FF7A59] transition">Bank Soal Asesmen</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed font-medium">Atur kuesioner psikometrik & peminatan siswa.</p>
-                        </div>
-                        <div class="mt-6 relative z-10 flex items-center text-xs font-bold text-[#FF7A59] gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
-                            Kelola modul &rarr;
-                        </div>
-                    </a>
-
-                    <!-- 2. Data Universitas -->
-                    <a href="{{ route('admin.universities.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden h-full">
-                        <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-[#3650A2] flex items-center justify-center mb-5 group-hover:bg-[#3650A2] group-hover:text-white transition-all duration-300 shadow-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                            </div>
-                            <h4 class="text-base font-extrabold text-gray-900 mb-1.5 group-hover:text-[#3650A2] transition">Data Perguruan Tinggi</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed font-medium">Tambah, edit, dan kelola daftar PTN serta PTS.</p>
-                        </div>
-                        <div class="mt-6 relative z-10 flex items-center text-xs font-bold text-[#3650A2] gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
-                            Kelola modul &rarr;
-                        </div>
-                    </a>
-
-                    <!-- 3. Program Studi & Jurusan -->
-                    <a href="{{ route('admin.majors.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden h-full">
-                        <div class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-[#3650A2] flex items-center justify-center mb-5 group-hover:bg-[#3650A2] group-hover:text-white transition-all duration-300 shadow-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
-                            </div>
-                            <h4 class="text-base font-extrabold text-gray-900 mb-1.5 group-hover:text-[#3650A2] transition">Program Studi & Jurusan</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed font-medium">Atur data pilihan program studi dan fakultas.</p>
-                        </div>
-                        <div class="mt-6 relative z-10 flex items-center text-xs font-bold text-[#3650A2] gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
-                            Kelola modul &rarr;
-                        </div>
-                    </a>
-
-                    <!-- 4. Manajemen Pengguna (Sekarang di Baris Kedua, Sejajar Sempurna) -->
-                    <a href="{{ route('admin.users.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-purple-500/10 hover:border-purple-500/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden h-full">
-                        <div class="absolute -right-8 -top-8 w-32 h-32 bg-purple-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-5 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300 shadow-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                            </div>
-                            <h4 class="text-base font-extrabold text-gray-900 mb-1.5 group-hover:text-purple-600 transition">Manajemen Pengguna</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed font-medium">Kelola akun siswa, guru BK, dan administrator.</p>
-                        </div>
-                        <div class="mt-6 relative z-10 flex items-center text-xs font-bold text-purple-600 gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
-                            Kelola modul &rarr;
-                        </div>
-                    </a>
-
-                    <!-- 5. Konsultasi Guru BK (Di Baris Kedua, Sejajar Sempurna) -->
-                    <a href="{{ route('admin.consultations.index') }}" class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 hover:border-[#3650A2]/60 transition-all duration-300 group flex flex-col justify-between relative overflow-hidden h-full">
-                        <div class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-100/60 rounded-full blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
-                        <div class="relative z-10">
-                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-[#3650A2] flex items-center justify-center mb-5 group-hover:bg-[#3650A2] group-hover:text-white transition-all duration-300 shadow-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-                            </div>
-                            <h4 class="text-base font-extrabold text-gray-900 mb-1.5 group-hover:text-[#3650A2] transition">Konsultasi Guru BK</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed font-medium">Pantau pengajuan konsultasi dan status penanganan siswa.</p>
-                        </div>
-                        <div class="mt-6 relative z-10 flex items-center text-xs font-bold text-[#3650A2] gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
-                            Lihat pengajuan &rarr;
-                        </div>
-                    </a>
-
-                    <!-- 6. Widget Status Sistem (Menempati slot ke-6 agar baris kedua terisi penuh 3 kolom) -->
-                    <div class="glass-card p-6 rounded-[28px] border border-[#E2E8F0] shadow-sm flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-white via-white to-emerald-50/40 h-full">
-                        <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-emerald-200/50 rounded-full blur-2xl pointer-events-none"></div>
-                        <div class="relative z-10">
-                            <div class="flex items-center justify-between mb-5">
-                                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                                </div>
-                                <span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold rounded-full uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live
-                                </span>
-                            </div>
-                            <h4 class="text-base font-extrabold text-gray-900 mb-1">Status Sistem</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed font-medium mb-4">Database Supabase PostgreSQL & Middleware optimal.</p>
-                        </div>
-                        <div class="pt-3.5 border-t border-gray-100 flex items-center justify-between text-xs font-bold relative z-10">
-                            <span class="text-gray-400 font-medium">Response Latency</span>
-                            <span class="text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100 shadow-xs">18 ms</span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </main>
-    </div>
-
-@endsection
-
-@push('scripts')
-<script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-
-            if (!sidebar || !backdrop) return;
-
-            const isOpening = sidebar.classList.contains('-translate-x-full');
-            sidebar.classList.toggle('-translate-x-full', !isOpening);
-            backdrop.classList.toggle('hidden', !isOpening);
-            document.body.classList.toggle('overflow-hidden', isOpening);
-            document.documentElement.classList.toggle('sidebar-open', isOpening);
+        /* Custom Styling untuk Radio Button Interaktif */
+        .option-input:checked + .option-label {
+            background-color: #EEF3FF;
+            border-color: #3650A2;
+            color: #3650A2;
+            box-shadow: 0 4px 12px rgba(54, 80, 162, 0.15);
+            transform: translateY(-1px);
         }
 
-        document.addEventListener('keydown', function (event) {
-            const sidebar = document.getElementById('mobileSidebar');
-            if (event.key === 'Escape' && sidebar && !sidebar.classList.contains('-translate-x-full')) {
-                toggleSidebar();
+        /* Tampilan tabel lebih ringkas di layar HP: pernyataan penuh di atas, opsi sejajar di bawah. */
+        @media (max-width: 640px) {
+            .questionnaire-table { table-layout: fixed; width: 100%; }
+            .questionnaire-table thead { display: none; }
+            .questionnaire-table,
+            .questionnaire-table tbody { display: block; width: 100%; }
+            .questionnaire-table tbody tr {
+                display: flex;
+                flex-wrap: wrap;
+                width: 100%;
+                border-bottom: 1px solid #E5E7EB;
+                padding: 4px 0 10px;
+            }
+            .questionnaire-table tbody tr:last-child { border-bottom: 0; }
+            .questionnaire-table tbody td { box-sizing: border-box; }
+            .questionnaire-table tbody td:first-child {
+                display: block;
+                width: 100%;
+                padding: 12px 16px 8px;
+                font-size: 13px;
+                line-height: 1.55;
+                overflow-wrap: anywhere;
+            }
+            .questionnaire-table tbody td:not(:first-child) {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                width: 33.3333%;
+                padding: 5px 3px 4px;
+            }
+            .questionnaire-table tbody td:not(:first-child)::before {
+                content: attr(data-label);
+                display: block;
+                min-height: 26px;
+                margin-bottom: 5px;
+                color: #64748B;
+                font-size: 9px;
+                font-weight: 700;
+                line-height: 1.25;
+                text-align: center;
+                overflow-wrap: anywhere;
+            }
+            .questionnaire-table .option-label {
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F4F7FE] text-gray-800 antialiased">
+
+    @include('components.global-loading')
+
+    {{-- Sidebar reusable component: backdrop dan kontrol mobile dikelola komponen --}}
+    <x-student.student-sidebar active="assessment" />
+
+    {{-- Topbar reusable component --}}
+    <x-student.student-topbar title="Tes Minat Bakat" subtitle="Asesmen" />
+
+    <!-- Main Content Area -->
+    <div class="md:ml-72 pt-28 min-h-screen flex flex-col">
+        <main class="p-6 md:p-10 space-y-8 max-w-6xl w-full mx-auto flex-1">
+
+            <!-- Title & Top Banner Box -->
+            <div class="space-y-6">
+                <!-- Judul Utama -->
+                <div class="text-center space-y-2">
+                    <span class="inline-block px-4 py-1 rounded-full bg-indigo-50 text-[#3650A2] text-xs font-extrabold tracking-wider uppercase border border-indigo-100">Tahap 1 dari 3 Asesmen</span>
+                    <h1 class="text-2xl sm:text-4xl font-black text-[#3650A2] tracking-tight">Tes Minat Bakat</h1>
+                </div>
+
+                <!-- Banner Gambar -->
+                <x-student.assessment-panel variant="glass" class="rounded-[32px] p-4 sm:p-6 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-indigo-200/30 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="absolute -left-10 -top-10 w-48 h-48 bg-orange-200/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="w-full h-56 sm:h-72 rounded-[24px] overflow-hidden relative shadow-sm group">
+                        <!-- Ganti asset('images/banner-minat-bakat.png') dengan path file gambar kamu di folder public -->
+                        <img src="{{ asset('images/banner-minat.bakat.png') }}" alt="Kenali Potensi & Bidang Impianmu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+
+                        <!-- Overlay Gradient & Text -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end p-6 sm:p-8">
+                            <div class="text-white space-y-1">
+                                <h3 class="text-base sm:text-xl font-extrabold">Kenali Potensi & Bidang Impianmu</h3>
+                                <p class="text-xs sm:text-sm text-gray-200 leading-relaxed">Pilihlah skala penilaian yang paling mencerminkan tingkat kesukaanmu secara jujur.</p>
+                            </div>
+                        </div>
+                    </div>
+                </x-student.assessment-panel>
+            </div>
+
+            <!-- Bagian Instruksi Cantik -->
+            <x-student.assessment-panel variant="instruction" class="rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#FF7A59]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xs font-black uppercase tracking-widest text-[#FF7A59]">Instruksi Pengisian</h2>
+                        <p class="text-xs sm:text-sm font-medium text-indigo-100 mt-0.5">Berikan penilaian dari Sangat Tidak Suka hingga Sangat Suka pada setiap pernyataan berikut.</p>
+                    </div>
+                </div>
+                <div class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/15 text-[11px] font-bold text-white shrink-0">
+                    Wajib Diisi Semua
+                </div>
+            </x-student.assessment-panel>
+
+            <!-- Tabel Kuesioner Pernyataan Interaktif -->
+            <form action="{{ route('student.assessment.minat-bakat.store') }}" method="POST" id="interestAssessmentForm" novalidate class="space-y-6">
+                @csrf
+                <x-student.assessment-panel variant="questionnaire" class="rounded-[28px] overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="questionnaire-table w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-indigo-50/70 text-[#3650A2] text-xs font-black uppercase tracking-wider border-b border-indigo-100">
+                                <th class="py-4 px-6">Pernyataan Aktivitas / Pekerjaan</th>
+                                <th colspan="5" class="py-4 px-3 text-center">Pilih satu jawaban (1–5)</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-100 text-xs sm:text-sm">
+                            @forelse ($questions as $index => $question)
+                                <tr class="hover:bg-indigo-50/30 transition duration-150">
+                                    <td class="py-4 px-6 font-semibold text-gray-700 leading-relaxed min-w-[280px]">
+                                        <span class="text-[#3650A2] font-bold mr-1.5">{{ $index + 1 }}.</span>
+                                        {{ $question->question_text }}
+                                    </td>
+                                    @php
+                                        $scaleOptions = $question->options->sortBy('score')->take(5)->values();
+                                        $scaleLabels = [
+                                            1 => 'Sangat Tidak Suka',
+                                            2 => 'Tidak Suka',
+                                            3 => 'Netral',
+                                            4 => 'Suka',
+                                            5 => 'Sangat Suka',
+                                        ];
+                                    @endphp
+                                    @foreach ($scaleOptions as $option)
+                                        <td class="py-4 px-2 text-center">
+                                            <label class="inline-flex flex-col items-center gap-1.5 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="responses[{{ $question->id }}]"
+                                                    value="{{ $option->score }}"
+                                                    class="peer sr-only"
+                                                    @checked((string) old("responses.$question->id", $savedResponses[$question->id] ?? '') === (string) $option->score)
+                                                    {{ $loop->first ? 'required' : '' }}
+                                                >
+                                                <span class="flex h-9 w-9 items-center justify-center rounded-lg border-2 border-gray-200 bg-white font-bold text-gray-600 transition peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-300">
+                                                    {{ $loop->iteration }}
+                                                </span>
+                                                <span class="w-16 text-[10px] leading-tight text-gray-500">{{ $scaleLabels[$loop->iteration] }}</span>
+                                            </label>
+                                        </td>
+                                    @endforeach
+                                    @if ($scaleOptions->count() < 5)
+                                        <td colspan="{{ 5 - $scaleOptions->count() }}" class="py-4 px-2 text-center text-amber-700">
+                                            Opsi jawaban belum lengkap di database.
+                                        </td>
+                                    @endif
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="py-10 text-center text-gray-500 font-medium">
+                                        Belum ada pertanyaan asesmen minat bakat yang diatur oleh Admin di database.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+
+                        </table>
+                    </div>
+
+                </x-student.assessment-panel>
+
+    <!-- Tombol Navigasi Bawah -->
+        <x-button
+            type="submit"
+            variant="coral-gradient"
+            size="lg"
+            class="!px-8 !py-3.5 !text-xs !font-extrabold hover:scale-105 !shadow-orange-950/20"
+        >
+            Simpan Jawaban
+        </x-button>
+
+    <!-- Modal reusable untuk peringatan soal yang belum dijawab -->
+    <x-student.assessment-warning-modal
+        modal-id="interestAssessmentWarning"
+        message-id="interestAssessmentWarningMessage"
+        title="Peringatan: Belum Selesai!"
+        initial-message="Masih ada pernyataan yang belum Anda jawab. Silakan lengkapi terlebih dahulu atau pilih tetap kirim jika sudah yakin."
+        close-action="closeInterestAssessmentWarning"
+        continue-action="forceSubmitInterestAssessment"
+    />
+
+    <script>
+        const interestAssessmentForm = document.getElementById('interestAssessmentForm');
+        const interestQuestionGroups = [...new Set(
+            [...interestAssessmentForm.querySelectorAll('input[type="radio"][name^="responses["]')].map(input => input.name)
+        )];
+
+        interestAssessmentForm.addEventListener('submit', function (event) {
+            const missing = interestQuestionGroups.filter(name =>
+                !interestAssessmentForm.querySelector(`input[name="${CSS.escape(name)}"]:checked`)
+            );
+
+            if (missing.length > 0) {
+                event.preventDefault();
+                const firstMissingInput = interestAssessmentForm.querySelector(`input[name="${CSS.escape(missing[0])}"]`);
+                const firstQuestionRow = firstMissingInput?.closest('tr');
+                const questionNumber = firstQuestionRow?.querySelector('td:first-child span')?.textContent?.trim() || '—';
+                const message = `Masih ada ${missing.length} pernyataan yang belum dijawab (dimulai dari nomor ${questionNumber.replace('.', '')}). Silakan lengkapi terlebih dahulu atau pilih tetap kirim jika sudah yakin.`;
+                document.getElementById('interestAssessmentWarningMessage').textContent = message;
+                showInterestAssessmentWarning();
             }
         });
-</script>
-@endpush
+
+        function showInterestAssessmentWarning() {
+            const modal = document.getElementById('interestAssessmentWarning');
+            const content = modal.querySelector('[data-warning-content]');
+            modal.classList.remove('hidden');
+            modal.style.display = 'grid';
+            requestAnimationFrame(() => {
+                if (content) {
+                    content.classList.remove('scale-95');
+                    content.classList.add('scale-100');
+                }
+            });
+        }
+
+        function closeInterestAssessmentWarning() {
+            const modal = document.getElementById('interestAssessmentWarning');
+            const content = modal.querySelector('[data-warning-content]');
+            if (content) {
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+            }
+            modal.style.display = 'none';
+            setTimeout(() => modal.classList.add('hidden'), 200);
+
+            const missing = interestQuestionGroups.find(name =>
+                !interestAssessmentForm.querySelector(`input[name="${CSS.escape(name)}"]:checked`)
+            );
+            if (missing) {
+                const input = interestAssessmentForm.querySelector(`input[name="${CSS.escape(missing)}"]`);
+                input?.closest('tr')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function forceSubmitInterestAssessment() {
+            // Dipanggil setelah pengguna menekan tombol 'Ya, Kirim' pada modal custom.
+            HTMLFormElement.prototype.submit.call(interestAssessmentForm);
+        }
+
+// Fungsi opsional untuk memberi efek background tipis pada baris tabel yang sudah dipilih
+        function highlightRow(radio) {
+            const row = radio.closest('tr');
+            // Hapus kelas aktif dari semua baris terkait dalam grup atau beri tanda terpenuhi
+            row.style.backgroundColor = '#F8FAFC';
+        }
+    </script>
+</body>
+</html>
