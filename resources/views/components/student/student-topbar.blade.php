@@ -5,6 +5,7 @@
     'subtitle' => 'MyUniv',
     'username' => null,
     'initials' => null,
+    'student' => null,
     'progressId' => null,
     'progressBarId' => null,
 ])
@@ -12,6 +13,16 @@
 @php
     $displayName = $username ?: (auth()->user()->name ?? 'Pengguna');
     $displayInitials = $initials ?: strtoupper(substr($displayName, 0, 2));
+
+    $studentData = $student ?? auth()->user()?->student;
+
+    $gender = strtolower(trim($studentData?->gender ?? ''));
+
+    $profilePhoto = match ($gender) {
+        'perempuan' => 'images/icon.female.jpg',
+        'laki-laki' => 'images/icon.male.jpg',
+        default => 'images/icon.male.jpg',
+    };
 @endphp
 
 <header class="fixed top-0 right-0 left-0 md:left-72 z-40 min-h-[65px] bg-white/95 backdrop-blur-md border-b border-[#E2E8F0] px-4 sm:px-6 lg:px-10 py-4 flex justify-between items-center shadow-sm">
@@ -53,12 +64,13 @@
                 <div class="text-xs font-semibold text-indigo-500">Siswa</div>
             </div>
 
-            <div
-                class="w-10 h-10 rounded-xl bg-[#3650A2] text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-900/20"
-                aria-label="Inisial {{ $displayName }}"
-            >
-                {{ $displayInitials }}
-            </div>
+            <div class="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-indigo-100 shadow-md shrink-0">
+                <img
+                    src="{{ asset($profilePhoto) }}"
+                    alt="Foto profil {{ $displayName }}"
+                    class="w-full h-full object-cover"
+                >
+</div>
         </div>
     </div>
 </header>

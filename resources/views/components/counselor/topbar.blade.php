@@ -1,3 +1,4 @@
+
 @props([
     'title' => 'Beranda',
     'subtitle' => 'Panel Guru BK',
@@ -8,6 +9,7 @@
     'sticky top-0 z-40 flex w-full shrink-0 items-center justify-between border-b border-[#E2E8F0] bg-white/90 px-4 py-4 shadow-sm backdrop-blur-md sm:px-6 md:px-10 md:py-5',
     'md:ml-72 md:w-[calc(100%-18rem)]' => $offsetSidebar,
 ])>
+    {{-- Bagian kiri: tombol sidebar dan judul halaman --}}
     <div class="flex min-w-0 items-center gap-3">
         <button
             type="button"
@@ -18,8 +20,18 @@
             aria-expanded="false"
             id="counselorSidebarToggle"
         >
-            <svg id="counselorMenuIcon" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.5" stroke-linecap="round"/>
+            <svg
+                id="counselorMenuIcon"
+                class="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+            >
+                <path
+                    d="M4 6h16M4 12h16M4 18h16"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                />
             </svg>
         </button>
 
@@ -36,23 +48,27 @@
         </div>
     </div>
 
+    {{-- Bagian kanan: nama Guru BK dan foto profil --}}
     <div class="ml-3 flex shrink-0 items-center gap-3">
         <div class="hidden text-right sm:block">
             <div class="text-sm font-extrabold leading-tight text-gray-900">
                 {{ Auth::user()->name ?? 'Guru BK' }}
             </div>
-            <div class="text-xs font-semibold text-indigo-500">Guru BK</div>
+
+            <div class="text-xs font-semibold text-indigo-500">
+                Guru BK
+            </div>
         </div>
 
-        <div
-            class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#2B4185] to-[#141F43] text-xs font-extrabold text-white shadow-md shadow-indigo-900/20 transition-transform hover:scale-105"
-            aria-label="Avatar Guru BK"
-        >
-            {{ collect(preg_split('/\s+/', trim(Auth::user()->name ?? 'Guru BK')))->filter()->take(2)->map(fn ($part) => mb_substr($part, 0, 1))->implode('') }}
-        </div>
+        <x-avatar
+            :user="Auth::user()"
+            type="counselor"
+            size="w-10 h-10"
+        />
     </div>
 </header>
 
+{{-- Script navigasi sidebar Guru BK --}}
 <script>
     (function () {
         const sidebarId = 'counselorSidebar';
@@ -61,13 +77,16 @@
 
         window.toggleCounselorSidebar = function () {
             const sidebar = document.getElementById(sidebarId);
+
             if (!sidebar) return;
 
             const isOpen = !sidebar.classList.contains('-translate-x-full');
 
-            isOpen
-                ? window.closeCounselorSidebar()
-                : window.openCounselorSidebar();
+            if (isOpen) {
+                window.closeCounselorSidebar();
+            } else {
+                window.openCounselorSidebar();
+            }
         };
 
         window.openCounselorSidebar = function () {
@@ -80,7 +99,11 @@
             sidebar.classList.remove('-translate-x-full');
             backdrop.classList.remove('hidden');
 
-            if (toggle) toggle.setAttribute('aria-expanded', 'true');
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', 'true');
+            }
+
+            document.body.classList.add('overflow-hidden');
         };
 
         window.closeCounselorSidebar = function () {
@@ -92,8 +115,15 @@
                 sidebar.classList.add('-translate-x-full');
             }
 
-            if (backdrop) backdrop.classList.add('hidden');
-            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+            if (backdrop) {
+                backdrop.classList.add('hidden');
+            }
+
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+
+            document.body.classList.remove('overflow-hidden');
         };
 
         document.addEventListener('keydown', function (event) {
@@ -108,11 +138,33 @@
             const toggle = document.getElementById(toggleId);
 
             if (window.innerWidth >= 768) {
-                if (sidebar) sidebar.classList.remove('-translate-x-full');
-                if (backdrop) backdrop.classList.add('hidden');
-                if (toggle) toggle.setAttribute('aria-expanded', 'false');
+                if (sidebar) {
+                    sidebar.classList.remove('-translate-x-full');
+                }
+
+                if (backdrop) {
+                    backdrop.classList.add('hidden');
+                }
+
+                if (toggle) {
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+
+                document.body.classList.remove('overflow-hidden');
             } else {
-                if (sidebar) sidebar.classList.add('-translate-x-full');
+                if (sidebar) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+
+                if (backdrop) {
+                    backdrop.classList.add('hidden');
+                }
+
+                if (toggle) {
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+
+                document.body.classList.remove('overflow-hidden');
             }
         });
     })();

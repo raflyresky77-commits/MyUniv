@@ -150,8 +150,12 @@
                 <div class="text-sm font-extrabold text-gray-900 leading-tight" id="headerName">{{ $user->name ?? 'Anisa Lidia Putri' }}</div>
                 <div class="text-xs font-semibold text-indigo-500">Siswa Aktif</div>
             </div>
-            <div class="w-10 h-10 rounded-2xl bg-gradient-strong text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-900/20 ring-2 ring-indigo-100 transition-transform hover:scale-105 cursor-pointer" id="headerAvatar">
-                {{ strtoupper(substr($user->name ?? 'Anisa Lidia Putri', 0, 2)) }}
+            <div class="w-10 h-10 rounded-2xl overflow-hidden ring-2 ring-indigo-100 shadow-md transition-transform hover:scale-105 cursor-pointer shrink-0" id="headerAvatar">
+                <img
+                    src="{{ asset(strtolower(trim($student->gender ?? '')) === 'perempuan' ? 'images/icon.female.jpg' : 'images/icon.male.jpg') }}"
+                    alt="Foto Profil Siswa"
+                    class="w-full h-full object-cover"
+                >
             </div>
         </div>
     </header>
@@ -196,9 +200,13 @@
                 <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none"></div>
 
                 <div class="flex items-center gap-5 relative z-10">
-                    <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-[22px] bg-gradient-to-br from-indigo-50 to-indigo-100/80 border-2 border-indigo-200/80 flex items-center justify-center text-[#3650A2] shrink-0 shadow-sm">
-                        <svg class="w-9 h-9 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    </div>
+                    <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-[22px] overflow-hidden border-2 border-indigo-200/80 shrink-0 shadow-sm">
+                            <img
+                                src="{{ asset(strtolower(trim($student->gender ?? '')) === 'perempuan' ? 'images/icon.female.jpg' : 'images/icon.male.jpg') }}"
+                                alt="Foto Profil {{ $user->name }}"
+                                class="w-full h-full object-cover"
+                            >
+                            </div>
                     <div class="space-y-1.5">
                         <h3 class="text-lg sm:text-xl font-black text-gray-900 tracking-tight" id="cardName">{{ $user->name ?? 'Anggia Tresa Putri' }}</h3>
                         <p class="text-xs font-semibold text-gray-500">Siswa &bull; <span class="text-[#3650A2] font-bold" id="cardClass">{{ $student->class ?? 'Belum diisi' }}</span></p>
