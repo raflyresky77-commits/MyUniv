@@ -102,6 +102,17 @@
                             </div>
                             <p class="text-xs text-gray-600">Guru BK: <strong>{{ $consultation->teacher?->user?->name ?? 'Belum tersedia' }}</strong></p>
                             <p class="text-xs text-gray-500">Jadwal yang diajukan: {{ $consultation->scheduled_at?->translatedFormat('l, d F Y') ?? 'Belum ditentukan' }} · {{ $consultation->scheduled_at?->format('H:i') ?? '-' }} WIB</p>
+
+                            {{-- Kontak WhatsApp Guru BK untuk tindak lanjut pengajuan. --}}
+                            @if ($consultation->whatsapp_url)
+                                <a href="{{ $consultation->whatsapp_url }}" target="_blank" rel="noopener noreferrer"
+                                   class="inline-flex items-center gap-2 rounded-xl bg-green-500 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-green-600">
+                                    <span>Hubungi Guru BK via WhatsApp</span>
+                                </a>
+                            @else
+                                <p class="text-xs text-amber-600">Nomor WhatsApp Guru BK belum tersedia.</p>
+                            @endif
+
                             @if ($consultation->message)<p class="rounded-xl bg-gray-50 p-3 text-xs text-gray-600">{{ $consultation->message }}</p>@endif
                             @foreach ($consultation->responses as $response)
                                 <div class="rounded-xl border border-indigo-100 bg-indigo-50/60 p-3 text-xs space-y-1">

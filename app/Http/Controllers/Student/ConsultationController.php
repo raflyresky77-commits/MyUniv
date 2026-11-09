@@ -27,6 +27,29 @@ class ConsultationController extends Controller
             ->latest()
             ->get();
 
+        // Siapkan tautan WhatsApp dari nomor Guru BK untuk setiap pengajuan.
+        // Nomor dibersihkan agar sesuai format internasional yang dipakai wa.me.
+        $studentName = Auth::user()->name ?? 'Siswa';
+
+        foreach ($consultations as $consultation) {
+            $teacherPhone = preg_replace('/\\D+/', '', (string) ($consultation->teacher?->phone ?? ''));
+
+            if (str_starts_with($teacherPhone, '0')) {
+                $teacherPhone = '62' . substr($teacherPhone, 1);
+            } elseif (str_starts_with($teacherPhone, '8')) {
+                $teacherPhone = '62' . $teacherPhone;
+            }
+
+            $message = "Assalamu'alaikum, Bapak/Ibu Guru BK. Saya {$studentName}. Saya sudah mengajukan konsultasi melalui MyUniv. Mohon konfirmasi lebih lanjut mengenai pengajuan saya. Terima kasih.";
+
+            $consultation->setAttribute(
+                'whatsapp_url',
+                strlen($teacherPhone) >= 9
+                    ? 'https://wa.me/' . $teacherPhone . '?text=' . rawurlencode($message)
+                    : null
+            );
+        }
+
         $teachers = TeacherBk::with('user')
             ->whereHas('user')
             ->get();
