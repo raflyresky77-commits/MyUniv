@@ -136,138 +136,83 @@
                 <form id="assessmentForm" action="{{ route('student.assessment.kemampuan.store') }}" method="POST" class="lg:col-span-3 space-y-10">
                     @csrf
 
-                    <!-- ================= SUBTES 1: NUMERIK (5 Soal) ================= -->
-                    <div class="space-y-6" id="section-numerik">
-                        <div class="bg-indigo-900 text-white px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-wider flex justify-between items-center shadow-md">
-                            <span>Subtes 1: Numerik (Pilihan Ganda Grid)</span>
-                            <span class="text-xs bg-indigo-800 px-3 py-1 rounded-xl text-indigo-200">5 Soal</span>
-                        </div>
+                    {{-- Soal diambil dari Supabase melalui Controller; Blade hanya merender tampilannya. --}}
+                    @php
+                        $subtestConfig = [
+                            'numerik' => ['label' => 'Numerik', 'section' => 'section-numerik'],
+                            'verbal' => ['label' => 'Verbal / Literasi', 'section' => 'section-verbal'],
+                            'abstrak' => ['label' => 'Abstrak & Logika', 'section' => 'section-abstrak'],
+                        ];
+                        $questionNumber = 0;
+                        $totalQuestions = collect($subtestConfig)->sum(fn ($config, $key) => collect($subtests[$key]['questions'] ?? [])->count());
+                    @endphp
 
+                    @foreach($subtestConfig as $subtestKey => $config)
                         @php
-                            $numerikQuestions = [
-                                ['q' => 'Seorang pedagang membeli 4 kg apel dengan harga Rp15.000 per kg. Ia menjual semuanya dengan harga Rp70.000. Berapa keuntungan pedagang tersebut?', 'opts' => ['Rp5.000', 'Rp10.000', 'Rp15.000', 'Rp20.000']],
-                                ['q' => 'Jika 3 orang pekerja dapat menyelesaikan sebuah proyek dalam waktu 12 hari, berapa hari waktu yang dibutuhkan jika pekerjaan dikerjakan oleh 9 orang?', 'opts' => ['2 Hari', '3 Hari', '4 Hari', '6 Hari']],
-                                ['q' => 'Berapakah nilai dari 15% dari 240?', 'opts' => ['32', '36', '40', '48']],
-                                ['q' => 'Selesaikan deret angka berikut: 2, 5, 10, 17, 26, ...', 'opts' => ['35', '37', '39', '42']],
-                                ['q' => 'Sebuah mobil menempuh jarak 180 km dengan kecepatan rata-rata 60 km/jam. Berapa jam waktu perjalanan yang diperlukan?', 'opts' => ['2 Jam', '2.5 Jam', '3 Jam', '3.5 Jam']]
-                            ];
+                            $questions = collect($subtests[$subtestKey]['questions'] ?? []);
+                            $subtestTitle = $config['label'];
                         @endphp
 
-                        @foreach($numerikQuestions as $index => $item)
-                            <div id="card-question-{{ $index + 1 }}" class="bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-8 space-y-4 shadow-sm transition-all duration-200">
-                                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $index + 1 }} dari 16</h3>
-                                    <span class="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">Numerik</span>
-                                </div>
-                                <p class="text-sm sm:text-base font-bold text-gray-800">{{ $item['q'] }}</p>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                                    @foreach($item['opts'] as $opt)
-                                        <label class="relative cursor-pointer">
-                                            <input type="radio" name="responses[numerik][{{ $index + 1 }}]" value="{{ $opt }}" class="peer sr-only" data-question-number="{{ $index + 1 }}" @checked(old("responses.numerik." . ($index + 1), $savedResponses['numerik'][$index + 1] ?? '') === $opt) onchange="updateProgress({{ $index + 1 }})">
-                                            <div class="flex items-center gap-3.5 p-3.5 rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-200 transition-all">
-                                                <div class="radio-bullet w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0 relative"><div class="w-1.5 h-1.5 rounded-full bg-white transform scale-0 transition-transform"></div></div>
-                                                <span class="text-sm font-bold text-gray-700">{{ $opt }}</span>
-                                            </div>
-                                        </label>
-                                    @endforeach
-                                </div>
+                        <section class="space-y-6 {{ $subtestKey !== 'numerik' ? 'pt-4' : '' }}" id="section-{{ $subtestKey }}">
+                            <div class="bg-indigo-900 text-white px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-wider flex justify-between items-center shadow-md">
+                                <span>Subtes {{ $loop->iteration }}: {{ $subtestTitle }}</span>
+                                <span class="text-xs bg-indigo-800 px-3 py-1 rounded-xl text-indigo-200">{{ $questions->count() }} Soal</span>
                             </div>
-                        @endforeach
-                    </div>
 
-                    <!-- ================= SUBTES 2: VERBAL (5 Soal) ================= -->
-                    <div class="space-y-6 pt-4" id="section-verbal">
-                        <div class="bg-[#3650A2] text-white px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-wider flex justify-between items-center shadow-md">
-                            <span>Subtes 2: Verbal (Pilihan Ganda Vertikal)</span>
-                            <span class="text-xs bg-indigo-800 px-3 py-1 rounded-xl text-indigo-200">5 Soal</span>
-                        </div>
+                            @forelse($questions as $question)
+                                @php
+                                    $questionNumber++;
+                                    $savedOptionId = old("responses.{$subtestKey}.{$question->id}", $savedResponses[$subtestKey][$question->id] ?? null);
+                                    $options = collect($question->options ?? []);
+                                @endphp
 
-                        @php
-                            $verbalQuestions = [
-                                ['q' => 'Tuliskan sinonim (persamaan kata) dari kata "Cepat":', 'opts' => ['A. Lambat', 'B. Kilat', 'C. Tenang', 'D. Ragu']],
-                                ['q' => 'Tuliskan antonim (lawan kata) dari "Nomaden":', 'opts' => ['A. Menetap', 'B. Berpindah', 'C. Menjelajah', 'D. Liar']],
-                                ['q' => 'Lengkapi analogi berikut: "Buku : Membaca" &rarr; "Pensil : ..."', 'opts' => ['A. Menghapus', 'B. Menulis', 'C. Menggambar', 'D. Menyimpan']],
-                                ['q' => 'Apa arti atau makna dari kata baku "Efektif"?', 'opts' => ['A. Berhasil guna / membawa hasil', 'B. Membutuhkan waktu lama', 'C. Sesuai keinginan pribadi', 'D. Penuh dengan keraguan']],
-                                ['q' => 'Tuliskan istilah lain yang sepadan dengan kata "Analogi":', 'opts' => ['A. Perbedaan mutlak', 'B. Persamaan / kiasan', 'C. Lawan kata', 'D. Asal-usul kata']]
-                            ];
-                        @endphp
+                                <article id="card-question-{{ $questionNumber }}" class="bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-8 space-y-4 shadow-sm transition-all duration-200">
+                                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                                        <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $questionNumber }} dari {{ $totalQuestions }}</h3>
+                                        <span class="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">{{ $subtestTitle }}</span>
+                                    </div>
 
-                        @foreach($verbalQuestions as $index => $item)
-                            @php $qNum = $index + 6; @endphp
-                            <div id="card-question-{{ $qNum }}" class="bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-8 space-y-4 shadow-sm transition-all duration-200">
-                                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $qNum }} dari 16</h3>
-                                    <span class="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">Verbal</span>
+                                    <p class="text-sm sm:text-base font-bold text-gray-800">{{ $question->question_text }}</p>
+
+                                    @if(!empty($question->image_url))
+                                        <div class="p-4 bg-indigo-50/40 rounded-2xl border border-indigo-100 flex justify-center">
+                                            <img src="{{ $question->image_url }}" alt="Ilustrasi soal {{ $questionNumber }}" class="w-full max-w-2xl h-auto object-contain rounded-xl" loading="lazy">
+                                        </div>
+                                    @endif
+
+                                    <div class="{{ $subtestKey === 'abstrak' ? 'grid grid-cols-2 sm:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-3' }} pt-2">
+                                        @forelse($options as $option)
+                                            <label class="relative cursor-pointer {{ $subtestKey === 'verbal' ? 'sm:col-span-2' : '' }}">
+                                                <input
+                                                    type="radio"
+                                                    name="responses[{{ $subtestKey }}][{{ $question->id }}]"
+                                                    value="{{ $option->id }}"
+                                                    class="peer sr-only"
+                                                    data-question-number="{{ $questionNumber }}"
+                                                    @checked((string) $savedOptionId === (string) $option->id)
+                                                    onchange="updateProgress({{ $questionNumber }})"
+                                                >
+                                                <div class="flex {{ $subtestKey === 'abstrak' ? 'flex-col items-center justify-center p-5' : 'items-center gap-3.5 p-3.5' }} rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-200 transition-all">
+                                                    @if(!empty($option->option_image))
+                                                        <img src="{{ $option->option_image }}" alt="Pilihan jawaban" class="max-h-28 max-w-full object-contain rounded-lg">
+                                                    @else
+                                                        <div class="radio-bullet w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0 relative"><div class="w-1.5 h-1.5 rounded-full bg-white transform scale-0 transition-transform"></div></div>
+                                                        <span class="text-sm font-bold text-gray-700">{{ $option->option_text }}</span>
+                                                    @endif
+                                                </div>
+                                            </label>
+                                        @empty
+                                            <p class="text-sm text-amber-700 bg-amber-50 rounded-xl p-4">Pilihan jawaban untuk soal ini belum tersedia.</p>
+                                        @endforelse
+                                    </div>
+                                </article>
+                            @empty
+                                <div class="rounded-2xl border border-dashed border-gray-300 bg-white p-6 text-center text-sm text-gray-500">
+                                    Belum ada soal {{ strtolower($subtestTitle) }} yang aktif.
                                 </div>
-                                <p class="text-sm sm:text-base font-bold text-gray-800">{!! $item['q'] !!}</p>
-                                <div class="space-y-2.5 pt-2">
-                                    @foreach($item['opts'] as $opt)
-                                        <label class="block relative cursor-pointer">
-                                            <input type="radio" name="responses[verbal][{{ $index + 1 }}]" value="{{ $opt }}" class="peer sr-only" data-question-number="{{ $qNum }}" @checked(old("responses.verbal." . ($index + 1), $savedResponses['verbal'][$index + 1] ?? '') === $opt) onchange="updateProgress({{ $qNum }})">
-                                            <div class="flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-200 transition-all">
-                                                <div class="radio-bullet w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0 relative"><div class="w-1.5 h-1.5 rounded-full bg-white transform scale-0 transition-transform"></div></div>
-                                                <span class="text-sm font-bold text-gray-700">{{ $opt }}</span>
-                                            </div>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <!-- ================= SUBTES 3: ABSTRAK (6 Soal: No 11 sampai 16) ================= -->
-                    <div class="space-y-6 pt-4" id="section-abstrak">
-                        <div class="bg-indigo-900 text-white px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-wider flex justify-between items-center shadow-md">
-                            <span>Subtes 3: Abstrak</span>
-                            <span class="text-xs bg-indigo-800 px-3 py-1 rounded-xl text-indigo-200">6 Soal</span>
-                        </div>
-
-                        @php
-                            $abstrakQuestions = [
-                                'Tentukan bentuk/pola matriks kelanjutan yang paling tepat untuk nomor 1:',
-                                'Tentukan bentuk/pola matriks kelanjutan yang paling tepat untuk nomor 2:',
-                                'Tentukan bentuk/pola matriks kelanjutan yang paling tepat untuk nomor 3:',
-                                'Tentukan bentuk/pola matriks kelanjutan yang paling tepat untuk nomor 4:',
-                                'Tentukan bentuk/pola matriks kelanjutan yang paling tepat untuk nomor 5:',
-                                'Tentukan bentuk/pola matriks kelanjutan yang paling tepat untuk nomor 6:',
-                            ];
-                        @endphp
-
-                        @foreach($abstrakQuestions as $index => $questionText)
-                            @php $qNum = $index + 11; @endphp
-                            <div id="card-question-{{ $qNum }}" class="bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-8 space-y-4 shadow-sm transition-all duration-200">
-                                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                                    <h3 class="text-sm font-extrabold text-[#3650A2]">Soal {{ $qNum }} dari 16</h3>
-                                    <span class="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-lg">Abstrak</span>
-                                </div>
-                                        <p class="text-sm sm:text-base font-bold text-gray-800">{{ $questionText }}</p>
-                                        <div class="p-4 bg-indigo-50/40 rounded-2xl border border-indigo-100 flex justify-center items-center">
-                                        <img
-                                            src="https://erlcsoyhstijixsjykmm.supabase.co/storage/v1/object/public/assessment-images/AB-{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.png"
-                                            alt="Ilustrasi soal abstrak {{ $index + 1 }}"
-                                            class="w-full max-w-2xl h-auto object-contain rounded-xl"
-                                            loading="lazy"
-                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-                                        >
-
-                                        <p class="hidden text-sm text-gray-400 font-medium">
-                                            Gambar soal belum tersedia.
-                                        </p>
-                                </div>
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-                                    @foreach(['A', 'B', 'C', 'D'] as $opt)
-                                        <label class="relative cursor-pointer">
-                                            <input type="radio" name="responses[abstrak][{{ $index + 1 }}]" value="{{ $opt }}" class="peer sr-only" data-question-number="{{ $qNum }}" @checked(old("responses.abstrak." . ($index + 1), $savedResponses['abstrak'][$index + 1] ?? '') === $opt) onchange="updateProgress({{ $qNum }})">
-                                            <div class="flex flex-col items-center justify-center p-5 rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-300 transition-all">
-                                                <span class="font-black text-[#3650A2] text-lg">{{ $opt }}</span>
-                                                <span class="text-[10px] text-gray-400 font-bold uppercase mt-1">Pilihan</span>
-                                            </div>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                            @endforelse
+                        </section>
+                    @endforeach
 
                     <!-- Tombol Navigasi Bawah -->
                     <div class="flex justify-between items-center pt-6">
@@ -285,10 +230,10 @@
                     <div class="bg-white border border-[#E2E8F0] rounded-[28px] p-5 shadow-sm space-y-4">
                         <div class="flex justify-between items-center border-b border-gray-100 pb-3">
                             <span class="text-xs font-black uppercase text-[#3650A2] tracking-wider">Navigasi Soal</span>
-                            <span id="paletteAnsweredCount" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">0/16 Terjawab</span>
+                            <span id="paletteAnsweredCount" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">0/{{ $totalQuestions }} Terjawab</span>
                         </div>
                         <div class="grid grid-cols-5 gap-2" id="questionPaletteGrid">
-                            @for ($i = 1; $i <= 16; $i++)
+                            @for ($i = 1; $i <= $totalQuestions; $i++)
                                 <button type="button" onclick="scrollToQuestion({{ $i }})" id="palette-btn-{{ $i }}" class="w-full aspect-square rounded-xl bg-gray-100 hover:bg-indigo-50 border border-gray-200 text-gray-700 font-extrabold text-xs transition flex items-center justify-center shadow-2xs">
                                     {{ $i }}
                                 </button>
@@ -358,7 +303,8 @@
         }, 1000);
 
         const answeredQuestions = new Set();
-        const totalQuestions = 16;
+        // Jumlah soal dihitung dari kartu yang benar-benar dirender oleh Blade.
+        const totalQuestions = document.querySelectorAll('[id^="card-question-"]').length;
 
         // Sinkronkan indikator dengan jawaban yang sudah dipulihkan oleh Blade.
         // Ini membuat jawaban lama ikut dihitung saat halaman dibuka kembali.
@@ -384,7 +330,7 @@
             const progressText = document.getElementById('progressTextHeader');
             const progressBar = document.getElementById('progressBarHeader');
             if (progressText) progressText.textContent = `Terjawab: ${totalAnswered} / ${totalQuestions} Soal`;
-            if (progressBar) progressBar.style.width = `${(totalAnswered / totalQuestions) * 100}%`;
+            if (progressBar) progressBar.style.width = `${totalQuestions ? (totalAnswered / totalQuestions) * 100 : 0}%`;
         }
 
         function updateProgress(questionNumber) {
@@ -426,6 +372,10 @@
         }
 
         function validateAndSubmit() {
+            if (totalQuestions === 0) {
+                alert('Soal Tes Kemampuan belum tersedia. Silakan hubungi admin.');
+                return;
+            }
             let missing = [];
             for (let i = 1; i <= totalQuestions; i++) {
                 if (!answeredQuestions.has(i)) {
