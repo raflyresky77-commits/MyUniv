@@ -55,18 +55,67 @@ class AssessmentController extends Controller
             ->route('student.assessment.index')
             ->with('success', 'Jawaban Tes Minat Bakat berhasil disimpan.');
     }
-
-    public function kemampuan()
-    {
         // Ambil jawaban tersimpan siswa. Halaman Kemampuan kini hanya
         // menggunakan subtes Numerik, Literasi, dan Abstrak & Logika.
-        $savedResponses = $this->getSavedResponses('kemampuan');
+    
+public function kemampuan()
+{
+    $savedResponses = $this->getSavedResponses('kemampuan');
 
-        return view(
-            'student.assessment.kemampuan',
-            compact('savedResponses')
-        );
-    }
+    // SOAL NUMERIK: Assessment 7, Subtest 2
+    // Termasuk soal lama yang subtest_id-nya NULL.
+    $numerikQuestions = Question::with('options')
+        ->where('assessment_id', 7)
+        ->where('is_active', true)
+        ->where('type', 'multiple_choice')
+        ->where(function ($query) {
+            $query->where('subtest_id', 2)
+                ->orWhereNull('subtest_id');
+        })
+        ->orderBy('id')
+        ->get();
+
+    // SOAL VERBAL: Assessment 6, Subtest 3
+    // Termasuk soal lama yang subtest_id-nya NULL.
+    $verbalQuestions = Question::with('options')
+        ->where('assessment_id', 6)
+        ->where('is_active', true)
+        ->where('type', 'multiple_choice')
+        ->where(function ($query) {
+            $query->where('subtest_id', 3)
+            ->orWhereNull('subtest_id');
+        })
+        ->orderBy('id')
+        ->get();
+
+    // SOAL ABSTRAK: Assessment 9, Subtest 4
+    $abstrakQuestions = Question::with('options')
+        ->where('assessment_id', 9)
+        ->where('subtest_id', 4)
+        ->where('is_active', true)
+        ->whereIn('type', ['image_choice', 'visual'])
+        ->orderBy('id')
+        ->get();
+
+    // Struktur data untuk Blade tetap menggunakan key yang sama.
+    $subtests = [
+        'numerik' => [
+            'questions' => $numerikQuestions,
+        ],
+        'verbal' => [
+            'questions' => $verbalQuestions,
+        ],
+        'abstrak' => [
+            'questions' => $abstrakQuestions,
+        ],
+    ];
+
+    return view(
+        'student.assessment.kemampuan',
+        compact('savedResponses', 'subtests')
+    );
+}
+
 
     public function kemampuanStore(Request $request)
     {

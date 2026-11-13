@@ -139,12 +139,28 @@
                     {{-- Soal diambil dari Supabase melalui Controller; Blade hanya merender tampilannya. --}}
                     @php
                         $subtestConfig = [
-                            'numerik' => ['label' => 'Numerik', 'section' => 'section-numerik'],
-                            'verbal' => ['label' => 'Verbal / Literasi', 'section' => 'section-verbal'],
-                            'abstrak' => ['label' => 'Abstrak & Logika', 'section' => 'section-abstrak'],
+                            'numerik' => [
+                                'label' => 'Numerik',
+                                'section' => 'section-numerik',
+                            ],
+                            'verbal' => [
+                                'label' => 'Verbal / Literasi',
+                                'section' => 'section-verbal',
+                            ],
+                            'abstrak' => [
+                                'label' => 'Abstrak & Logika',
+                                'section' => 'section-abstrak',
+                            ],
                         ];
+
+                        // Nomor soal dimulai dari 0 sebelum loop berjalan
                         $questionNumber = 0;
-                        $totalQuestions = collect($subtestConfig)->sum(fn ($config, $key) => collect($subtests[$key]['questions'] ?? [])->count());
+
+                        $totalQuestions = 0;
+
+                        foreach ($subtestConfig as $key => $config) {
+                            $totalQuestions += count($subtests[$key]['questions'] ?? []);
+                        }
                     @endphp
 
                     @foreach($subtestConfig as $subtestKey => $config)
