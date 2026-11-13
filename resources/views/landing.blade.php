@@ -1003,17 +1003,18 @@
                     <span class="hero-hybrid-doodle hero-hybrid-doodle-orbit" aria-hidden="true"></span>
 
                     <img src="{{ asset('images/1.png') }}"
-                         onerror="this.onerror=null; this.src='https://placehold.co/500x500/F4FAFF/3650A2?text=Mauny+Mascot'"
-                         alt="Mauny, naga pemandu MyUniv"
-                         width="500" height="500"
-                         class="hero-hybrid-mascot"
-                         fetchpriority="high"
-                         decoding="async">
+                        onerror="this.onerror=null; this.src='https://placehold.co/500x500/F4FAFF/3650A2?text=Mauny+Mascot'"
+                        alt="Mauny, naga pemandu MyUniv"
+                        width="500" height="500"
+                        class="hero-hybrid-mascot"
+                        fetchpriority="high"
+                        decoding="async">
                 </div>
             </div>
         </div>
     </div>
 </section>
+
     {{-- ========== /HERO ========== --}}
 
     <!-- LOGO SEKOLAH & MYUNIV (GLASSMORPHISM STYLE) -->

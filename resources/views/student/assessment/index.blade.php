@@ -31,36 +31,47 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(54, 80, 162, 0.12);
             box-shadow:
-                0 20px 45px -12px rgba(30, 45, 98, 0.12),
-                0 0 0 1px rgba(54, 80, 162, 0.04);
+                0 15px 35px -10px rgba(30, 45, 98, 0.08),
+                0 0 0 1px rgba(54, 80, 162, 0.03);
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .card-interactive-strong:hover {
-            transform: translateY(-6px) scale(1.01);
-            border-color: rgba(54, 80, 162, 0.4);
+            transform: translateY(-4px);
+            border-color: rgba(255, 122, 89, 0.35);
             box-shadow:
-                0 35px 65px -15px rgba(54, 80, 162, 0.22),
+                0 25px 50px -12px rgba(54, 80, 162, 0.15),
                 0 0 0 2px rgba(255, 122, 89, 0.2);
         }
 
         @keyframes floatMascot {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-
-            50% {
-                transform: translateY(-8px) rotate(1.5deg);
-            }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1.5deg); }
         }
 
         .mascot-float {
             animation: floatMascot 4s ease-in-out infinite;
         }
+
+        /* Transisi tombol dari biru ke oranye */
+        .btn-hover-orange {
+            background-color: #3650A2 !important;
+            border-color: #3650A2 !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .btn-hover-orange:hover {
+            background-color: #FF7A59 !important;
+            border-color: #FF7A59 !important;
+            box-shadow: 0 8px 20px -4px rgba(255, 122, 89, 0.4) !important;
+            transform: translateY(-2px);
+        }
+        .btn-hover-orange:active {
+            transform: translateY(0) scale(0.97);
+        }
     </style>
 </head>
 
-<body class="bg-[#F4F7FE] text-gray-800 antialiased">
+<body class="bg-[#F4F7FE] text-gray-800 antialiased overflow-x-hidden">
 
     @include('components.global-loading')
 
@@ -75,21 +86,18 @@
         $progress = $progress ?? (int) round(($completedCount / 3) * 100);
     @endphp
 
-    {{-- Sidebar reusable component.
-    Backdrop dikelola oleh komponen sidebar, jangan buat backdrop kedua. --}}
+    {{-- Sidebar & Topbar --}}
     <x-student.student-sidebar active="assessment" />
-
-    {{-- Topbar reusable component --}}
     <x-student.student-topbar
         title="Dashboard Asesmen Siswa"
         :user="auth()->user()"
     />
 
-    {{-- Main Content Area --}}
-    <div class="md:ml-72 pt-28 min-h-screen flex flex-col">
-        <main class="p-6 md:p-10 space-y-8 max-w-7xl w-full mx-auto flex-1">
+    {{-- Main Content Area (Padding atas diperkecil agar pas dan tidak ada space kosong berlebih) --}}
+    <div class="md:ml-72 pt-16 md:pt-20 min-h-screen flex flex-col">
+        <main class="p-4 sm:p-6 md:p-10 space-y-6 md:space-y-8 max-w-7xl w-full mx-auto flex-1">
 
-            {{-- Banner Asesmen --}}
+            {{-- Banner Asesmen (Warna Asli/Tidak Diubah) --}}
             <x-student.banner
                 eyebrow="Pusat Asesmen"
                 title="Kenali Potensi Dirimu"
@@ -99,13 +107,13 @@
             {{-- Progress Keseluruhan --}}
             <x-card
                 variant="strong"
-                class="card-interactive-strong rounded-[36px] p-7 sm:p-8 space-y-4 relative overflow-hidden group"
+                class="card-interactive-strong rounded-[24px] sm:rounded-[32px] p-5 sm:p-7 space-y-3.5 relative overflow-hidden group"
             >
-                <div class="absolute right-0 top-0 bottom-0 w-3.5 bg-gradient-to-b from-[#3650A2] to-[#FF7A59]"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-b from-[#3650A2] to-[#FF7A59]"></div>
 
-                <div class="flex justify-between items-center">
-                    <span class="text-sm font-extrabold text-gray-900 flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center text-[#3650A2] transition-transform group-hover:rotate-12">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                    <span class="text-xs sm:text-sm font-extrabold text-gray-900 flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[#3650A2] transition-transform group-hover:rotate-12 shrink-0 shadow-2xs">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                             </svg>
@@ -113,44 +121,44 @@
                         Progress Keseluruhan Asesmen
                     </span>
 
-                    <span class="text-xs font-extrabold px-4 py-1.5 bg-indigo-50 text-[#3650A2] rounded-full border border-indigo-200">
+                    <span class="text-[11px] sm:text-xs font-extrabold px-3.5 py-1 bg-indigo-50/80 text-[#3650A2] rounded-full border border-indigo-100 w-fit shadow-2xs">
                         {{ $progress }}% Selesai
                     </span>
                 </div>
 
-                <div class="w-full bg-gray-100 h-3.5 rounded-full overflow-hidden p-0.5 border border-indigo-50">
+                <div class="w-full bg-gray-100/80 h-3 rounded-full overflow-hidden p-0.5 border border-indigo-50">
                     <div class="bg-gradient-to-r from-[#3650A2] via-indigo-600 to-[#FF7A59] h-full rounded-full transition-all duration-700 shadow-sm" style="width: {{ $progress }}%;"></div>
                 </div>
 
-                <div class="text-xs font-bold text-gray-500">
+                <div class="text-[11px] sm:text-xs font-bold text-gray-500">
                     {{ $completedCount }} dari 3 tes telah disimpan ke database.
                 </div>
             </x-card>
 
             {{-- Grid 3 Kartu Asesmen --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
 
                 {{-- 1. Tes Minat & Bakat --}}
                 <x-card
                     variant="strong"
-                    class="card-interactive-strong rounded-[40px] p-7 flex flex-col justify-between group relative overflow-hidden"
+                    class="card-interactive-strong rounded-[24px] sm:rounded-[32px] p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden"
                 >
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-100/60 rounded-full blur-3xl group-hover:bg-indigo-200/90 transition-all duration-500"></div>
+                    <div class="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-indigo-100/60 to-orange-100/30 rounded-full blur-3xl group-hover:from-indigo-200/90 group-hover:to-orange-200/60 transition-all duration-500 pointer-events-none"></div>
 
-                    <div class="space-y-5 relative z-10">
-                        <div class="flex justify-between items-center border-b border-indigo-100/60 pb-4">
-                            <span class="text-xs font-extrabold text-[#3650A2] uppercase tracking-wider">
+                    <div class="space-y-4 relative z-10">
+                        <div class="flex justify-between items-center border-b border-indigo-100/60 pb-3">
+                            <span class="text-[11px] font-extrabold text-[#3650A2] uppercase tracking-wider bg-indigo-50/80 px-2.5 py-1 rounded-lg border border-indigo-100">
                                 Modul 01
                             </span>
 
-                            <span class="px-3 py-1 bg-emerald-100/80 text-emerald-800 rounded-xl text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['minat_bakat']) ? 'bg-emerald-600' : 'bg-amber-600' }}"></span>
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200/80 flex items-center gap-1.5 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['minat_bakat']) ? 'bg-emerald-600' : 'bg-amber-500' }}"></span>
                                 {{ isset($submissions['minat_bakat']) ? 'Tersimpan' : 'Belum' }}
                             </span>
                         </div>
 
-                        <div class="space-y-2">
-                            <h3 class="text-xl font-black text-gray-900 group-hover:text-[#3650A2] transition-colors">
+                        <div class="space-y-1.5">
+                            <h3 class="text-base sm:text-lg font-black text-gray-900 group-hover:text-[#3650A2] transition-colors">
                                 Tes Minat &amp; Bakat
                             </h3>
                             <p class="text-xs text-gray-600 leading-relaxed">
@@ -158,19 +166,27 @@
                             </p>
                         </div>
 
-                        <div class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-2xl space-y-1 shadow-2xs">
-                            <div class="text-xs font-extrabold text-[#3650A2]">{{ isset($submissions['minat_bakat']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
-                            <div class="text-[11px] text-gray-500 font-medium">{{ isset($submissions['minat_bakat']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['minat_bakat']->submitted_at)->format('d M Y, H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
+                        {{-- Estimasi Waktu & Detail Kecil --}}
+                        <div class="flex items-center gap-2 text-[11px] font-bold text-gray-500 pt-1">
+                            <span class="flex items-center gap-1 bg-indigo-50/60 text-[#3650A2] px-2.5 py-1 rounded-md border border-indigo-100/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                ± 15 Menit
+                            </span>
+                        </div>
+
+                        <div class="bg-indigo-50/50 border border-indigo-100/80 p-3 rounded-xl space-y-0.5 shadow-2xs">
+                            <div class="text-[11px] font-extrabold text-[#3650A2]">{{ isset($submissions['minat_bakat']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
+                            <div class="text-[10px] text-gray-500 font-medium">{{ isset($submissions['minat_bakat']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['minat_bakat']->submitted_at)->format('d M Y, H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
                         </div>
                     </div>
 
-                    <div class="pt-8 relative z-10 flex justify-end">
+                    <div class="pt-5 sm:pt-6 relative z-10">
                         <x-button
                             href="{{ route('student.assessment.minat-bakat') }}"
                             variant="primary"
                             size="md"
                             block
-                            class="w-full text-center px-5 py-3 !bg-[#3650A2] hover:!bg-[#FF7A59] active:!bg-[#FF7A59] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 border border-[#3650A2] hover:border-[#FF7A59] shadow-md shadow-indigo-900/20 hover:shadow-orange-500/25"
+                            class="w-full text-center px-4 py-2.5 text-white text-xs font-extrabold rounded-xl shadow-md shadow-indigo-900/20 btn-hover-orange"
                         >
                             {{ isset($submissions['minat_bakat']) ? 'Ulangi Tes' : 'Mulai Tes' }}
                         </x-button>
@@ -180,24 +196,24 @@
                 {{-- 2. Tes Kemampuan --}}
                 <x-card
                     variant="strong"
-                    class="card-interactive-strong rounded-[40px] p-7 flex flex-col justify-between group relative overflow-hidden"
+                    class="card-interactive-strong rounded-[24px] sm:rounded-[32px] p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden"
                 >
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-100/60 rounded-full blur-3xl group-hover:bg-indigo-200/90 transition-all duration-500"></div>
+                    <div class="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-indigo-100/60 to-orange-100/30 rounded-full blur-3xl group-hover:from-indigo-200/90 group-hover:to-orange-200/60 transition-all duration-500 pointer-events-none"></div>
 
-                    <div class="space-y-5 relative z-10">
-                        <div class="flex justify-between items-center border-b border-indigo-100/60 pb-4">
-                            <span class="text-xs font-extrabold text-[#3650A2] uppercase tracking-wider">
+                    <div class="space-y-4 relative z-10">
+                        <div class="flex justify-between items-center border-b border-indigo-100/60 pb-3">
+                            <span class="text-[11px] font-extrabold text-[#3650A2] uppercase tracking-wider bg-indigo-50/80 px-2.5 py-1 rounded-lg border border-indigo-100">
                                 Modul 02
                             </span>
 
-                            <span class="px-3 py-1 bg-emerald-100/80 text-emerald-800 rounded-xl text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['kemampuan']) ? 'bg-emerald-600' : 'bg-amber-600' }}"></span>
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200/80 flex items-center gap-1.5 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['kemampuan']) ? 'bg-emerald-600' : 'bg-amber-500' }}"></span>
                                 {{ isset($submissions['kemampuan']) ? 'Tersimpan' : 'Belum' }}
                             </span>
                         </div>
 
-                        <div class="space-y-2">
-                            <h3 class="text-xl font-black text-gray-900 group-hover:text-[#3650A2] transition-colors">
+                        <div class="space-y-1.5">
+                            <h3 class="text-base sm:text-lg font-black text-gray-900 group-hover:text-[#3650A2] transition-colors">
                                 Tes Kemampuan
                             </h3>
                             <p class="text-xs text-gray-600 leading-relaxed">
@@ -205,19 +221,27 @@
                             </p>
                         </div>
 
-                        <div class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-2xl space-y-1 shadow-2xs">
-                            <div class="text-xs font-extrabold text-[#3650A2]">{{ isset($submissions['kemampuan']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
-                            <div class="text-[11px] text-gray-500 font-medium">{{ isset($submissions['kepribadian']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['kepribadian']->submitted_at)->format('d/m/Y H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
+                        {{-- Estimasi Waktu & Detail Kecil --}}
+                        <div class="flex items-center gap-2 text-[11px] font-bold text-gray-500 pt-1">
+                            <span class="flex items-center gap-1 bg-indigo-50/60 text-[#3650A2] px-2.5 py-1 rounded-md border border-indigo-100/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                ± 20 Menit
+                            </span>
+                        </div>
+
+                        <div class="bg-indigo-50/50 border border-indigo-100/80 p-3 rounded-xl space-y-0.5 shadow-2xs">
+                            <div class="text-[11px] font-extrabold text-[#3650A2]">{{ isset($submissions['kemampuan']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
+                            <div class="text-[10px] text-gray-500 font-medium">{{ isset($submissions['kepribadian']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['kepribadian']->submitted_at)->format('d/m/Y H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
                         </div>
                     </div>
 
-                    <div class="pt-8 relative z-10 flex justify-end">
+                    <div class="pt-5 sm:pt-6 relative z-10">
                         <x-button
                             href="{{ route('student.assessment.kemampuan') }}"
                             variant="primary"
                             size="md"
                             block
-                            class="w-full text-center px-5 py-3 !bg-[#3650A2] hover:!bg-[#FF7A59] active:!bg-[#FF7A59] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 border border-[#3650A2] hover:border-[#FF7A59] shadow-md shadow-indigo-900/20 hover:shadow-orange-500/25"
+                            class="w-full text-center px-4 py-2.5 text-white text-xs font-extrabold rounded-xl shadow-md shadow-indigo-900/20 btn-hover-orange"
                         >
                             {{ isset($submissions['kemampuan']) ? 'Ulangi Tes' : 'Mulai Tes' }}
                         </x-button>
@@ -227,24 +251,24 @@
                 {{-- 3. Tes Kepribadian Karier --}}
                 <x-card
                     variant="strong"
-                    class="card-interactive-strong rounded-[40px] p-7 flex flex-col justify-between group relative overflow-hidden"
+                    class="card-interactive-strong rounded-[24px] sm:rounded-[32px] p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden"
                 >
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-100/60 rounded-full blur-3xl group-hover:bg-indigo-200/90 transition-all duration-500"></div>
+                    <div class="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-indigo-100/60 to-orange-100/30 rounded-full blur-3xl group-hover:from-indigo-200/90 group-hover:to-orange-200/60 transition-all duration-500 pointer-events-none"></div>
 
-                    <div class="space-y-5 relative z-10">
-                        <div class="flex justify-between items-center border-b border-indigo-100/60 pb-4">
-                            <span class="text-xs font-extrabold text-[#3650A2] uppercase tracking-wider">
+                    <div class="space-y-4 relative z-10">
+                        <div class="flex justify-between items-center border-b border-indigo-100/60 pb-3">
+                            <span class="text-[11px] font-extrabold text-[#3650A2] uppercase tracking-wider bg-indigo-50/80 px-2.5 py-1 rounded-lg border border-indigo-100">
                                 Modul 03
                             </span>
 
-                            <span class="px-3 py-1 bg-emerald-100/80 text-emerald-800 rounded-xl text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
-                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['kepribadian']) ? 'bg-emerald-600' : 'bg-amber-600' }}"></span>
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-extrabold uppercase tracking-wide border border-emerald-200/80 flex items-center gap-1.5 shadow-2xs">
+                                <span class="w-1.5 h-1.5 rounded-full {{ isset($submissions['kepribadian']) ? 'bg-emerald-600' : 'bg-amber-500' }}"></span>
                                 {{ isset($submissions['kepribadian']) ? 'Tersimpan' : 'Belum' }}
                             </span>
                         </div>
 
-                        <div class="space-y-2">
-                            <h3 class="text-xl font-black text-gray-900 group-hover:text-[#3650A2] transition-colors">
+                        <div class="space-y-1.5">
+                            <h3 class="text-base sm:text-lg font-black text-gray-900 group-hover:text-[#3650A2] transition-colors">
                                 Tes Kepribadian Karier
                             </h3>
                             <p class="text-xs text-gray-600 leading-relaxed">
@@ -252,19 +276,27 @@
                             </p>
                         </div>
 
-                        <div class="bg-indigo-50/60 border border-indigo-100 p-4 rounded-2xl space-y-1 shadow-2xs">
-                            <div class="text-xs font-extrabold text-[#3650A2]">{{ isset($submissions['kepribadian']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
-                            <div class="text-[11px] text-gray-500 font-medium">{{ isset($submissions['kepribadian']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['kepribadian']->submitted_at)->format('d/m/Y H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
+                        {{-- Estimasi Waktu & Detail Kecil --}}
+                        <div class="flex items-center gap-2 text-[11px] font-bold text-gray-500 pt-1">
+                            <span class="flex items-center gap-1 bg-indigo-50/60 text-[#3650A2] px-2.5 py-1 rounded-md border border-indigo-100/50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                ± 15 Menit
+                            </span>
+                        </div>
+
+                        <div class="bg-indigo-50/50 border border-indigo-100/80 p-3 rounded-xl space-y-0.5 shadow-2xs">
+                            <div class="text-[11px] font-extrabold text-[#3650A2]">{{ isset($submissions['kepribadian']) ? 'Jawaban Tersimpan' : 'Belum Dikerjakan' }}</div>
+                            <div class="text-[10px] text-gray-500 font-medium">{{ isset($submissions['kepribadian']) ? 'Terakhir disimpan ' . \Carbon\Carbon::parse($submissions['kepribadian']->submitted_at)->format('d/m/Y H:i') : 'Selesaikan tes untuk menyimpan jawaban.' }}</div>
                         </div>
                     </div>
 
-                    <div class="pt-8 relative z-10 flex justify-end">
+                    <div class="pt-5 sm:pt-6 relative z-10">
                         <x-button
                             href="{{ route('student.assessment.kepribadian') }}"
                             variant="primary"
                             size="md"
                             block
-                            class="w-full text-center px-5 py-3 !bg-[#3650A2] hover:!bg-[#FF7A59] active:!bg-[#FF7A59] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 border border-[#3650A2] hover:border-[#FF7A59] shadow-md shadow-indigo-900/20 hover:shadow-orange-500/25"
+                            class="w-full text-center px-4 py-2.5 text-white text-xs font-extrabold rounded-xl shadow-md shadow-indigo-900/20 btn-hover-orange"
                         >
                             {{ isset($submissions['kepribadian']) ? 'Ulangi Tes' : 'Mulai Tes' }}
                         </x-button>
@@ -273,14 +305,27 @@
 
             </div>
 
+            {{-- Section Heading: Laporan & Layanan --}}
+            <div class="pt-4 pb-1 space-y-1">
+                <h2 class="text-lg sm:text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                    <span class="w-2 h-6 bg-[#3650A2] rounded-full inline-block"></span>
+                    Laporan &amp; Layanan Bimbingan
+                </h2>
+                <p class="text-xs sm:text-sm text-gray-500 ml-4 font-medium">
+                    Akses hasil rangkuman asesmen serta jadwalkan konsultasi dengan Guru BK.
+                </p>
+            </div>
+
             {{-- Kartu Hasil Asesmen --}}
-            <x-card variant="strong" class="card-interactive-strong rounded-[32px] p-7 flex flex-col sm:flex-row items-center justify-between gap-5">
-                <div>
-                    <h3 class="text-lg font-black text-gray-900">Hasil Asesmen</h3>
-                    <p class="text-sm text-gray-600 mt-1">Lihat halaman hasil asesmen yang terkait dengan akunmu.</p>
-                    <p class="text-xs font-bold text-gray-500 mt-2">{{ $completedCount === 3 ? 'Semua tes sudah tersimpan.' : 'Tes tersimpan: ' . $completedCount . ' dari 3.' }}</p>
+            <x-card variant="strong" class="card-interactive-strong rounded-[24px] sm:rounded-[28px] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden group">
+                <div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-[#3650A2] to-[#FF7A59]"></div>
+                <div class="space-y-1 pl-1 sm:pl-2">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#FF7A59] bg-orange-50 px-2 py-0.5 rounded border border-orange-100">Laporan Akhir</span>
+                    <h3 class="text-sm sm:text-base font-black text-gray-900">Hasil Asesmen</h3>
+                    <p class="text-xs text-gray-600">Lihat halaman hasil asesmen yang terkait dengan akunmu.</p>
+                    <p class="text-[11px] font-bold text-gray-500">{{ $completedCount === 3 ? 'Semua tes sudah tersimpan.' : 'Tes tersimpan: ' . $completedCount . ' dari 3.' }}</p>
                 </div>
-                <x-button href="{{ route('student.result.index') }}" variant="primary" size="lg" class="px-7 py-3.5 !bg-[#3650A2] text-white text-xs font-extrabold rounded-2xl">
+                <x-button href="{{ route('student.result.index') }}" variant="primary" size="md" class="w-full sm:w-auto text-center px-5 py-3 text-white text-xs font-extrabold rounded-xl shadow-md shadow-indigo-900/20 btn-hover-orange shrink-0">
                     Lihat Hasil Asesmen &rarr;
                 </x-button>
             </x-card>
@@ -288,20 +333,22 @@
             {{-- Footer Bantuan / Konsultasi BK --}}
             <x-card
                 variant="strong"
-                class="w-full card-interactive-strong rounded-[40px] p-7 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm group"
+                class="w-full card-interactive-strong rounded-[24px] sm:rounded-[32px] p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-sm group relative overflow-hidden"
             >
-                <div class="flex items-center gap-5">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#3650A2] to-[#1E2D62] text-white flex items-center justify-center font-extrabold shrink-0 shadow-md shadow-indigo-900/20 transition-transform group-hover:scale-110">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="absolute right-0 top-0 bottom-0 w-2 bg-gradient-to-b from-[#3650A2] to-[#FF7A59]"></div>
+
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-4">
+                    <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#3650A2] to-[#1E2D62] text-white flex items-center justify-center font-extrabold shrink-0 shadow-md shadow-indigo-900/20 transition-transform group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                         </svg>
                     </div>
 
-                    <div class="space-y-1">
-                        <div class="text-base font-extrabold text-gray-900 group-hover:text-[#3650A2] transition-colors">
+                    <div class="space-y-0.5">
+                        <div class="text-xs sm:text-sm font-extrabold text-gray-900 group-hover:text-[#3650A2] transition-colors">
                             Butuh panduan atau interpretasi hasil asesmen?
                         </div>
-                        <div class="text-xs text-gray-600 font-medium leading-relaxed">
+                        <div class="text-[11px] sm:text-xs text-gray-600 font-medium leading-relaxed">
                             Jadwalkan sesi diskusi langsung bersama Guru Bimbingan Konseling (BK) sekolahmu untuk mendapatkan insight mendalam.
                         </div>
                     </div>
@@ -310,8 +357,8 @@
                 <x-button
                     href="{{ route('student.consultation.index') }}"
                     variant="primary"
-                    size="lg"
-                    class="px-7 py-3.5 bg-[#3650A2] hover:bg-[#1E2D62] text-white text-xs font-extrabold rounded-2xl transition-all duration-300 shadow-md shadow-indigo-900/25 hover:scale-105 shrink-0"
+                    size="md"
+                    class="w-full sm:w-auto text-center px-5 py-3 text-white text-xs font-extrabold rounded-xl shadow-md shadow-indigo-900/20 btn-hover-orange shrink-0"
                 >
                     Hubungi Guru BK
                 </x-button>
@@ -319,9 +366,6 @@
 
         </main>
     </div>
-
-    {{-- Tidak perlu script toggleSidebar di halaman ini.
-    Hamburger dan backdrop dikendalikan oleh komponen sidebar. --}}
 
 </body>
 </html>
