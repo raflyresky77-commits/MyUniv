@@ -368,7 +368,7 @@
             @php
                 $abilitySubtests = $abilitySubtests ?? [
                     'numerik' => ['label' => 'Numerik', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
-                    'literasi' => ['label' => 'Literasi', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
+                    'verbal' => ['label' => 'Literasi', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
                     'abstrak' => ['label' => 'Abstrak', 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0],
                 ];
                 $statusClass = fn ($status) => str_contains(strtolower($status), 'selesai')
@@ -383,13 +383,13 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    @foreach (['numerik', 'literasi', 'abstrak'] as $subtestKey)
+                    @foreach (['numerik', 'verbal', 'abstrak'] as $subtestKey)
                         @php $subtest = $abilitySubtests[$subtestKey] ?? ['label' => ucfirst($subtestKey), 'status' => 'Belum dikerjakan', 'score' => null, 'answered_count' => 0]; @endphp
                         <article class="result-card p-5">
                             <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 text-[#3650A2]">
                                 @if ($subtestKey === 'numerik')
                                     <i class="fa-solid fa-calculator"></i>
-                                @elseif ($subtestKey === 'literasi')
+                                @elseif ($subtestKey === 'verbal')
                                     <i class="fa-solid fa-book-open"></i>
                                 @else
                                     <i class="fa-solid fa-shapes"></i>
@@ -397,7 +397,7 @@
                             </div>
                             <h3 class="text-lg font-extrabold text-gray-900">{{ $subtest['label'] }}</h3>
                             <p class="mt-3 text-2xl font-black text-[#3650A2]">
-                                {{ is_numeric($subtest['score'] ?? null) ? $subtest['score'] : '—' }}
+                                {{ is_numeric($subtest['score_percent'] ?? null) ? $subtest['score_percent'].'%' : '—' }}
                             </p>
                             <span class="mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-bold {{ $statusClass($subtest['status'] ?? 'Belum dikerjakan') }}">
                                 {{ $subtest['status'] ?? 'Belum dikerjakan' }}
@@ -472,10 +472,10 @@
     <section class="space-y-4">
         @php
             $abilityLabels = [
-                'numerik' => 'Numerik',
-                'literasi' => 'Literasi',
-                'abstrak' => 'Abstrak',
-            ];
+            'numerik' => 'Numerik',
+            'verbal' => 'Literasi',
+            'abstrak' => 'Abstrak',
+        ];
             $totalAbilityAnswers = collect($kemampuanQuestionResponses ?? [])->sum(fn ($items) => count($items ?? []));
         @endphp
 
@@ -527,15 +527,25 @@
         </details>
     </section>
 
-    {{-- Hasil interpretasi Kepribadian & Karier
-         Menampilkan data yang memang tersedia. Tidak membuat tipe/skor kepribadian fiktif. --}}
+    {{-- Hasil interpretasi Kepribadian & Karier --}}
     @php
         $personalityResult = $kepribadianResult ?? [];
         $hasPersonalitySubmission = (bool) ($personalityResult['has_submission'] ?? false);
         $personalityScore = $personalityResult['score_percent'] ?? null;
-        $personalityAnsweredCount = $personalityResult['answered_count']
-            ?? count($kepribadianQuestionResponses ?? []);
+        $personalityAnsweredCount = $personalityResult['answered_count'] ?? 0;
+        $personalityTotalCount = $personalityResult['total_count'] ?? 35;
         $personalitySubmittedAt = $personalityResult['submitted_at'] ?? null;
+        $personalityDetails = $personalityResult['personality_details'] ?? [];
+        $dominantPersonality = $personalityResult['dominant_personality'] ?? null;
+        $personalityReady = (bool) ($personalityResult['has_interpretation'] ?? false);
+
+        $personalityIcons = [
+            'openness' => 'fa-lightbulb',
+            'conscientiousness' => 'fa-list-check',
+            'extraversion' => 'fa-people-group',
+            'agreeableness' => 'fa-handshake',
+            'emotional_stability' => 'fa-heart-pulse',
+        ];
     @endphp
 
     <section class="space-y-4" aria-labelledby="personality-result-title">
@@ -549,7 +559,7 @@
                     Hasil Kepribadian & Karier
                 </h2>
                 <p class="mt-1 max-w-2xl text-sm leading-relaxed text-gray-600">
-                    Kenali kecenderungan dirimu sebagai bahan refleksi untuk mengeksplorasi lingkungan belajar dan karier.
+                    Gambaran kecenderungan dirimu berdasarkan lima dimensi kepribadian. Gunakan hasil ini sebagai bahan refleksi, bukan label yang membatasi pilihanmu.
                 </p>
             </div>
             @if ($hasPersonalitySubmission)
@@ -565,21 +575,25 @@
 
         @if ($hasPersonalitySubmission)
             <div class="result-card p-5 sm:p-7">
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(220px,.65fr)] lg:items-center">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(220px,.7fr)] lg:items-center">
                     <div>
                         <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3650A2] to-[#6879CE] text-xl text-white shadow-lg shadow-indigo-900/10">
                             <i class="fa-solid fa-brain"></i>
                         </div>
                         <h3 class="mt-4 text-lg font-extrabold text-gray-900">
-                            Terima kasih sudah mengenali dirimu!
+                            {{ $personalityReady ? 'Profil kepribadianmu sudah tersedia' : 'Jawabanmu sedang menunggu dilengkapi' }}
                         </h3>
                         <p class="mt-2 max-w-2xl text-sm leading-7 text-gray-600">
-                            Jawaban Kepribadian & Karier kamu sudah tercatat. Interpretasi profil, karakteristik, dan arah karier akan ditampilkan setelah sistem penilaian kepribadian tersedia.
+                            @if ($personalityReady && $dominantPersonality)
+                                Dimensi yang paling menonjol pada hasilmu saat ini adalah <strong>{{ $dominantPersonality['label'] }}</strong> ({{ $dominantPersonality['level'] }}). Ini menunjukkan kecenderungan yang relatif lebih kuat dibandingkan dimensi lain, bukan penentuan mutlak tentang dirimu.
+                            @else
+                                Sistem telah membaca {{ $personalityAnsweredCount }} dari {{ $personalityTotalCount }} jawaban yang dapat dinilai. Lengkapi seluruh pernyataan agar interpretasi kelima dimensi dapat ditampilkan.
+                            @endif
                         </p>
                         <div class="mt-4 flex flex-wrap gap-2">
                             <span class="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 text-xs font-bold text-[#3650A2]">
                                 <i class="fa-solid fa-clipboard-check"></i>
-                                {{ $personalityAnsweredCount }} jawaban tersimpan
+                                {{ $personalityAnsweredCount }}/{{ $personalityTotalCount }} jawaban dinilai
                             </span>
                             @if (!empty($personalitySubmittedAt))
                                 <span class="inline-flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600">
@@ -592,56 +606,92 @@
 
                     <div class="rounded-2xl border border-indigo-100 bg-gradient-to-br from-[#F1F5FF] via-white to-[#FFF4EF] p-5">
                         <p class="text-xs font-extrabold uppercase tracking-wide text-[#3650A2]">
-                            Status interpretasi
+                            Skor ringkasan kepribadian
                         </p>
                         @if (is_numeric($personalityScore))
                             <p class="mt-3 text-4xl font-black tracking-tight text-[#3650A2]">
-                                {{ round((float) $personalityScore, 1) }}%
+                                {{ round((float) $personalityScore) }}%
                             </p>
                             <div class="mt-3 h-2.5 overflow-hidden rounded-full bg-indigo-100">
                                 <div class="h-full rounded-full bg-gradient-to-r from-[#3650A2] to-[#FF7A59]"
                                      style="width: {{ max(0, min(100, (float) $personalityScore)) }}%"></div>
                             </div>
                             <p class="mt-3 text-xs leading-relaxed text-gray-600">
-                                Skor ringkasan tersimpan. Tipe dan interpretasi kepribadian belum ditampilkan sebelum aturan kategorisasinya tersedia.
+                                Rata-rata skor lima dimensi yang dinormalisasi ke skala 0–100. Skor ini bukan nilai baik atau buruk.
                             </p>
                         @else
-                            <p class="mt-3 text-lg font-black text-gray-900">Menunggu pengolahan</p>
+                            <p class="mt-3 text-lg font-black text-gray-900">Belum lengkap</p>
                             <p class="mt-2 text-xs leading-relaxed text-gray-600">
-                                Jawaban sudah ada, tetapi skor dan kategori kepribadian belum dapat ditentukan oleh sistem.
+                                Skor ringkasan tersedia setelah 35 jawaban berhasil dipetakan ke opsi dan dinilai.
                             </p>
                         @endif
                     </div>
                 </div>
 
-                <div class="mt-6 grid grid-cols-1 gap-3 border-t border-indigo-100 pt-5 sm:grid-cols-3">
-                    <div class="rounded-xl bg-[#F7F9FF] p-4">
-                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#3650A2] shadow-sm">
-                            <i class="fa-solid fa-fingerprint"></i>
-                        </div>
-                        <h4 class="mt-3 text-sm font-extrabold text-gray-900">Profil diri</h4>
-                        <p class="mt-1 text-xs leading-relaxed text-gray-500">Kecenderungan kepribadian berdasarkan hasil penilaian.</p>
+                <div class="mt-7 border-t border-indigo-100 pt-6">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-extrabold text-gray-900">Lima dimensi kepribadian</h3>
+                        <p class="mt-1 text-xs leading-relaxed text-gray-500">Persentase menunjukkan posisi skor pada rentang skala jawaban 1–5, bukan persentase kecocokan karier.</p>
                     </div>
-                    <div class="rounded-xl bg-[#F7F9FF] p-4">
-                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#3650A2] shadow-sm">
-                            <i class="fa-solid fa-star"></i>
-                        </div>
-                        <h4 class="mt-3 text-sm font-extrabold text-gray-900">Potensi positif</h4>
-                        <p class="mt-1 text-xs leading-relaxed text-gray-500">Kekuatan yang dapat dikenali dan terus dikembangkan.</p>
-                    </div>
-                    <div class="rounded-xl bg-[#F7F9FF] p-4">
-                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#3650A2] shadow-sm">
-                            <i class="fa-solid fa-compass"></i>
-                        </div>
-                        <h4 class="mt-3 text-sm font-extrabold text-gray-900">Eksplorasi karier</h4>
-                        <p class="mt-1 text-xs leading-relaxed text-gray-500">Gambaran lingkungan belajar dan bidang karier untuk dieksplorasi.</p>
+
+                    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                        @foreach ($personalityDetails as $traitKey => $trait)
+                            @php
+                                $traitScore = $trait['score_percent'] ?? null;
+                                $traitIcon = $personalityIcons[$traitKey] ?? 'fa-user';
+                            @endphp
+                            <article class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-[#3650A2]">
+                                            <i class="fa-solid {{ $traitIcon }}"></i>
+                                        </span>
+                                        <div>
+                                            <h4 class="font-extrabold text-gray-900">{{ $trait['label'] }}</h4>
+                                            <p class="mt-0.5 text-xs font-semibold text-[#3650A2]">{{ $trait['level'] ?? 'Belum tersedia' }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-lg font-black text-[#3650A2]">
+                                        {{ is_numeric($traitScore) ? $traitScore.'%' : '—' }}
+                                    </span>
+                                </div>
+
+                                <div class="mt-4 h-2.5 overflow-hidden rounded-full bg-gray-100">
+                                    <div class="h-full rounded-full bg-gradient-to-r from-[#3650A2] to-[#FF7A59]"
+                                         style="width: {{ is_numeric($traitScore) ? max(0, min(100, $traitScore)) : 0 }}%"></div>
+                                </div>
+
+                                @if (is_numeric($traitScore))
+                                    <p class="mt-4 text-sm leading-6 text-gray-600">{{ $trait['interpretation'] }}</p>
+                                    <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                        <div class="rounded-xl bg-emerald-50/70 p-3">
+                                            <p class="text-xs font-extrabold text-emerald-800"><i class="fa-solid fa-star mr-1"></i> Potensi positif</p>
+                                            <p class="mt-1 text-xs leading-5 text-emerald-900">{{ $trait['strengths'] }}</p>
+                                        </div>
+                                        <div class="rounded-xl bg-amber-50/80 p-3">
+                                            <p class="text-xs font-extrabold text-amber-800"><i class="fa-solid fa-seedling mr-1"></i> Area pengembangan</p>
+                                            <p class="mt-1 text-xs leading-5 text-amber-900">{{ $trait['development'] }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 rounded-xl bg-[#F7F9FF] p-3">
+                                        <p class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-compass mr-1"></i> Lingkungan belajar/kerja yang bisa dieksplorasi</p>
+                                        <p class="mt-1 text-xs leading-5 text-gray-600">{{ $trait['career_environment'] }}</p>
+                                    </div>
+                                @else
+                                    <p class="mt-3 text-xs leading-relaxed text-gray-500">
+                                        Belum cukup jawaban valid untuk menginterpretasikan dimensi ini.
+                                        ({{ $trait['answered_count'] ?? 0 }}/{{ $trait['total_count'] ?? 7 }} jawaban dinilai)
+                                    </p>
+                                @endif
+                            </article>
+                        @endforeach
                     </div>
                 </div>
 
-                <div class="mt-4 flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
+                <div class="mt-6 flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
                     <i class="fa-solid fa-circle-info mt-0.5"></i>
                     <p>
-                        <strong>Informasi:</strong> bagian ini tidak menebak tipe kepribadian atau kecocokan karier. Hasil interpretasi akan mengikuti indikator dan metode penilaian yang benar-benar digunakan MyUniv.
+                        <strong>Catatan penting:</strong> Interpretasi ini merupakan gambaran umum berdasarkan lima dimensi Big Five dan bukan diagnosis psikologis, penilaian kemampuan, atau penentu pekerjaan yang harus dipilih. Pilihan pendidikan dan karier tetap perlu mempertimbangkan minat, kemampuan, pengalaman, serta konsultasi dengan guru BK atau konselor.
                     </p>
                 </div>
             </div>
@@ -703,7 +753,7 @@
     </section>
 
 
-           {{-- Rekomendasi jurusan --}}
+        {{-- Rekomendasi jurusan --}}
 <section class="space-y-4">
     <div>
         <h2 class="text-2xl font-black text-gray-900">

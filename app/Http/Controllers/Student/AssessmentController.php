@@ -30,7 +30,7 @@ class AssessmentController extends Controller
         ));
     }
 
-    public function minatBakat()
+    public function minatBakat()   
     {
         $assessment = Assessment::where('title', 'ilike', '%minat%')->first();
 

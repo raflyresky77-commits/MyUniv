@@ -190,9 +190,17 @@
 
                                     <p class="text-sm sm:text-base font-bold text-gray-800">{{ $question->question_text }}</p>
 
-                                    @if(!empty($question->image_url))
+                                    @if(
+                                        !empty($question->image_url) &&
+                                        preg_match('/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i', $question->image_url)
+                                    )
                                         <div class="p-4 bg-indigo-50/40 rounded-2xl border border-indigo-100 flex justify-center">
-                                            <img src="{{ $question->image_url }}" alt="Ilustrasi soal {{ $questionNumber }}" class="w-full max-w-2xl h-auto object-contain rounded-xl" loading="lazy">
+                                            <img
+                                                src="{{ $question->image_url }}"
+                                                alt="Ilustrasi soal {{ $questionNumber }}"
+                                                class="w-full max-w-2xl h-auto object-contain rounded-xl"
+                                                loading="lazy"
+                                            >
                                         </div>
                                     @endif
 
