@@ -210,7 +210,10 @@
                                                 >
                                                 <div class="flex {{ $subtestKey === 'abstrak' ? 'flex-col items-center justify-center p-5' : 'items-center gap-3.5 p-3.5' }} rounded-2xl border-2 border-gray-200 bg-white hover:border-indigo-200 transition-all">
                                                     @if(!empty($option->option_image))
-                                                        <img src="{{ $option->option_image }}" alt="Pilihan jawaban" class="max-h-28 max-w-full object-contain rounded-lg">
+                                                        <img
+                                                            src="{{ $option->option_image }}"
+                                                            alt="Pilihan jawaban"
+                                                            class="max-h-28 max-w-full object-contain rounded-lg">
                                                     @else
                                                         <div class="radio-bullet w-4 h-4 rounded-full border-2 border-gray-300 flex items-center justify-center shrink-0 relative"><div class="w-1.5 h-1.5 rounded-full bg-white transform scale-0 transition-transform"></div></div>
                                                         <span class="text-sm font-bold text-gray-700">{{ $option->option_text }}</span>
