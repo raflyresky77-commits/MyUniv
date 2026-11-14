@@ -527,6 +527,146 @@
         </details>
     </section>
 
+    {{-- Hasil interpretasi Kepribadian & Karier
+         Menampilkan data yang memang tersedia. Tidak membuat tipe/skor kepribadian fiktif. --}}
+    @php
+        $personalityResult = $kepribadianResult ?? [];
+        $hasPersonalitySubmission = (bool) ($personalityResult['has_submission'] ?? false);
+        $personalityScore = $personalityResult['score_percent'] ?? null;
+        $personalityAnsweredCount = $personalityResult['answered_count']
+            ?? count($kepribadianQuestionResponses ?? []);
+        $personalitySubmittedAt = $personalityResult['submitted_at'] ?? null;
+    @endphp
+
+    <section class="space-y-4" aria-labelledby="personality-result-title">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <span class="inline-flex items-center gap-2 rounded-full bg-[#3650A2]/10 px-3 py-1.5 text-xs font-extrabold text-[#3650A2]">
+                    <i class="fa-solid fa-user-astronaut text-[#FF7A59]"></i>
+                    PENGENALAN DIRI
+                </span>
+                <h2 id="personality-result-title" class="mt-3 text-2xl font-black text-gray-900">
+                    Hasil Kepribadian & Karier
+                </h2>
+                <p class="mt-1 max-w-2xl text-sm leading-relaxed text-gray-600">
+                    Kenali kecenderungan dirimu sebagai bahan refleksi untuk mengeksplorasi lingkungan belajar dan karier.
+                </p>
+            </div>
+            @if ($hasPersonalitySubmission)
+                <span class="inline-flex w-fit items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
+                    <i class="fa-solid fa-check-circle"></i> Jawaban tersimpan
+                </span>
+            @else
+                <span class="inline-flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
+                    <i class="fa-regular fa-clock"></i> Belum dikerjakan
+                </span>
+            @endif
+        </div>
+
+        @if ($hasPersonalitySubmission)
+            <div class="result-card p-5 sm:p-7">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(220px,.65fr)] lg:items-center">
+                    <div>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3650A2] to-[#6879CE] text-xl text-white shadow-lg shadow-indigo-900/10">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h3 class="mt-4 text-lg font-extrabold text-gray-900">
+                            Terima kasih sudah mengenali dirimu!
+                        </h3>
+                        <p class="mt-2 max-w-2xl text-sm leading-7 text-gray-600">
+                            Jawaban Kepribadian & Karier kamu sudah tercatat. Interpretasi profil, karakteristik, dan arah karier akan ditampilkan setelah sistem penilaian kepribadian tersedia.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 text-xs font-bold text-[#3650A2]">
+                                <i class="fa-solid fa-clipboard-check"></i>
+                                {{ $personalityAnsweredCount }} jawaban tersimpan
+                            </span>
+                            @if (!empty($personalitySubmittedAt))
+                                <span class="inline-flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-600">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    {{ \Carbon\Carbon::parse($personalitySubmittedAt)->format('d M Y, H:i') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-indigo-100 bg-gradient-to-br from-[#F1F5FF] via-white to-[#FFF4EF] p-5">
+                        <p class="text-xs font-extrabold uppercase tracking-wide text-[#3650A2]">
+                            Status interpretasi
+                        </p>
+                        @if (is_numeric($personalityScore))
+                            <p class="mt-3 text-4xl font-black tracking-tight text-[#3650A2]">
+                                {{ round((float) $personalityScore, 1) }}%
+                            </p>
+                            <div class="mt-3 h-2.5 overflow-hidden rounded-full bg-indigo-100">
+                                <div class="h-full rounded-full bg-gradient-to-r from-[#3650A2] to-[#FF7A59]"
+                                     style="width: {{ max(0, min(100, (float) $personalityScore)) }}%"></div>
+                            </div>
+                            <p class="mt-3 text-xs leading-relaxed text-gray-600">
+                                Skor ringkasan tersimpan. Tipe dan interpretasi kepribadian belum ditampilkan sebelum aturan kategorisasinya tersedia.
+                            </p>
+                        @else
+                            <p class="mt-3 text-lg font-black text-gray-900">Menunggu pengolahan</p>
+                            <p class="mt-2 text-xs leading-relaxed text-gray-600">
+                                Jawaban sudah ada, tetapi skor dan kategori kepribadian belum dapat ditentukan oleh sistem.
+                            </p>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="mt-6 grid grid-cols-1 gap-3 border-t border-indigo-100 pt-5 sm:grid-cols-3">
+                    <div class="rounded-xl bg-[#F7F9FF] p-4">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#3650A2] shadow-sm">
+                            <i class="fa-solid fa-fingerprint"></i>
+                        </div>
+                        <h4 class="mt-3 text-sm font-extrabold text-gray-900">Profil diri</h4>
+                        <p class="mt-1 text-xs leading-relaxed text-gray-500">Kecenderungan kepribadian berdasarkan hasil penilaian.</p>
+                    </div>
+                    <div class="rounded-xl bg-[#F7F9FF] p-4">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#3650A2] shadow-sm">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <h4 class="mt-3 text-sm font-extrabold text-gray-900">Potensi positif</h4>
+                        <p class="mt-1 text-xs leading-relaxed text-gray-500">Kekuatan yang dapat dikenali dan terus dikembangkan.</p>
+                    </div>
+                    <div class="rounded-xl bg-[#F7F9FF] p-4">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#3650A2] shadow-sm">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <h4 class="mt-3 text-sm font-extrabold text-gray-900">Eksplorasi karier</h4>
+                        <p class="mt-1 text-xs leading-relaxed text-gray-500">Gambaran lingkungan belajar dan bidang karier untuk dieksplorasi.</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex items-start gap-3 rounded-xl border border-amber-100 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
+                    <i class="fa-solid fa-circle-info mt-0.5"></i>
+                    <p>
+                        <strong>Informasi:</strong> bagian ini tidak menebak tipe kepribadian atau kecocokan karier. Hasil interpretasi akan mengikuti indikator dan metode penilaian yang benar-benar digunakan MyUniv.
+                    </p>
+                </div>
+            </div>
+        @else
+            <div class="result-card p-6 sm:p-8">
+                <div class="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+                    <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-orange-50 text-2xl text-[#3650A2]">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-extrabold text-gray-900">Yuk, kenali gaya dirimu!</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-gray-600">
+                            Kamu belum memiliki jawaban Kepribadian & Karier yang tersimpan. Selesaikan asesmen ini agar hasilnya dapat diproses.
+                        </p>
+                        <a href="{{ route('student.assessment.index') }}"
+                           class="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#3650A2] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#283C7E] focus:outline-none focus:ring-2 focus:ring-[#3650A2]/30">
+                            Kembali ke Asesmen
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </section>
+
     {{-- Detail Jawaban Tes Kepribadian --}}
     <section class="space-y-4">
         <details class="result-card group p-5 sm:p-6">
