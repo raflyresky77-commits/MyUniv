@@ -160,6 +160,16 @@
                         <p class="text-xs text-[#C9D7EE] mt-0.5">Buat akun baru untuk mulai merencanakan masa depanmu.</p>
                     </div>
 
+                    {{-- Pesan sukses ditampilkan jika proses registrasi berhasil dan controller mengirim flash session --}}
+                    @if (session('success') || session('status'))
+                        <div role="alert" class="mb-4 rounded-2xl border border-emerald-300/40 bg-emerald-400/15 px-4 py-3 text-sm text-emerald-100">
+                            <div class="flex items-start gap-2">
+                                <span class="text-base" aria-hidden="true">✓</span>
+                                <p class="font-semibold">{{ session('success') ?? session('status') }}</p>
+                            </div>
+                        </div>
+                    @endif
+
                     {{-- Kotak error global di atas sudah DIHAPUS agar pesan error hanya tampil di bawah masing-masing input --}}
 
                     <form action="{{ route('register.store') }}" method="POST" class="space-y-3">

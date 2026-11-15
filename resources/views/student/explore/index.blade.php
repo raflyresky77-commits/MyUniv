@@ -40,7 +40,7 @@
             <!-- Brand Logo -->
             <div class="px-6 py-6 border-b border-gray-100 flex items-center gap-3.5">
                 <div class="w-11 h-11 flex items-center justify-center bg-indigo-50 rounded-[16px] border border-indigo-200/80 p-1.5 shrink-0 overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105">
-                    <img src="{{ asset('images/icon.png') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
+                    <img src="{{ asset('images/icon-myuniv.jpg') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <span class="text-lg font-black text-[#3650A2] tracking-tight leading-none block">MyUniv</span>

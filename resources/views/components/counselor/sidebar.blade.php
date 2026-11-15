@@ -2,16 +2,16 @@
 
 {{-- Backdrop transparan: tidak menggelapkan halaman saat sidebar mobile terbuka --}}
 <div id="counselorSidebarBackdrop"
-     class="fixed inset-0 z-40 hidden bg-transparent md:hidden"
-     aria-hidden="true"
-     onclick="closeCounselorSidebar()"></div>
+    class="fixed inset-0 z-40 hidden bg-transparent md:hidden"
+    aria-hidden="true"
+    onclick="closeCounselorSidebar()"></div>
 
 <aside id="counselorSidebar"
-       class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col justify-between overflow-y-auto border-r border-[#E2E8F0] bg-white shadow-2xl transition-transform duration-300 ease-in-out md:translate-x-0 md:shadow-[4px_0_24px_rgba(54,80,162,0.05)]">
+    class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col justify-between overflow-y-auto border-r border-[#E2E8F0] bg-white shadow-2xl transition-transform duration-300 ease-in-out md:translate-x-0 md:shadow-[4px_0_24px_rgba(54,80,162,0.05)]">
     <div>
         <div class="flex items-center gap-3.5 border-b border-gray-100 px-6 py-6">
             <div class="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-[14px] border border-indigo-200/80 bg-indigo-50 p-1.5 shadow-sm transition-transform duration-300 hover:scale-105">
-                <img src="{{ asset('images/icon.png') }}" alt="Logo MyUniv" class="h-full w-full object-contain">
+                <img src="{{ asset('images/icon-myuniv.jpg') }}" alt="Logo MyUniv" class="h-full w-full object-contain">
             </div>
             <div>
                 <span class="block text-lg font-black leading-none tracking-tight text-[#3650A2]">MyUniv</span>
@@ -97,8 +97,8 @@
             <div class="px-4 py-2 text-[10px] font-extrabold uppercase tracking-widest text-indigo-400">Menu Utama</div>
 
             <a href="{{ route('counselor.dashboard') }}"
-               class="counselor-nav-link"
-               data-active="{{ $active === 'dashboard' ? 'true' : 'false' }}">
+                class="counselor-nav-link"
+                data-active="{{ $active === 'dashboard' ? 'true' : 'false' }}">
                 <svg class="ml-1 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M3 12l2-2 7-7 7 7 2 2M5 10v10a1 1 0 001 1h3m10-11v10a1 1 0 01-1 1h-3m-6 0h6m-6 0v-4a1 1 0 011-1h2a1 1 0 011 1v4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -106,8 +106,8 @@
             </a>
 
             <a href="{{ route('counselor.exploration') }}"
-               class="counselor-nav-link"
-               data-active="{{ $active === 'exploration' ? 'true' : 'false' }}">
+                class="counselor-nav-link"
+                data-active="{{ $active === 'exploration' ? 'true' : 'false' }}">
                 <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <circle cx="11" cy="11" r="7" stroke-width="2"/>
                     <path d="m20 20-4-4" stroke-width="2" stroke-linecap="round"/>
@@ -116,8 +116,8 @@
             </a>
 
             <a href="{{ route('counselor.assessment-results.index') }}"
-               class="counselor-nav-link"
-               data-active="{{ $active === 'assessment-results' ? 'true' : 'false' }}">
+                class="counselor-nav-link"
+                data-active="{{ $active === 'assessment-results' ? 'true' : 'false' }}">
                 <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke-width="2" stroke-linecap="round"/>
                 </svg>
@@ -125,8 +125,8 @@
             </a>
 
             <a href="{{ route('counselor.consultation') }}"
-               class="counselor-nav-link"
-               data-active="{{ $active === 'consultation' ? 'true' : 'false' }}">
+                class="counselor-nav-link"
+                data-active="{{ $active === 'consultation' ? 'true' : 'false' }}">
                 <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -134,8 +134,8 @@
             </a>
 
             <a href="{{ route('counselor.profile') }}"
-               class="counselor-nav-link"
-               data-active="{{ $active === 'profile' ? 'true' : 'false' }}">
+                class="counselor-nav-link"
+                data-active="{{ $active === 'profile' ? 'true' : 'false' }}">
                 <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>

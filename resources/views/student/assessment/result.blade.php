@@ -15,8 +15,8 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- html2canvas CDN untuk fitur Unduh PNG -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- html2canvas-pro mendukung CSS modern Tailwind CSS v4 (termasuk warna oklch) -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
 
     <style>
         body {
@@ -128,7 +128,10 @@
             @endif
 
             {{-- Header halaman hasil asesmen --}}
-            <section class="relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[#3650A2] via-[#2A3F82] to-[#1C2C5E] p-6 text-white shadow-xl shadow-indigo-950/15 sm:p-10">
+            <section
+                class="relative overflow-hidden rounded-[32px] bg-[#1C2C5E] p-6 text-white shadow-xl shadow-indigo-950/15 sm:p-10"
+                style="background-image: linear-gradient(90deg, rgba(28, 44, 94, .94) 0%, rgba(42, 63, 130, .84) 52%, rgba(54, 80, 162, .52) 100%), url('{{ asset('images/illustrasi-utama.jpg') }}'); background-position: center; background-size: cover;"
+            >
                 <div class="pointer-events-none absolute -right-10 -bottom-12 h-64 w-64 rounded-full bg-[#FF7A59]/15 blur-3xl"></div>
                 <div class="pointer-events-none absolute right-32 top-0 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
 
@@ -928,41 +931,92 @@
     {{-- Script unduh hasil asesmen sebagai PNG atau DOC --}}
     <script>
         async function downloadAssessmentImage() {
+            const button = document.querySelector('button[onclick="downloadAssessmentImage()"]');
             const buttonText = document.getElementById('downloadPngText');
             const captureArea = document.getElementById('captureArea');
-            const hiddenElements = document.querySelectorAll('.no-export-ui, .no-print');
-            if (!captureArea || typeof html2canvas === 'undefined') {
-                alert('Fitur PNG belum siap. Periksa koneksi internet lalu coba lagi.');
+
+            if (!captureArea) {
+                alert('Bagian hasil asesmen tidak ditemukan. Silakan muat ulang halaman.');
+                return;
+            }
+
+            if (typeof html2canvas === 'undefined') {
+                alert('Fitur PNG belum termuat. Periksa koneksi internet, lalu muat ulang halaman.');
                 return;
             }
 
             const originalText = buttonText ? buttonText.textContent : 'Unduh PNG';
-            if (buttonText) buttonText.textContent = 'Memproses...';
-            hiddenElements.forEach(element => element.dataset.previousDisplay = element.style.display);
-            hiddenElements.forEach(element => element.style.display = 'none');
+            const hiddenElements = captureArea.querySelectorAll('.no-export-ui, .no-print');
+            const previousDisplays = new Map();
+
+            if (button) button.disabled = true;
+            if (buttonText) buttonText.textContent = 'Menyiapkan gambar...';
+
+            hiddenElements.forEach(element => {
+                previousDisplays.set(element, element.style.display);
+                element.style.display = 'none';
+            });
 
             try {
+                // Tunggu font dan gambar selesai dimuat agar hasil PNG tidak kosong/terpotong.
+                if (document.fonts && document.fonts.ready) {
+                    await document.fonts.ready;
+                }
+
+                const images = Array.from(captureArea.querySelectorAll('img'));
+                await Promise.all(images.map(image => {
+                    if (image.complete) {
+                        return typeof image.decode === 'function'
+                            ? image.decode().catch(() => {})
+                            : Promise.resolve();
+                    }
+                    return new Promise(resolve => {
+                        image.addEventListener('load', resolve, { once: true });
+                        image.addEventListener('error', resolve, { once: true });
+                    });
+                }));
+
+                if (buttonText) buttonText.textContent = 'Membuat PNG...';
+
                 const canvas = await html2canvas(captureArea, {
-                    scale: Math.max(2, window.devicePixelRatio || 1),
+                    scale: Math.min(2, Math.max(1.5, window.devicePixelRatio || 1)),
                     useCORS: true,
+                    allowTaint: false,
                     backgroundColor: '#F4FAFF',
                     logging: false,
+                    imageTimeout: 15000,
                     scrollX: 0,
-                    scrollY: -window.scrollY,
-                    windowWidth: document.documentElement.clientWidth
+                    scrollY: 0,
+                    windowWidth: Math.max(document.documentElement.clientWidth, captureArea.scrollWidth),
+                    onclone: clonedDocument => {
+                        // Pastikan elemen navigasi/tombol tidak ikut masuk ke gambar.
+                        clonedDocument.querySelectorAll('#captureArea .no-export-ui, #captureArea .no-print').forEach(element => {
+                            element.style.display = 'none';
+                        });
+                    }
                 });
+
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                if (!blob) {
+                    throw new Error('Browser tidak berhasil membuat file PNG.');
+                }
+
+                const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.download = 'hasil-asesmen-myuniv.png';
-                link.href = canvas.toDataURL('image/png');
+                link.href = url;
+                document.body.appendChild(link);
                 link.click();
+                link.remove();
+                window.setTimeout(() => URL.revokeObjectURL(url), 1000);
             } catch (error) {
                 console.error('Gagal membuat PNG hasil asesmen:', error);
-                alert('Gagal mengunduh PNG. Silakan coba lagi.');
+                alert('PNG belum berhasil dibuat. Coba muat ulang halaman. Jika masih gagal, periksa Console browser untuk detail error.');
             } finally {
-                hiddenElements.forEach(element => {
-                    element.style.display = element.dataset.previousDisplay || '';
-                    delete element.dataset.previousDisplay;
+                previousDisplays.forEach((display, element) => {
+                    element.style.display = display;
                 });
+                if (button) button.disabled = false;
                 if (buttonText) buttonText.textContent = originalText;
             }
         }

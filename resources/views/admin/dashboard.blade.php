@@ -67,7 +67,7 @@
     @endphp
 
     {{-- Sidebar memakai komponen bersama; route, ikon, dan logout --}}
-    <x-sidebar :menus="$sidebarMenus" active="dashboard" title="MyUniv" logo="images/icon.png">
+    <x-sidebar :menus="$sidebarMenus" active="dashboard" title="MyUniv" logo="images/icon-myuniv.jpg">
 
 {{-- Form logout admin. --}}
 <form action="{{ route('logout') }}" method="POST" class="w-full">

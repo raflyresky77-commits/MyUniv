@@ -99,6 +99,7 @@
 
             {{-- Banner Asesmen (Warna Asli/Tidak Diubah) --}}
             <x-student.banner
+                background="images/banner-assesmen.jpg"
                 eyebrow="Pusat Asesmen"
                 title="Kenali Potensi Dirimu"
                 description="Pilih dan selesaikan rangkaian tes minat, bakat, kemampuan, serta kepribadian kariermu untuk rekomendasi masa depan terbaik."
@@ -107,9 +108,9 @@
             {{-- Progress Keseluruhan --}}
             <x-card
                 variant="strong"
-                class="card-interactive-strong rounded-[24px] sm:rounded-[32px] p-5 sm:p-7 space-y-3.5 relative overflow-hidden group"
+                class="card-interactive-strong rounded-3xl sm:rounded-4xl p-5 sm:p-7 space-y-3.5 relative overflow-hidden group"
             >
-                <div class="absolute right-0 top-0 bottom-0 w-3 bg-gradient-to-b from-[#3650A2] to-[#FF7A59]"></div>
+                <div class="absolute right-0 top-0 bottom-0 w-3 bg-linear-to-b from-[#3650A2] to-[#FF7A59]"></div>
 
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                     <span class="text-xs sm:text-sm font-extrabold text-gray-900 flex items-center gap-2.5">
@@ -141,7 +142,7 @@
                 {{-- 1. Tes Minat & Bakat --}}
                 <x-card
                     variant="strong"
-                    class="card-interactive-strong rounded-[24px] sm:rounded-[32px] p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden"
+                    class="card-interactive-strong rounded-3xl sm:rounded-4xl p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden"
                 >
                     <div class="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-indigo-100/60 to-orange-100/30 rounded-full blur-3xl group-hover:from-indigo-200/90 group-hover:to-orange-200/60 transition-all duration-500 pointer-events-none"></div>
 
@@ -196,7 +197,7 @@
                 {{-- 2. Tes Kemampuan --}}
                 <x-card
                     variant="strong"
-                    class="card-interactive-strong rounded-[24px] sm:rounded-[32px] p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden"
+                    class="card-interactive-strong rounded-3xl sm:rounded-4xl p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden"
                 >
                     <div class="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-indigo-100/60 to-orange-100/30 rounded-full blur-3xl group-hover:from-indigo-200/90 group-hover:to-orange-200/60 transition-all duration-500 pointer-events-none"></div>
 

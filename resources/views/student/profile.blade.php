@@ -70,7 +70,7 @@
             <!-- Brand Logo -->
             <div class="px-6 py-6 border-b border-gray-100 flex items-center gap-3.5">
                 <div class="w-11 h-11 flex items-center justify-center bg-indigo-50 rounded-[14px] border border-indigo-200/80 p-1.5 shrink-0 overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105">
-                    <img src="{{ asset('images/icon.png') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
+                    <img src="{{ asset('images/icon-myuniv.jpg') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <span class="text-lg font-black text-[#3650A2] tracking-tight leading-none block">MyUniv</span>
@@ -152,7 +152,7 @@
             </div>
             <div class="w-10 h-10 rounded-2xl overflow-hidden ring-2 ring-indigo-100 shadow-md transition-transform hover:scale-105 cursor-pointer shrink-0" id="headerAvatar">
                 <img
-                    src="{{ asset(strtolower(trim($student->gender ?? '')) === 'perempuan' ? 'images/icon.female.jpg' : 'images/icon.male.jpg') }}"
+                    src="{{ asset(strtolower(trim($student->gender ?? '')) === 'perempuan' ? 'images/Profile/icon-female.jpg' : 'images/Profile/icon-male.jpg') }}"
                     alt="Foto Profil Siswa"
                     class="w-full h-full object-cover"
                 >
@@ -192,7 +192,8 @@
             <x-student.banner
                 eyebrow="Pengaturan Akun"
                 title="Profil Saya"
-                description="Kelola informasi akun dan data diri kamu dengan mudah."
+                description="Kelola informasi akun dan data diri kamu."
+                background="images/banner-profile.jpg"
             />
 
             <!-- Kartu Identitas Ringkas (Hero Profile Card) -->
@@ -202,7 +203,7 @@
                 <div class="flex items-center gap-5 relative z-10">
                     <div class="w-18 h-18 sm:w-20 sm:h-20 rounded-[22px] overflow-hidden border-2 border-indigo-200/80 shrink-0 shadow-sm">
                             <img
-                                src="{{ asset(strtolower(trim($student->gender ?? '')) === 'perempuan' ? 'images/icon.female.jpg' : 'images/icon.male.jpg') }}"
+                                src="{{ asset(strtolower(trim($student->gender ?? '')) === 'perempuan' ? 'images/Profile/icon-female.jpg' : 'images/Profile/icon-male.jpg') }}"
                                 alt="Foto Profil {{ $user->name }}"
                                 class="w-full h-full object-cover"
                             >

@@ -56,6 +56,7 @@
         />
     </div>
 
+
     <!-- Main Content Area -->
     <div class="md:ml-72 pt-28 min-h-screen flex flex-col">
         <main class="p-6 md:p-10 space-y-8 max-w-6xl w-full mx-auto flex-1">
@@ -79,8 +80,11 @@
                 </div>
             @endif
 
-            {{-- Header menggunakan desain komponen header MyUniv yang sudah ada --}}
-            <section class="bg-gradient-strong rounded-[32px] p-8 sm:p-10 text-white relative overflow-hidden shadow-xl shadow-indigo-950/15">
+            {{-- Header Education Planning dengan foto custom khusus halaman ini --}}
+            <section
+                class="rounded-[32px] p-8 sm:p-10 text-white relative overflow-hidden shadow-xl shadow-indigo-950/15"
+                style="background-image: linear-gradient(90deg, rgba(20, 31, 67, 0.96) 0%, rgba(30, 45, 98, 0.88) 48%, rgba(30, 45, 98, 0.35) 100%), url('{{ asset('images/illustrasi-utama.jpg') }}'); background-size: cover; background-position: center 45%;"
+            >
                 <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
                 <div class="absolute right-20 top-0 w-32 h-32 bg-[#FF7A59]/20 rounded-full blur-xl pointer-events-none"></div>
 
@@ -447,8 +451,9 @@
                         @foreach($universities as $university)
                             <option
                                 value="{{ $university->id }}"
+                                data-type="{{ strtoupper($university->type ?? '') }}"
                                 {{ old('target_university_id', $targetPlan?->target_university_id) == $university->id ? 'selected' : '' }}>
-                                {{ $university->name }}
+                                {{ $university->name }} ({{ strtoupper($university->type ?? 'Jenis belum diatur') }})
                             </option>
                         @endforeach
                     </select>
@@ -487,13 +492,24 @@
                         name="admission_path"
                         id="select-path"
                         required
+                        onchange="toggleOtherAdmissionPath()"
                         class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:border-[#3650A2] text-sm bg-white">
-
-                        <option value="SNBP & SNBT" {{ old('admission_path', $targetPlan?->admission_path) == 'SNBP & SNBT' ? 'selected' : '' }}>SNBP &amp; SNBT</option>
-                        <option value="SNBP (Jalur Rapor)" {{ old('admission_path', $targetPlan?->admission_path) == 'SNBP (Jalur Rapor)' ? 'selected' : '' }}>SNBP (Jalur Rapor)</option>
-                        <option value="SNBT (UTBK)" {{ old('admission_path', $targetPlan?->admission_path) == 'SNBT (UTBK)' ? 'selected' : '' }}>SNBT (UTBK)</option>
-                        <option value="Jalur Mandiri" {{ old('admission_path', $targetPlan?->admission_path) == 'Jalur Mandiri' ? 'selected' : '' }}>Jalur Mandiri / UTUL</option>
+                        <option value="">Pilih universitas terlebih dahulu</option>
                     </select>
+
+                    {{-- Ditampilkan jika siswa memilih jalur seleksi lainnya. --}}
+                    <input
+                        type="text"
+                        name="admission_path_other"
+                        id="admission-path-other"
+                        maxlength="100"
+                        value="{{ old('admission_path_other') }}"
+                        placeholder="Tuliskan nama jalur seleksi kampus"
+                        class="hidden mt-2 w-full px-4 py-3 rounded-2xl border border-gray-200 focus:outline-none focus:border-[#3650A2] text-sm bg-white">
+
+                    <p id="admission-path-note" class="mt-1.5 text-[10px] text-gray-500">
+                        Pilihan jalur akan menyesuaikan jenis universitas yang dipilih.
+                    </p>
                 </div>
 
                 <div>
@@ -686,6 +702,101 @@
             document.getElementById('editPlanModal').classList.add('hidden');
         }
 
+        // Pilihan jalur masuk dibedakan berdasarkan jenis universitas.
+        const admissionPathOptions = {
+            PTN: [
+                { value: 'SNBP & SNBT', label: 'SNBP & SNBT' },
+                { value: 'SNBP (Jalur Rapor)', label: 'SNBP (Jalur Rapor)' },
+                { value: 'SNBT (UTBK)', label: 'SNBT (UTBK)' },
+                { value: 'Jalur Mandiri', label: 'Jalur Mandiri / UTUL' },
+                { value: 'Belum menentukan', label: 'Belum menentukan' },
+                { value: 'Lainnya', label: 'Jalur lainnya' },
+            ],
+            PTS: [
+                { value: 'Jalur Prestasi / Rapor', label: 'Jalur Prestasi / Rapor' },
+                { value: 'Jalur Tes Seleksi', label: 'Jalur Tes Seleksi' },
+                { value: 'Jalur Reguler / Tanpa Tes', label: 'Jalur Reguler / Tanpa Tes' },
+                { value: 'Jalur Khusus / Kemitraan', label: 'Jalur Khusus / Kemitraan' },
+                { value: 'Belum menentukan', label: 'Belum menentukan' },
+                { value: 'Lainnya', label: 'Jalur lainnya' },
+            ],
+        };
+
+        // Isi ulang pilihan jalur saat universitas berubah.
+        function filterAdmissionPaths() {
+            const universitySelect = document.getElementById('select-univ');
+            const pathSelect = document.getElementById('select-path');
+
+            if (!universitySelect || !pathSelect) return;
+
+            const selectedUniversity = universitySelect.options[universitySelect.selectedIndex];
+            const universityType = selectedUniversity?.dataset.type || '';
+            const previousValue = pathSelect.dataset.currentValue || pathSelect.value;
+            const options = admissionPathOptions[universityType] || [];
+
+            pathSelect.innerHTML = '';
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = universityType
+                ? 'Pilih jalur seleksi'
+                : 'Pilih universitas terlebih dahulu';
+            pathSelect.appendChild(placeholder);
+
+            options.forEach(optionData => {
+                const option = document.createElement('option');
+                option.value = optionData.value;
+                option.textContent = optionData.label;
+                pathSelect.appendChild(option);
+            });
+
+            // Pulihkan pilihan standar, atau tampilkan nama jalur tersimpan sebagai "Lainnya".
+            if (options.some(option => option.value === previousValue)) {
+                pathSelect.value = previousValue;
+            } else if (previousValue && universityType) {
+                pathSelect.value = 'Lainnya';
+                pathSelect.dataset.otherValue = previousValue;
+            } else {
+                pathSelect.value = '';
+            }
+
+            pathSelect.disabled = !universityType || options.length === 0;
+            pathSelect.dataset.currentValue = pathSelect.value;
+
+            const note = document.getElementById('admission-path-note');
+            if (note) {
+                note.textContent = universityType === 'PTN'
+                    ? 'Jalur seleksi PTN: SNBP, SNBT, atau Mandiri.'
+                    : universityType === 'PTS'
+                        ? 'Jalur PTS dapat berbeda di setiap kampus. Pilih kategori yang paling sesuai.'
+                        : 'Pilih universitas untuk menampilkan jalur seleksi.';
+            }
+
+            toggleOtherAdmissionPath();
+        }
+
+        // Tampilkan input tambahan jika jalur lainnya dipilih.
+        function toggleOtherAdmissionPath() {
+            const pathSelect = document.getElementById('select-path');
+            const otherInput = document.getElementById('admission-path-other');
+
+            if (!pathSelect || !otherInput) return;
+
+            const isOther = pathSelect.value === 'Lainnya';
+            otherInput.classList.toggle('hidden', !isOther);
+            otherInput.required = isOther;
+
+            if (isOther && !otherInput.value && pathSelect.dataset.otherValue) {
+                otherInput.value = pathSelect.dataset.otherValue;
+            }
+
+            if (!isOther) {
+                otherInput.value = '';
+                pathSelect.dataset.otherValue = '';
+            }
+            pathSelect.dataset.currentValue = pathSelect.value;
+        }
+
         // Filter jurusan berdasarkan relasi pivot university_majors dari Supabase.
         function filterMajors() {
             const universitySelect = document.getElementById('select-univ');
@@ -722,7 +833,7 @@
                 }
             });
 
-            // Jangan mempertahankan jurusan yang bukan milik universitas terpilih.
+            // Kosongkan jurusan jika tidak terhubung dengan universitas terpilih.
             if (!previousMajorIsAvailable) {
                 majorSelect.value = '';
             }
@@ -737,6 +848,9 @@
             }
 
             majorSelect.disabled = universityId === '' || availableCount === 0;
+
+            // Jalur masuk mengikuti jenis universitas yang sedang dipilih.
+            filterAdmissionPaths();
         }
 
         // Simpan status checklist ke database, lalu perbarui tampilan jika berhasil
@@ -819,8 +933,22 @@
         document.addEventListener('DOMContentLoaded', function () {
             const universitySelect = document.getElementById('select-univ');
             const majorSelect = document.getElementById('select-major');
+            const pathSelect = document.getElementById('select-path');
 
-            if (universitySelect && majorSelect) filterMajors();
+            if (universitySelect && majorSelect) {
+                // Simpan nilai lama sebelum daftar jalur dibangun ulang.
+                if (pathSelect) {
+                    pathSelect.dataset.currentValue = @json(old('admission_path', $targetPlan?->admission_path));
+                }
+
+                filterMajors();
+
+                // Pulihkan input jalur manual jika form sebelumnya gagal validasi.
+                const otherInput = document.getElementById('admission-path-other');
+                if (otherInput && pathSelect?.value === 'Lainnya') {
+                    otherInput.value = @json(old('admission_path_other'));
+                }
+            }
         });
     </script>
 </body>

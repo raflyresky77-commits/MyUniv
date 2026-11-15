@@ -14,28 +14,25 @@
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            /* Background Gradasi Indah & Dinamis */
             background: linear-gradient(135deg, #E2EEFF 0%, #F4F7FF 50%, #FFF0EC 100%);
             min-height: 100vh;
         }
         .myuniv-gradient { background: linear-gradient(135deg, #3650A2 0%, #1E2D62 100%); }
 
-        /* Gaya Glassmorphism Card */
         .glass-card {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 20px 50px rgba(54, 80, 162, 0.1);
         }
 
-        .field { width: 100%; border: 1.5px solid #D1DFF7; border-radius: 14px; padding: 12px 14px; background: rgba(255, 255, 255, 0.8); color: #1E2D62; font-size: 13px; font-weight: 600; outline: none; transition: all .25s ease; }
+        .field { width: 100%; border: 1.5px solid #D1DFF7; border-radius: 14px; padding: 12px 14px; background: rgba(255, 255, 255, 0.9); color: #1E2D62; font-size: 13px; font-weight: 600; outline: none; transition: all .25s ease; }
         .field:focus { background: white; border-color: #3650A2; box-shadow: 0 0 0 4px rgba(54,80,162,0.12); }
         .field-label { display: block; font-size: 12px; font-weight: 800; color: #34405B; margin-bottom: 6px; }
         .field-note { display: block; color: #8791A8; font-size: 11px; line-height: 1.4; margin-top: 5px; font-weight: 500; }
         .field-error { border-color: #FF7A59 !important; background: #FFF5F2 !important; }
 
-        /* Keyframe Animasi Shake */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-8px); }
@@ -45,7 +42,6 @@
             animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
         }
 
-        /* Keyframe Animasi Pop-up Center */
         @keyframes popUp {
             0% { opacity: 0; transform: scale(0.9); }
             100% { opacity: 1; transform: scale(1); }
@@ -55,7 +51,7 @@
         }
     </style>
 </head>
-<body class="text-slate-800 relative overflow-x-hidden selection:bg-brand-coral selection:text-white">
+<body class="text-slate-800 relative overflow-x-hidden selection:bg-[#3650A2]/20 selection:text-[#1E2D62]">
 
     @include('components.global-loading')
 
@@ -80,39 +76,39 @@
     </div>
 
     <!-- Dekorasi Background Blobs Cahaya -->
-    <div class="absolute top-10 left-10 w-[500px] h-[500px] bg-[#3650A2]/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
-    <div class="absolute bottom-10 right-10 w-[500px] h-[500px] bg-[#FF7A59]/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+    <div class="absolute top-10 left-10 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#3650A2]/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+    <div class="absolute bottom-10 right-10 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#FF7A59]/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
 
-    <main class="min-h-screen px-4 py-8 sm:px-6 flex items-center justify-center relative z-10">
-        <div class="w-full max-w-2xl">
+    <main class="min-h-screen px-4 py-10 sm:px-6 sm:py-14 flex items-center justify-center relative z-10">
+        <div class="w-full max-w-2xl mx-auto">
 
-            <!-- Header Ringkas -->
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center gap-2.5 mb-3">
-                    <div class="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-indigo-100 p-2 shadow-sm">
-                        <img src="{{ asset('images/icon.png') }}" onerror="this.src='https://placehold.co/100x100/F4FAFF/3650A2?text=M'" alt="MyUniv" class="w-full h-full object-contain">
+            <!-- Header Utama yang Dipercantik & Diberi Spacing Proporsional -->
+            <div class="text-center mb-8 sm:mb-10 px-2">
+                <div class="inline-flex items-center gap-3 mb-4 p-1.5 bg-white/70 backdrop-blur-md border border-white rounded-2xl shadow-sm">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center p-1.5">
+                        <img src="{{ asset('images/icon-myuniv.jpg') }}" onerror="this.src='https://placehold.co/100x100/F4FAFF/3650A2?text=M'" alt="MyUniv" class="w-full h-full object-contain">
                     </div>
-                    <span class="text-xl font-black tracking-tight text-[#3650A2]">MyUniv<span class="text-[#FF7A59]">.</span></span>
+                    <span class="text-lg font-extrabold tracking-tight text-[#3650A2] pr-2">MyUniv<span class="text-[#FF7A59]">.</span></span>
                 </div>
-                <h1 class="text-xl sm:text-2xl font-black text-[#1E2D62]">Lengkapi Data Dirimu</h1>
-                <p class="mt-1 text-xs sm:text-sm text-slate-500 max-w-md mx-auto font-medium">
+                <h1 class="text-2xl sm:text-3xl font-black text-[#1E2D62] tracking-tight">Lengkapi Data Dirimu</h1>
+                <p class="mt-2 text-xs sm:text-sm text-slate-500 max-w-md mx-auto font-medium leading-relaxed">
                     Isi informasi profil di bawah ini untuk mengaktifkan akses asesmen dan rekomendasi kampusmu.
                 </p>
             </div>
 
             <!-- Card Utama Form (Glassmorphism) -->
-            <section id="form-card" class="glass-card rounded-[28px] overflow-hidden">
+            <section id="form-card" class="glass-card rounded-2xl sm:rounded-[28px] overflow-hidden">
 
                 <!-- Indikator Langkah (Progress Bar) -->
-                <div class="bg-white/50 px-6 py-4 border-b border-indigo-100/50 flex items-center justify-between">
+                <div class="bg-white/60 px-5 sm:px-7 py-4 sm:py-5 border-b border-indigo-100/60 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <span id="step-badge" class="w-7 h-7 rounded-lg bg-[#3650A2] text-white flex items-center justify-center text-xs font-black shadow-sm">1</span>
+                        <span id="step-badge" class="w-8 h-8 rounded-xl bg-[#3650A2] text-white flex items-center justify-center text-xs font-black shadow-sm shadow-indigo-500/20">1</span>
                         <div>
-                            <h3 id="step-title" class="text-xs font-extrabold text-[#1E2D62]">Langkah 1: Informasi Pribadi</h3>
-                            <p id="step-desc" class="text-[10px] text-slate-500 font-medium">Identitas dasar dan kontak</p>
+                            <h3 id="step-title" class="text-xs sm:text-sm font-extrabold text-[#1E2D62]">Langkah 1: Informasi Pribadi</h3>
+                            <p id="step-desc" class="text-[11px] text-slate-500 font-medium">Identitas dasar dan kontak</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-1.5 bg-white/80 px-3 py-1.5 rounded-full border border-slate-100 shadow-2xs">
                         <span id="dot-1" class="w-6 h-2 rounded-full bg-[#3650A2] transition-all duration-300"></span>
                         <span id="dot-2" class="w-2 h-2 rounded-full bg-slate-300 transition-all duration-300"></span>
                     </div>
@@ -155,14 +151,14 @@
                                     <label class="cursor-pointer">
                                         <input type="radio" name="gender" value="Laki-laki" class="peer hidden" @checked(old('gender', $student->gender) === 'Laki-laki') required>
                                         <div class="border-2 border-slate-200/80 peer-checked:border-[#3650A2] peer-checked:bg-indigo-50/70 rounded-xl p-3 text-center transition bg-white/50">
-                                            <span class="block text-base mb-0.5">👦🏻</span>
+                                            <span class="block text-base mb-0.5">👦</span>
                                             <span class="text-xs font-bold text-slate-700 peer-checked:text-[#3650A2]">Laki-laki</span>
                                         </div>
                                     </label>
                                     <label class="cursor-pointer">
                                         <input type="radio" name="gender" value="Perempuan" class="peer hidden" @checked(old('gender', $student->gender) === 'Perempuan') required>
                                         <div class="border-2 border-slate-200/80 peer-checked:border-[#FF7A59] peer-checked:bg-orange-50/70 rounded-xl p-3 text-center transition bg-white/50">
-                                            <span class="block text-base mb-0.5">👧🏻</span>
+                                            <span class="block text-base mb-0.5">👧</span>
                                             <span class="text-xs font-bold text-slate-700 peer-checked:text-[#FF7A59]">Perempuan</span>
                                         </div>
                                     </label>
@@ -186,7 +182,7 @@
                         </div>
 
                         <div class="pt-4 flex justify-end">
-                            <button type="button" onclick="nextSlide()" class="myuniv-gradient rounded-xl px-6 py-3 text-xs font-black text-white shadow-md hover:opacity-95 transition flex items-center gap-2">
+                            <button type="button" onclick="nextSlide()" class="myuniv-gradient w-full sm:w-auto rounded-xl px-6 py-3 text-xs font-black text-white shadow-md hover:opacity-95 transition flex items-center justify-center gap-2">
                                 <span>Selanjutnya: Data Sekolah</span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
@@ -210,19 +206,19 @@
                         </div>
 
                         <div class="bg-indigo-50/70 backdrop-blur-sm rounded-2xl p-4 border border-indigo-100 flex items-center gap-3 mt-4">
-                            <span class="text-xl">💡</span>
+                            <span class="text-xl shrink-0">💡</span>
                             <p class="text-xs text-[#3650A2] font-semibold leading-relaxed">
                                 Pastikan NISN dan Kelas yang kamu masukkan sudah benar agar terhubung dengan data guru BK sekolah.
                             </p>
                         </div>
 
-                        <div class="pt-4 flex items-center justify-between">
-                            <button type="button" onclick="prevSlide()" class="bg-white/80 hover:bg-white text-slate-600 rounded-xl px-5 py-3 text-xs font-extrabold transition border border-slate-200 flex items-center gap-2 shadow-xs">
+                        <div class="pt-4 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
+                            <button type="button" onclick="prevSlide()" class="w-full sm:w-auto bg-white/80 hover:bg-white text-slate-600 rounded-xl px-5 py-3 text-xs font-extrabold transition border border-slate-200 flex items-center justify-center gap-2 shadow-xs">
                                 <i class="fa-solid fa-arrow-left"></i>
                                 <span>Kembali</span>
                             </button>
 
-                            <button type="submit" onclick="validateSubmit(event)" class="myuniv-gradient rounded-xl px-6 py-3 text-xs font-black text-white shadow-lg hover:opacity-95 transition flex items-center gap-2">
+                            <button type="submit" onclick="validateSubmit(event)" class="myuniv-gradient w-full sm:w-auto rounded-xl px-6 py-3 text-xs font-black text-white shadow-lg hover:opacity-95 transition flex items-center justify-center gap-2">
                                 <span class="font-extrabold">Simpan & Masuk ke MyUniv</span>
                                 <i class="fa-solid fa-check"></i>
                             </button>
@@ -232,7 +228,7 @@
                 </form>
             </section>
 
-            <p class="text-center text-[10px] text-slate-500 mt-6 font-medium">© {{ date('Y') }} MyUniv · Sistem Informasi Peminatan Siswa</p>
+            <p class="text-center text-[11px] text-slate-400 mt-6 font-medium">&copy; {{ date('Y') }} MyUniv &middot; Sistem Informasi Peminatan Siswa</p>
         </div>
     </main>
 
@@ -245,12 +241,10 @@
 
             if(msg) messageEl.textContent = msg;
 
-            // Tampilkan Modal Popup di Tengah
             toast.classList.remove('hidden');
 
-            // Trigger Efek Shake pada Card Form di belakangnya
             card.classList.remove('animate-shake');
-            void card.offsetWidth; // Force Reflow
+            void card.offsetWidth;
             card.classList.add('animate-shake');
         }
 
@@ -269,10 +263,8 @@
             let isValid = true;
             let firstInvalidInput = null;
 
-            // Reset status error
             [name, phone, address, birthDate].forEach(input => input.classList.remove('field-error'));
 
-            // Validasi Input Slide 1
             if (!name.value.trim()) { name.classList.add('field-error'); isValid = false; if(!firstInvalidInput) firstInvalidInput = name; }
             if (!birthDate.value) { birthDate.classList.add('field-error'); isValid = false; if(!firstInvalidInput) firstInvalidInput = birthDate; }
             if (!phone.value.trim()) { phone.classList.add('field-error'); isValid = false; if(!firstInvalidInput) firstInvalidInput = phone; }
@@ -285,11 +277,9 @@
                 return;
             }
 
-            // Pindah Slide ke 2
             document.getElementById('slide-1').classList.add('hidden');
             document.getElementById('slide-2').classList.remove('hidden');
 
-            // Update Indikator Header
             document.getElementById('step-badge').textContent = '2';
             document.getElementById('step-title').textContent = 'Langkah 2: Data Sekolah';
             document.getElementById('step-desc').textContent = 'Informasi pendidikan asal';
@@ -301,7 +291,6 @@
             document.getElementById('slide-2').classList.add('hidden');
             document.getElementById('slide-1').classList.remove('hidden');
 
-            // Update Indikator Header
             document.getElementById('step-badge').textContent = '1';
             document.getElementById('step-title').textContent = 'Langkah 1: Informasi Pribadi';
             document.getElementById('step-desc').textContent = 'Identitas dasar dan kontak';
@@ -320,6 +309,7 @@
                 if (!nisn.value.trim() || nisn.value.length < 10) nisn.classList.add('field-error');
                 if (!studentClass.value.trim()) studentClass.classList.add('field-error');
 
+                showValidationAdminAlert = true;
                 showValidationAlert("NISN (10 angka) dan Kelas wajib terisi dengan benar!");
             }
         }

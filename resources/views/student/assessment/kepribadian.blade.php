@@ -78,6 +78,7 @@
                 eyebrow="Tes Kepribadian Karier"
                 title="Kenali Potensi & Karakter Dirimu 🎯"
                 description="Kenali potensi unik dan karakter dirimu secara mendalam. Jawablah setiap pernyataan dengan jujur dan santai—tidak ada jawaban benar atau salah!"
+                background="images/banner-kepribadian.jpg"
             />
 
             {{-- Data pertanyaan --}}

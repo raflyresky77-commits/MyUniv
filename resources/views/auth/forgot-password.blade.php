@@ -30,7 +30,7 @@
         <!-- Logo & Brand Header -->
         <div class="text-center space-y-3">
             <div class="inline-flex w-16 h-16 items-center justify-center bg-white rounded-[22px] border border-indigo-100 p-2 shadow-md hover:scale-105 transition-transform">
-                <img src="{{ asset('images/icon.png') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
+                <img src="{{ asset('images/icon-myuniv.jpg') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
             </div>
             <div>
                 <h2 class="text-2xl font-black text-[#3650A2] tracking-tight">Lupa Kata Sandi?</h2>

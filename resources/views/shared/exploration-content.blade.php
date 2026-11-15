@@ -20,7 +20,10 @@
 {{-- Konten Eksplorasi bersama untuk Student dan Counselor. Navigasi tetap dikelola masing-masing role. --}}
 <main class="w-full min-w-0 max-w-6xl mx-auto flex-1 space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-10">
             <!-- Hero Banner Section -->
-            <div class="bg-gradient-strong min-w-0 rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-10 text-white relative overflow-hidden shadow-xl shadow-indigo-950/15">
+            <div
+                class="bg-gradient-strong min-w-0 rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-10 text-white relative overflow-hidden shadow-xl shadow-indigo-950/15"
+                style="background-image: linear-gradient(90deg, rgba(30, 45, 97, 0.96) 0%, rgba(30, 45, 97, 0.86) 48%, rgba(30, 45, 97, 0.48) 100%), url('{{ asset('images/header.jpg') }}'); background-size: cover; background-position: center;"
+            >
                 <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
                 <div class="absolute right-20 top-0 w-32 h-32 bg-[#FF7A59]/20 rounded-full blur-xl pointer-events-none"></div>
 
@@ -92,7 +95,7 @@
 
                             <!-- Badge Atas -->
                             <div class="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
-                                <span class="px-2.5 py-1 {{ ($univ->type ?? 'PTN') == 'PTS' ? 'bg-[#FF7A59]/90 text-white' : 'bg-white/20 text-white' }} backdrop-blur-md rounded-lg text-[10px] font-extrabold uppercase tracking-wider border border-white/20 shadow-xs">
+                                <span class="px-2.5 py-1 {{ ($univ->type ?? 'PTN') == 'PTS' ? 'bg-white/25 text-white border-white/40 shadow-lg shadow-black/10' : 'bg-white/20 text-white border-white/30 shadow-xs' }} backdrop-blur-lg rounded-lg text-[10px] font-extrabold uppercase tracking-wider border saturate-150">
                                     {{ $univ->type ?? 'Belum ditentukan' }} • Akreditasi {{ $univ->accreditation ?: 'Belum tersedia' }}
                                 </span>
                             </div>

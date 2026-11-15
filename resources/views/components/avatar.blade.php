@@ -7,15 +7,15 @@
 ])
 
 @php
-    $photo = 'images/icon.GuruBK.jpg';
+    $photo = 'images/Profile/icon-GuruBK.jpg';
 
     if ($type !== 'counselor') {
         $gender = strtolower(trim($student?->gender ?? ''));
 
         $photo = match ($gender) {
-            'perempuan' => 'images/icon.female.jpg',
-            'laki-laki' => 'images/icon.male.jpg',
-            default => 'images/icon.male.jpg',
+            'perempuan' => 'images/Profile/icon-female.jpg',
+            'laki-laki' => 'images/Profile/icon-male.jpg',
+            default => 'images/Profile/icon-male.jpg',
         };
     }
 @endphp

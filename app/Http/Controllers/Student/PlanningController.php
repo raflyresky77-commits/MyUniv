@@ -217,14 +217,22 @@ class PlanningController extends Controller
         $validated = $request->validate([
             'target_university_id' => [
                 'required',
+                'integer',
                 'exists:universities,id',
             ],
             'target_major_id' => [
                 'required',
+                'integer',
                 'exists:majors,id',
             ],
             'admission_path' => [
                 'required',
+                'string',
+                'max:100',
+            ],
+            'admission_path_other' => [
+                'required_if:admission_path,Lainnya',
+                'nullable',
                 'string',
                 'max:100',
             ],
@@ -235,10 +243,55 @@ class PlanningController extends Controller
             ],
         ]);
 
-        // Memastikan jurusan tersedia di universitas pilihan.
-        $majorBelongsToUniversity = Major::whereKey(
-            $validated['target_major_id']
-        )
+        // Ambil tipe kampus dari database; jangan mengandalkan data dari browser.
+        $university = University::findOrFail($validated['target_university_id']);
+        $universityType = strtoupper((string) $university->type);
+
+        $ptnPaths = [
+            'SNBP & SNBT',
+            'SNBP (Jalur Rapor)',
+            'SNBT (UTBK)',
+            'Jalur Mandiri',
+            'Belum menentukan',
+            'Lainnya',
+        ];
+
+        $ptsPaths = [
+            'Jalur Prestasi / Rapor',
+            'Jalur Tes Seleksi',
+            'Jalur Reguler / Tanpa Tes',
+            'Jalur Khusus / Kemitraan',
+            'Belum menentukan',
+            'Lainnya',
+        ];
+
+        $allowedPaths = $universityType === 'PTN'
+            ? $ptnPaths
+            : ($universityType === 'PTS' ? $ptsPaths : []);
+
+        if (!in_array($validated['admission_path'], $allowedPaths, true)) {
+            return back()
+                ->withErrors([
+                    'admission_path' => 'Jalur seleksi tidak sesuai dengan jenis universitas yang dipilih.',
+                ])
+                ->withInput();
+        }
+
+        // Simpan nama jalur manual jika siswa memilih opsi lainnya.
+        $admissionPath = $validated['admission_path'] === 'Lainnya'
+            ? trim($validated['admission_path_other'])
+            : $validated['admission_path'];
+
+        if ($admissionPath === '') {
+            return back()
+                ->withErrors([
+                    'admission_path_other' => 'Nama jalur seleksi lainnya wajib diisi.',
+                ])
+                ->withInput();
+        }
+
+        // Pastikan jurusan memang terhubung dengan universitas pilihan.
+        $majorBelongsToUniversity = Major::whereKey($validated['target_major_id'])
             ->whereHas('universities', function ($query) use ($validated) {
                 $query->where(
                     'universities.id',
@@ -250,13 +303,12 @@ class PlanningController extends Controller
         if (!$majorBelongsToUniversity) {
             return back()
                 ->withErrors([
-                    'target_major_id' =>
-                        'Jurusan tidak tersedia di universitas yang dipilih.',
+                    'target_major_id' => 'Jurusan tidak tersedia di universitas yang dipilih.',
                 ])
                 ->withInput();
         }
 
-        // Cari target pendidikan sebelumnya.
+        // Cari target pendidikan siswa yang sudah ada agar tidak membuat duplikat.
         $targetPlan = EducationPlan::where('student_id', $student->id)
             ->where(function ($query) {
                 $query->whereNotNull('target_university_id')
@@ -265,16 +317,18 @@ class PlanningController extends Controller
             ->latest()
             ->first();
 
-        // Buat data target jika belum tersedia.
         if (!$targetPlan) {
             $targetPlan = new EducationPlan();
-
             $targetPlan->student_id = $student->id;
             $targetPlan->title = 'Target Pendidikan';
             $targetPlan->status = 'pending';
         }
 
-        $targetPlan->fill($validated);
+        // Tetapkan satu per satu agar tidak bergantung pada konfigurasi $fillable.
+        $targetPlan->target_university_id = $university->id;
+        $targetPlan->target_major_id = $validated['target_major_id'];
+        $targetPlan->admission_path = $admissionPath;
+        $targetPlan->career = $validated['career'];
         $targetPlan->save();
 
         return redirect()

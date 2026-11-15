@@ -251,7 +251,7 @@
                         <p class="text-[10px] font-black text-[#3650A2] uppercase tracking-wider">&mdash; Mauny, Maskot MyUniv</p>
                     </div>
                     <div class="w-20 h-20 bg-indigo-50/80 border border-indigo-100 rounded-2xl flex items-center justify-center shrink-0 shadow-xs overflow-hidden p-2 relative z-10">
-                        <img src="{{ asset('images/3d.0.png') }}" alt="Mauny" class="w-full h-full object-contain mascot-float">
+                        <img src="{{ asset('images/head.jpg') }}" alt="Mauny" class="w-full h-full object-contain mascot-float">
                     </div>
                 </div>
             </div>

@@ -112,7 +112,7 @@
             <div class="relative min-w-0 rounded-[24px] sm:rounded-[40px] overflow-hidden px-5 sm:px-8 lg:px-12 py-8 sm:py-12 lg:py-16 shadow-lg border border-indigo-100 flex flex-col justify-center">
                 <!-- Background Image Kampus -->
                 <div class="absolute inset-0 z-0">
-                    <img src="{{ asset('images/banner-dashboardc.png') }}" alt="Background Kampus" class="w-full h-full object-cover object-center filter scale-105">
+                    <img src="{{ asset('images/banner-dashboard.jpg') }}" alt="Background Kampus" class="w-full h-full object-cover object-center filter scale-105">
                 </div>
                 <!-- Overlay Gradasi Konsisten -->
                 <div class="absolute inset-0 z-5 bg-gradient-to-r from-[#141F43]/75 via-[#1E2D62]/80 to-[#3650A2]/75 backdrop-blur-[1px]"></div>

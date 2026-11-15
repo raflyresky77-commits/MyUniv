@@ -1,4 +1,4 @@
-@props(['name' => 'Siswa', 'description' => 'Temukan potensi dan arah pilihan perguruan tinggi terbaikmu bersama MyUniv.', 'background' => 'images/header.png', 'eyebrow' => 'Selamat Datang'])
+@props(['name' => 'Siswa', 'description' => 'Temukan potensi dan arah pilihan perguruan tinggi terbaikmu bersama MyUniv.', 'background' => 'images/header.jpg', 'eyebrow' => 'Selamat Datang'])
 <section class="relative rounded-[28px] overflow-hidden px-6 sm:px-10 py-8 sm:py-10 shadow-md border border-indigo-100 flex flex-col justify-center isolate">
     <div class="absolute inset-0 -z-20"><img src="{{ asset($background) }}" alt="" class="w-full h-full object-cover object-center" loading="lazy"></div>
     <div class="absolute inset-0 -z-10 bg-gradient-to-r from-[#141F43]/80 via-[#1E2D62]/85 to-[#3650A2]/80"></div>

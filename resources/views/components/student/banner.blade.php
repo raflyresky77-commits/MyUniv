@@ -2,9 +2,15 @@
     'eyebrow' => 'Informasi MyUniv',
     'title' => 'Temukan Potensi dan Masa Depanmu',
     'description' => '',
+    'background' => null,
 ])
 
-<section class="bg-gradient-strong rounded-[32px] p-8 sm:p-10 text-white relative overflow-hidden shadow-xl shadow-indigo-950/15">
+<section
+    class="bg-gradient-strong rounded-[32px] p-8 sm:p-10 text-white relative overflow-hidden shadow-xl shadow-indigo-950/15"
+    @if (filled($background))
+        style="background-image: linear-gradient(110deg, rgba(20, 31, 67, .94) 0%, rgba(43, 65, 133, .78) 100%), url('{{ asset($background) }}'); background-size: cover; background-position: center;"
+    @endif
+>
     <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
     <div class="absolute right-20 top-0 w-32 h-32 bg-[#FF7A59]/20 rounded-full blur-xl pointer-events-none"></div>
 

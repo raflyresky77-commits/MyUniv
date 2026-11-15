@@ -143,33 +143,47 @@ Route::middleware(['auth', 'role:student'])
         Route::get('/majors/{id}', [ExplorationController::class, 'show'])
             ->name('majors.show');
 
-        // Education Planning
+
+        // ========================================
+        // EDUCATION PLANNING
+        // ========================================
+
         Route::get('/planning', [PlanningController::class, 'index'])
             ->name('planning.index');
 
         Route::post('/planning', [PlanningController::class, 'store'])
             ->name('planning.store');
 
-        Route::put('/planning/{plan}', [PlanningController::class, 'update'])
-            ->name('planning.update');
-
-        Route::delete('/planning/{plan}', [PlanningController::class, 'destroy'])
-            ->name('planning.destroy');
-
+        // Route khusus target harus berada sebelum route dinamis {plan}.
         Route::put('/planning/target', [PlanningController::class, 'updateTarget'])
             ->name('planning.target.update');
 
+        // Route dinamis untuk mengubah dan menghapus rencana.
+        Route::put('/planning/{plan}', [PlanningController::class, 'update'])
+            ->whereNumber('plan')
+            ->name('planning.update');
+
+        Route::delete('/planning/{plan}', [PlanningController::class, 'destroy'])
+            ->whereNumber('plan')
+            ->name('planning.destroy');
+
+        // Checklist persiapan pendidikan.
         Route::post('/planning/{plan}/checklist', [PlanningController::class, 'storeChecklist'])
+            ->whereNumber('plan')
             ->name('planning.checklist.store');
 
         Route::put('/planning/checklist/{checklist}', [PlanningController::class, 'updateChecklistDetails'])
+            ->whereNumber('checklist')
             ->name('planning.checklist.update-details');
 
         Route::delete('/planning/checklist/{checklist}', [PlanningController::class, 'destroyChecklist'])
+            ->whereNumber('checklist')
             ->name('planning.checklist.destroy');
 
         Route::patch('/planning/checklist/{checklist}', [PlanningController::class, 'updateChecklist'])
+            ->whereNumber('checklist')
             ->name('planning.checklist.update');
+
 
         // Profil Siswa
         Route::get('/profile', [ProfileController::class, 'index'])

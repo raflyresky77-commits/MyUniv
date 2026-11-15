@@ -47,7 +47,7 @@
             <!-- Hero Banner dengan Foto Kampus -->
             <div class="relative min-w-0 rounded-[24px] sm:rounded-[40px] overflow-hidden px-5 sm:px-8 lg:px-12 py-8 sm:py-12 lg:py-16 shadow-lg border border-indigo-100 flex flex-col justify-center">
                 <div class="absolute inset-0 z-0">
-                    <img src="{{ asset('images/banner-consultation.png') }}" alt="Background Kampus" class="w-full h-full object-cover object-center filter scale-105">
+                    <img src="{{ asset('images/banner-consultation.jpg') }}" alt="Background Kampus" class="w-full h-full object-cover object-center filter scale-105">
                 </div>
                 <div class="absolute inset-0 z-5 bg-gradient-to-r from-[#141F43]/75 via-[#1E2D62]/80 to-[#3650A2]/75 backdrop-blur-[1px]"></div>
 
@@ -274,66 +274,6 @@
             </div>
         </div>
 
-        <form id="consultationUpdateForm" method="POST">
-            @csrf
-            @method('PUT')
-
-            <div class="space-y-4 text-sm">
-                <div>
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Nama Siswa</span>
-                    <p id="modalStudentName" class="font-extrabold text-gray-900 text-base mt-0.5">-</p>
-                </div>
-
-                <div>
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Topik / Pembahasan</span>
-                    <p id="modalTopic" class="font-semibold text-gray-700 mt-0.5">-</p>
-                </div>
-
-                <div>
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Metode Konsultasi</span>
-                    <p id="modalMethod" class="font-semibold text-gray-700 mt-0.5">-</p>
-                </div>
-
-                <div>
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Pesan Siswa</span>
-                    <p id="modalMessage" class="font-medium text-gray-600 mt-1">-</p>
-                </div>
-
-                <div>
-                    <label class="text-xs font-bold text-[#3650A2] uppercase tracking-wider block mb-1.5">
-                        Status Konsultasi
-                    </label>
-                    <select name="status" id="modalStatus" required
-                        class="w-full px-4 py-3 rounded-xl border border-indigo-100 bg-[#F8FBFF] text-xs font-semibold">
-                        <option value="pending">Menunggu</option>
-                        <option value="approved">Terjadwal</option>
-                        <option value="rejected">Ditolak</option>
-                        <option value="completed">Selesai</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-xs font-bold text-[#3650A2] uppercase tracking-wider block mb-1.5">
-                        Catatan / Tanggapan Guru BK
-                    </label>
-                    <textarea name="response" rows="3" maxlength="3000"
-                        placeholder="Tuliskan tanggapan untuk siswa..."
-                        class="w-full px-4 py-3 rounded-2xl border border-indigo-100 bg-[#F8FBFF] text-xs font-medium focus:outline-none focus:border-[#3650A2]"></textarea>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-end gap-3 pt-5 mt-5 border-t border-gray-100">
-                <button type="button" onclick="closeDetailModal()"
-                    class="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-600 text-xs font-extrabold hover:bg-gray-200 transition">
-                    Tutup
-                </button>
-
-                <button type="submit"
-                    class="px-5 py-2.5 rounded-xl bg-[#FF7A59] hover:bg-[#e0684a] text-white text-xs font-extrabold transition shadow-md">
-                    Simpan & Konfirmasi
-                </button>
-            </div>
-        </form>
 
     <script>
         function openDetailModal(button) {

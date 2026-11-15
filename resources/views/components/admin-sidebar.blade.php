@@ -24,7 +24,7 @@
 <aside id="mobileSidebar" class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col justify-between overflow-y-auto border-r border-[#E2E8F0] bg-white shadow-2xl transition-transform duration-300 ease-in-out md:translate-x-0 md:shadow-[4px_0_24px_rgba(54,80,162,0.03)]">
     <div>
         <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3.5 border-b border-gray-100 px-6 py-6">
-            <img src="{{ asset('images/icon.png') }}" alt="MyUniv Logo" class="h-10 w-auto object-contain">
+            <img src="{{ asset('images/icon-myuniv.jpg') }}" alt="MyUniv Logo" class="h-10 w-auto object-contain">
             <span>
                 <span class="block text-lg font-black leading-none tracking-tight text-[#3650A2]">MyUniv</span>
                 <span class="mt-1 block text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Enterprise OS</span>

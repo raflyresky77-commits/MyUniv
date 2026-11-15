@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -207,15 +208,28 @@
 
                 </x-student.assessment-panel>
 
-    <!-- Tombol Navigasi Bawah -->
-        <x-button
-            type="submit"
-            variant="coral-gradient"
-            size="lg"
-            class="!px-8 !py-3.5 !text-xs !font-extrabold hover:scale-105 !shadow-orange-950/20"
-        >
-            Simpan Jawaban
-        </x-button>
+                {{-- Tombol navigasi: kembali sebagai aksi sekunder, simpan sebagai aksi utama. --}}
+                <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+                    <x-button
+                        href="{{ route('student.assessment.index') }}"
+                        variant="outline"
+                        size="lg"
+                        class="!w-full sm:!w-auto !justify-center !px-6 !py-3.5 !text-xs !font-bold !border-[#C7D2FE] !text-[#3650A2] hover:!bg-indigo-50"
+                    >
+                        <span aria-hidden="true" class="mr-2">&larr;</span>
+                        Kembali ke Halaman Asesmen
+                    </x-button>
+
+                    <x-button
+                        type="submit"
+                        variant="coral-gradient"
+                        size="lg"
+                        class="!w-full sm:!w-auto !justify-center !px-8 !py-3.5 !text-xs !font-extrabold hover:scale-105 !shadow-orange-950/20"
+                    >
+                        Simpan Jawaban   →
+                    </x-button>
+                </div>
+            </form>
 
     <!-- Modal reusable untuk peringatan soal yang belum dijawab -->
     <x-student.assessment-warning-modal

@@ -19,9 +19,9 @@
     $gender = strtolower(trim($studentData?->gender ?? ''));
 
     $profilePhoto = match ($gender) {
-        'perempuan' => 'images/icon.female.jpg',
-        'laki-laki' => 'images/icon.male.jpg',
-        default => 'images/icon.male.jpg',
+        'perempuan' => 'images/Profile/icon-female.jpg',
+        'laki-laki' => 'images/Profile/icon-male.jpg',
+        default => 'images/Profile/icon-male.jpg',
     };
 @endphp
 

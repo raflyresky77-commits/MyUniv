@@ -40,7 +40,7 @@
             <div class="text-center mb-6">
                 <a href="{{ url('/') }}" class="inline-flex items-center gap-2.5 mb-3 group">
                     <div class="w-10 h-10 rounded-xl bg-white/80 backdrop-blur-md border border-indigo-100 p-2 shadow-sm group-hover:scale-105 transition">
-                        <img src="{{ asset('images/icon.png') }}" onerror="this.src='https://placehold.co/100x100/F4FAFF/3650A2?text=M'" alt="MyUniv" class="w-full h-full object-contain">
+                        <img src="{{ asset('images/icon-myuniv.jpg') }}" onerror="this.src='https://placehold.co/100x100/F4FAFF/3650A2?text=M'" alt="MyUniv" class="w-full h-full object-contain">
                     </div>
                     <span class="text-xl font-black tracking-tight text-[#3650A2]">MyUniv<span class="text-[#FF7A59]">.</span></span>
                 </a>
