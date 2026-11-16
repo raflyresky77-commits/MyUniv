@@ -110,8 +110,7 @@
                     <div class="absolute -left-10 -top-10 w-48 h-48 bg-orange-200/20 rounded-full blur-2xl pointer-events-none"></div>
 
                     <div class="w-full h-56 sm:h-72 rounded-[24px] overflow-hidden relative shadow-sm group">
-                        <!-- Ganti asset('images/banner-minat-bakat.png') dengan path file gambar kamu di folder public -->
-                        <img src="{{ asset('images/banner-minat.bakat.png') }}" alt="Kenali Potensi & Bidang Impianmu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset('images/banner-minat-bakat.jpg') }}" alt="Kenali Potensi & Bidang Impianmu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
 
                         <!-- Overlay Gradient & Text -->
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end p-6 sm:p-8">
