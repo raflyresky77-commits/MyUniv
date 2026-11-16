@@ -131,7 +131,7 @@
                         <div class="relative z-20 p-5 sm:p-6">
                             <div class="inline-flex items-center gap-2.5 sm:gap-3 bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-[#C9D7EE] shadow-sm">
                                 <div class="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center">
-                                    <img src="{{ asset('images/icon.jpg') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
+                                    <img src="{{ asset('images/icon-myuniv.jpg') }}" alt="Logo MyUniv" class="w-full h-full object-contain">
                                 </div>
                                 <div>
                                     <h2 class="text-xs font-bold text-[#2F3136] leading-tight">MyUniv</h2>
