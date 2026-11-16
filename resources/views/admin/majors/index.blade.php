@@ -36,27 +36,6 @@
     <x-admin-topbar module="Modul Akademik" page-title="Manajemen Program Studi" />
 
 
-    <header class="bg-white/90 backdrop-blur-md border-b border-[#E2E8F0] px-6 lg:px-10 py-6 flex justify-between items-center fixed top-0 right-0 left-0 md:left-72 z-40 shadow-xs">
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="toggleSidebar()" class="md:hidden relative z-50 p-2.5 rounded-xl text-gray-700 bg-gray-100 hover:bg-indigo-50 hover:text-[#3650A2] transition focus:outline-none cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
-            <span class="text-xs font-extrabold px-3.5 py-1.5 bg-indigo-50 text-[#3650A2] rounded-xl tracking-wide border border-indigo-100/50">Modul Akademik</span>
-            <span class="text-gray-300 font-light hidden sm:inline">/</span>
-            <h1 class="text-sm font-black text-gray-800 tracking-tight hidden sm:inline">Manajemen Program Studi</h1>
-        </div>
-
-        <div class="flex items-center gap-4">
-            <div class="text-right hidden sm:block">
-                <div class="text-sm font-extrabold text-gray-900 leading-tight">Administrator Utama</div>
-                <div class="text-xs font-semibold text-gray-400">admin@myuniv.test</div>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-gradient-myuniv text-white flex items-center justify-center font-extrabold text-xs shadow-md shadow-indigo-200/50">AD</div>
-        </div>
-    </header>
-
     <!-- Konten utama diberi jarak dari topbar fixed agar tidak tertutup. -->
     <div class="md:ml-72 pt-24 sm:pt-28 min-h-screen">
         <main class="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-7xl w-full mx-auto">
@@ -69,16 +48,6 @@
                     </ul>
                 </div>
             @endif
-            @if(session('success'))
-                <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 font-semibold">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-
-
-
-
             @if(session('success'))
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
@@ -94,32 +63,7 @@
             </script>
             @endif
 
-            <script>
-// Import Excel ditampilkan inline tanpa pindah halaman.
-        const majorImportForm = document.getElementById('majorImportForm');
-        const majorImportPreview = document.getElementById('majorsImportPreview');
-        let majorPreviewReady = false;
-        majorImportForm?.addEventListener('submit', async function (event) {
-            event.preventDefault();
-            const button = majorImportForm.querySelector('button[type="submit"]'); const originalText=button.textContent;
-            button.disabled=true;button.textContent='Memproses...';majorImportPreview.classList.remove('hidden');majorImportPreview.innerHTML='<p class="text-sm text-gray-500">Membaca dan memvalidasi file...</p>';majorPreviewReady=false;
-            try { const response=await fetch(majorImportForm.action,{method:'POST',body:new FormData(majorImportForm),headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});const result=await response.json();renderMajorImportPreview(result); }
-            catch(error){majorImportPreview.innerHTML='<p class="text-sm text-red-600">Gagal memproses file. Periksa koneksi atau log Laravel.</p>';}
-            finally{button.disabled=false;button.textContent=originalText;}
-        });
-        function escapeMajorImportHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));}
-        function renderMajorImportPreview(result){
-            const rows=result.rows||[],errors=result.errors||[];let html=`<div class="flex flex-wrap justify-between gap-2"><div><h3 class="font-extrabold text-sm text-[#3650A2]">Preview Import Prodi</h3><p class="text-xs text-gray-500 mt-1">Total baris terbaca: ${rows.length}</p></div><span class="text-xs font-bold ${result.success?'text-emerald-700':'text-red-600'}">${result.success?'Validasi berhasil':'Perlu perbaikan'}</span></div>`;
-            if(errors.length)html+=`<div class="mt-3 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700"><b>Kesalahan:</b><ul class="list-disc pl-5 mt-1">${errors.map(e=>`<li>${escapeMajorImportHtml(e)}</li>`).join('')}</ul></div>`;
-            html+='<div class="overflow-x-auto mt-3"><table class="w-full text-xs"><thead><tr class="bg-slate-50 text-left">'+['Baris','Nama Prodi','Universitas','Akreditasi'].map(x=>`<th class="p-2">${x}</th>`).join('')+'</tr></thead><tbody>';
-            rows.forEach(item=>{const d=item.data||{};html+=`<tr class="border-b"><td class="p-2">${item.row_number}</td><td class="p-2 font-semibold">${escapeMajorImportHtml(d.name)}</td><td class="p-2">${escapeMajorImportHtml(d.university_name)}</td><td class="p-2">${escapeMajorImportHtml(d.accreditation||'-')}</td></tr>`;});
-            html+='</tbody></table></div><div class="flex gap-2 mt-4"><button type="button" id="confirmMajorImport" class="px-4 py-2 rounded-xl bg-indigo-700 text-white text-xs font-bold" '+(result.success?'':'disabled')+'>Konfirmasi & Simpan</button><button type="button" id="cancelMajorImport" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Batal</button></div>';
-            majorImportPreview.innerHTML=html;majorPreviewReady=!!result.success;document.getElementById('confirmMajorImport')?.addEventListener('click',confirmMajorImport);document.getElementById('cancelMajorImport')?.addEventListener('click',()=>{majorImportPreview.classList.add('hidden');majorImportPreview.innerHTML='';majorImportForm.reset();});
-        }
-        async function confirmMajorImport(){const button=document.getElementById('confirmMajorImport');if(!button||!majorPreviewReady)return;const answer=await Swal.fire({title:'Simpan data prodi?',text:'Prodi akan disimpan dan dihubungkan dengan universitas.',icon:'question',showCancelButton:true,confirmButtonText:'Ya, simpan',cancelButtonText:'Batal'});if(!answer.isConfirmed)return;button.disabled=true;button.textContent='Menyimpan...';try{const response=await fetch(@json(route('admin.majors.import.confirm')),{method:'POST',headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN':majorImportForm.querySelector('input[name="_token"]').value}});const result=await response.json();if(!response.ok)throw new Error(result.message||'Import gagal.');await Swal.fire({icon:'success',title:'Import berhasil',text:result.message});window.location.reload();}catch(error){Swal.fire({icon:'error',title:'Import gagal',text:error.message});button.disabled=false;button.textContent='Konfirmasi & Simpan';}}
 
-
-            </script>
 
             <x-admin-page-header
                 label="Database Peminatan & Jurusan"
@@ -317,39 +261,34 @@
 
     <!-- Script Fungsionalitas -->
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('mobileSidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            sidebar.classList.toggle('-translate-x-full');
-            backdrop.classList.toggle('hidden');
-        }
-
         function openAddMajorModal() {
-            document.getElementById('addMajorModal').classList.remove('hidden');
+            document.getElementById('addMajorModal')?.classList.remove('hidden');
         }
         function closeAddMajorModal() {
-            document.getElementById('addMajorModal').classList.add('hidden');
+            document.getElementById('addMajorModal')?.classList.add('hidden');
         }
 
         function openEditMajorModal(id, name, faculty, degree, description) {
             const modal = document.getElementById('editMajorModal');
             const form = document.getElementById('editMajorForm');
+            if (!modal || !form) return;
 
             form.action = `/admin/majors/${id}`;
 
-            document.getElementById('edit_name').value = name;
-            document.getElementById('edit_faculty').value = faculty;
-            document.getElementById('edit_degree').value = degree;
-            document.getElementById('edit_description').value = description;
+            document.getElementById('edit_name').value = name ?? '';
+            document.getElementById('edit_faculty').value = faculty ?? '';
+            document.getElementById('edit_degree').value = degree ?? 'S1';
+            document.getElementById('edit_description').value = description ?? '';
 
             modal.classList.remove('hidden');
         }
         function closeEditMajorModal() {
-            document.getElementById('editMajorModal').classList.add('hidden');
+            document.getElementById('editMajorModal')?.classList.add('hidden');
         }
 
         function filterMajors() {
             const input = document.getElementById('searchInput');
+            if (!input) return;
             const filter = input.value.toLowerCase();
             const rows = document.querySelectorAll('#majorsTableBody tr[id^="major-row-"]');
             let visibleCount = 0;
@@ -365,17 +304,20 @@
             });
 
             const counter = document.getElementById('searchCounter');
-            if (filter.length > 0) {
-                counter.textContent = `Ditemukan ${visibleCount} prodi`;
-                counter.classList.remove('hidden');
-            } else {
-                counter.classList.add('hidden');
+            if (counter) {
+                if (filter.length > 0) {
+                    counter.textContent = `Ditemukan ${visibleCount} prodi`;
+                    counter.classList.remove('hidden');
+                } else {
+                    counter.classList.add('hidden');
+                }
             }
         }
 
         function confirmEditMajor(event) {
             event.preventDefault();
             const form = document.getElementById('editMajorForm');
+            if (!form) return;
 
             Swal.fire({
                 title: 'Perbarui Program Studi?',
@@ -398,6 +340,7 @@
             event.preventDefault();
             const form = event.target.closest('form');
             const row = document.getElementById(rowId);
+            if (!form) return;
 
             Swal.fire({
                 title: 'Hapus Program Studi?',
@@ -418,6 +361,38 @@
                 }
             });
         }
+
+// Import Excel ditampilkan inline tanpa pindah halaman.
+        // Form import berada di dalam modal tambah, jadi ambil setelah seluruh HTML terbaca.
+        const majorImportForm = document.getElementById('majorImportForm');
+        const majorImportPreview = document.getElementById('majorsImportPreview');
+        let majorPreviewReady = false;
+        majorImportForm?.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            if (!majorImportPreview) return;
+            const button = majorImportForm.querySelector('button[type="submit"]');
+            if (!button) return;
+            const originalText = button.textContent;
+            button.disabled=true;button.textContent='Memproses...';majorImportPreview.classList.remove('hidden');majorImportPreview.innerHTML='<p class="text-sm text-gray-500">Membaca dan memvalidasi file...</p>';majorPreviewReady=false;
+            try { const response=await fetch(majorImportForm.action,{method:'POST',body:new FormData(majorImportForm),headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});const result=await response.json();renderMajorImportPreview(result); }
+            catch(error){majorImportPreview.innerHTML='<p class="text-sm text-red-600">Gagal memproses file. Periksa koneksi atau log Laravel.</p>';}
+            finally{button.disabled=false;button.textContent=originalText;}
+        });
+        function escapeMajorImportHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));}
+        function renderMajorImportPreview(result){
+            const rows=result.rows||[],errors=result.errors||[];let html=`<div class="flex flex-wrap justify-between gap-2"><div><h3 class="font-extrabold text-sm text-[#3650A2]">Preview Import Prodi</h3><p class="text-xs text-gray-500 mt-1">Total baris terbaca: ${rows.length}</p></div><span class="text-xs font-bold ${result.success?'text-emerald-700':'text-red-600'}">${result.success?'Validasi berhasil':'Perlu perbaikan'}</span></div>`;
+            if(errors.length)html+=`<div class="mt-3 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700"><b>Kesalahan:</b><ul class="list-disc pl-5 mt-1">${errors.map(e=>`<li>${escapeMajorImportHtml(e)}</li>`).join('')}</ul></div>`;
+            html+='<div class="overflow-x-auto mt-3"><table class="w-full text-xs"><thead><tr class="bg-slate-50 text-left">'+['Baris','Nama Prodi','Universitas','Akreditasi'].map(x=>`<th class="p-2">${x}</th>`).join('')+'</tr></thead><tbody>';
+            rows.forEach(item=>{const d=item.data||{};html+=`<tr class="border-b"><td class="p-2">${item.row_number}</td><td class="p-2 font-semibold">${escapeMajorImportHtml(d.name)}</td><td class="p-2">${escapeMajorImportHtml(d.university_name)}</td><td class="p-2">${escapeMajorImportHtml(d.accreditation||'-')}</td></tr>`;});
+            html+='</tbody></table></div><div class="flex gap-2 mt-4"><button type="button" id="confirmMajorImport" class="px-4 py-2 rounded-xl bg-indigo-700 text-white text-xs font-bold" '+(result.success?'':'disabled')+'>Konfirmasi & Simpan</button><button type="button" id="cancelMajorImport" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Batal</button></div>';
+            if (!majorImportPreview) return;
+            majorImportPreview.innerHTML=html;majorPreviewReady=!!result.success;document.getElementById('confirmMajorImport')?.addEventListener('click',confirmMajorImport);document.getElementById('cancelMajorImport')?.addEventListener('click',()=>{majorImportPreview.classList.add('hidden');majorImportPreview.innerHTML='';majorImportForm.reset();});
+        }
+        async function confirmMajorImport(){const button=document.getElementById('confirmMajorImport');if(!button||!majorPreviewReady||!majorImportForm)return;const answer=await Swal.fire({title:'Simpan data prodi?',text:'Prodi akan disimpan dan dihubungkan dengan universitas.',icon:'question',showCancelButton:true,confirmButtonText:'Ya, simpan',cancelButtonText:'Batal'});if(!answer.isConfirmed)return;button.disabled=true;button.textContent='Menyimpan...';try{const response=await fetch(@json(route('admin.majors.import.confirm')),{method:'POST',headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN':majorImportForm.querySelector('input[name="_token"]').value}});const result=await response.json();if(!response.ok)throw new Error(result.message||'Import gagal.');await Swal.fire({icon:'success',title:'Import berhasil',text:result.message});window.location.reload();}catch(error){Swal.fire({icon:'error',title:'Import gagal',text:error.message});button.disabled=false;button.textContent='Konfirmasi & Simpan';}}
+
+
+
+
     </script>
 </body>
 </html>

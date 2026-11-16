@@ -292,7 +292,8 @@ Route::middleware(['auth', 'role:admin'])
             ->name('majors.import.confirm');
 
         // Manajemen Program Studi
-        Route::resource('majors', MajorController::class);
+        Route::resource('majors', MajorController::class)
+            ->except(['create', 'edit']);
 
         // Manajemen Pengguna
         Route::resource('users', UserController::class);

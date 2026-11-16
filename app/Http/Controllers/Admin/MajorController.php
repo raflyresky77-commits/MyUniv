@@ -18,40 +18,34 @@ class MajorController extends Controller
         return view('admin.majors.index', compact('majors'));
     }
 
-    public function create()
-    {
-        $universities = University::all();
-        return view('admin.majors.create', compact('universities'));
-    }
-
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'faculty' => 'required|string|max:255',
+            'degree' => 'required|string|max:100',
+            'description' => 'nullable|string',
         ]);
 
-        Major::create($request->all());
+        Major::create($validated);
 
-        return redirect()->route('admin.majors.index')->with('success', 'Program studi baru berhasil ditambahkan!');
-    }
-
-    public function edit(Major $major)
-    {
-        $universities = University::all();
-        return view('admin.majors.edit', compact('major', 'universities'));
+        return redirect()->route('admin.majors.index')
+            ->with('success', 'Program studi baru berhasil ditambahkan!');
     }
 
     public function update(Request $request, Major $major)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'faculty' => 'required|string|max:255',
+            'degree' => 'required|string|max:100',
+            'description' => 'nullable|string',
         ]);
 
-        $major->update($request->all());
+        $major->update($validated);
 
-        return redirect()->route('admin.majors.index')->with('success', 'Program studi berhasil diperbarui!');
+        return redirect()->route('admin.majors.index')
+            ->with('success', 'Program studi berhasil diperbarui!');
     }
 
     public function destroy(Major $major)

@@ -15,6 +15,8 @@ class Major extends Model
         'description',
         'category_id',
         'university_id',
+        'faculty',
+        'degree',
     ];
 
     public function universities(): BelongsToMany
