@@ -400,99 +400,205 @@ class CounselorController extends Controller
         if ($type === 'kemampuan') {
             // Kunci berikut disamakan dengan ResultController yang dipakai MyUniv.
             // Jangan menilai subtes yang belum memiliki kunci tervalidasi.
-            $answerKeys = [
-                'numerik' => [
-                    1 => 'Rp10.000',
-                    2 => '4 Hari',
-                    3 => '36',
-                    4 => '37',
-                    5 => '3 Jam',
-                ],
-                'verbal' => [
-                    1 => 'B. Kilat',
-                    2 => 'A. Menetap',
-                    3 => 'B. Menulis',
-                    4 => 'A. Berhasil guna / membawa hasil',
-                    5 => 'B. Persamaan / kiasan',
-                ],
-                // ResultController belum memberi kunci untuk abstrak.
-                'abstrak' => [],
-            ];
+        $answerKeys = $this->getCounselorAbilityAnswerKeys();
 
-            $subtestAliases = [
-                'numerik' => 'Numerik',
-                'verbal' => 'Literasi',
-                'literasi' => 'Literasi',
-                'abstrak' => 'Abstrak & Logika',
-            ];
+    $subtestAliases = [
+        'numeric' => [
+            'label' => 'Numerik',
+            'response_keys' => ['numerik', 'numeric'],
+        ],
+        'verbal' => [
+            'label' => 'Literasi',
+            'response_keys' => ['verbal', 'literasi'],
+        ],
+        'abstract' => [
+            'label' => 'Abstrak & Logika',
+            'response_keys' => ['abstrak', 'abstract'],
+        ],
+    ];
 
-            $foundSubtest = false;
-            foreach ($subtestAliases as $key => $label) {
-                $answers = $responses[$key]
-                    ?? ($responses['subtests'][$key] ?? null);
+    $foundSubtest = false;
 
-                if (!is_array($answers)) {
-                    continue;
-                }
+    foreach ($subtestAliases as $code => $config) {
+        $answers = null;
 
-                $foundSubtest = true;
-                // Data lama menggunakan key "literasi", tetapi kuncinya sama
-                // dengan subtes "verbal" pada ResultController.
-                $keyName = $key === 'literasi' ? 'verbal' : $key;
-                $answerKey = $answerKeys[$keyName] ?? [];
+        foreach ($config['response_keys'] as $responseKey) {
+            $candidate = $responses[$responseKey]
+                ?? ($responses['subtests'][$responseKey] ?? null);
 
-                foreach ($answers as $number => $answer) {
-                    if (!is_numeric($number)) {
-                        continue;
-                    }
-
-                    $number = (int) $number;
-                    $hasAnswer = !($answer === null || $answer === '');
-                    $canBeGraded = array_key_exists($number, $answerKey);
-                    $correctAnswer = $canBeGraded ? $answerKey[$number] : null;
-                    $isCorrect = $hasAnswer && $canBeGraded
-                        && is_scalar($answer)
-                        && $this->normalizeCounselorAnswer((string) $answer)
-                            === $this->normalizeCounselorAnswer($correctAnswer);
-
-                    $rows[] = [
-                        'question' => $label . ' — Soal ' . $number,
-                        'answer' => $this->humanizeAbilityAnswer($answer),
-                        'grading_status' => !$hasAnswer
-                            ? 'Tidak dijawab'
-                            : ($canBeGraded ? ($isCorrect ? 'Benar' : 'Salah') : 'Belum dinilai'),
-                        'correct_answer' => ($hasAnswer && $canBeGraded && !$isCorrect)
-                            ? $correctAnswer
-                            : null,
-                        'grading_note' => $canBeGraded
-                            ? null
-                            : 'Kunci jawaban belum tersedia atau belum tervalidasi. Jawaban tidak dinilai.',
-                    ];
-                }
+            if (is_array($candidate)) {
+                $answers = $candidate;
+                break;
             }
-
-            // Format lama: nomor soal tersimpan langsung pada root.
-            // Tidak ada identitas subtes, sehingga tidak boleh ditebak kunci jawabannya.
-            if (!$foundSubtest) {
-                foreach ($responses as $number => $answer) {
-                    if (is_numeric($number) && !is_array($answer)) {
-                        $rows[] = [
-                            'question' => 'Soal ' . $number,
-                            'answer' => $this->humanizeAbilityAnswer($answer),
-                            'grading_status' => 'Belum dinilai',
-                            'correct_answer' => null,
-                            'grading_note' => 'Jenis subtes tidak teridentifikasi. Jawaban tidak dinilai agar tidak memberikan hasil yang keliru.',
-                        ];
-                    }
-                }
-            }
-
-            return $rows;
         }
+
+        if (!is_array($answers)) {
+            continue;
+        }
+
+        $foundSubtest = true;
+
+        foreach ($answers as $questionId => $answer) {
+            if (!is_numeric($questionId)) {
+                continue;
+            }
+
+            $questionId = (int) $questionId;
+            $hasAnswer = !($answer === null || $answer === '');
+
+            $question = DB::table('questions')
+                ->where('id', $questionId)
+                ->first(['id', 'question_text']);
+
+            $questionText = $question->question_text
+                ?? 'Pertanyaan nomor ' . $questionId;
+
+            $correctOptionIds = $answerKeys[$code][$questionId] ?? [];
+
+            $selectedOption = null;
+
+            if ($hasAnswer && is_numeric($answer)) {
+                $selectedOption = DB::table('question_options')
+                    ->where('id', (int) $answer)
+                    ->where('question_id', $questionId)
+                    ->first(['id', 'option_text']);
+            }
+
+            $canBeGraded = !empty($correctOptionIds);
+
+            $isCorrect = $hasAnswer
+                && $canBeGraded
+                && $selectedOption
+                && in_array(
+                    (string) $selectedOption->id,
+                    array_map('strval', $correctOptionIds),
+                    true
+                );
+
+            $correctAnswerText = null;
+
+            if ($hasAnswer && $canBeGraded && !$isCorrect) {
+                $correctOptions = DB::table('question_options')
+                    ->where('question_id', $questionId)
+                    ->whereIn('id', $correctOptionIds)
+                    ->pluck('option_text')
+                    ->all();
+
+                $correctAnswerText = implode(', ', $correctOptions);
+            }
+
+            $answerText = !$hasAnswer
+                ? 'Tidak dijawab'
+                : (
+                    $selectedOption
+                        ? $selectedOption->option_text
+                        : 'Pilihan jawaban tidak ditemukan (ID: ' . $answer . ')'
+                );
+
+            $rows[] = [
+                'question' => $config['label'] . ' — ' . $questionText,
+                'answer' => $answerText,
+
+                'grading_status' => !$hasAnswer
+                    ? 'Tidak dijawab'
+                    : (
+                        !$canBeGraded || !$selectedOption
+                            ? 'Belum dinilai'
+                            : ($isCorrect ? 'Benar' : 'Salah')
+                    ),
+
+                'correct_answer' => $correctAnswerText,
+
+                'grading_note' => (!$canBeGraded || ($hasAnswer && !$selectedOption))
+                    ? 'Kunci jawaban atau pilihan siswa belum tersedia dan tervalidasi.'
+                    : null,
+            ];
+        }
+    }
+
+    if (!$foundSubtest) {
+        foreach ($responses as $number => $answer) {
+            if (is_numeric($number) && !is_array($answer)) {
+                $rows[] = [
+                    'question' => 'Soal ' . $number,
+                    'answer' => $this->humanizeAbilityAnswer($answer),
+                    'grading_status' => 'Belum dinilai',
+                    'correct_answer' => null,
+                    'grading_note' => 'Jenis subtes tidak teridentifikasi.',
+                ];
+            }
+        }
+    }
+
+    return $rows;
+}
 
         // Jangan tampilkan JSON mentah jika tipe asesmen belum dikenali.
         return [];
     }
+
+
+private function getCounselorAbilityAnswerKeys(): array
+{
+    $subtestMap = [
+        'numeric' => 'numeric',
+        'verbal' => 'verbal',
+        'abstract' => 'abstract',
+    ];
+
+    $rows = DB::table('questions as q')
+        ->join('assessment_subtests as s', 's.id', '=', 'q.subtest_id')
+        ->join('question_options as qo', 'qo.question_id', '=', 'q.id')
+        ->whereIn('s.code', array_keys($subtestMap))
+        ->whereIn('q.type', [
+            'multiple_choice',
+            'image_choice',
+            'visual',
+        ])
+        ->select(
+            's.code',
+            'q.id as question_id',
+            'qo.id as option_id',
+            'qo.score'
+        )
+        ->get();
+
+    $answerKeys = [
+        'numeric' => [],
+        'verbal' => [],
+        'abstract' => [],
+    ];
+
+    $grouped = $rows->groupBy(function ($row) {
+        return $row->code . '_' . $row->question_id;
+    });
+
+    foreach ($grouped as $options) {
+        $first = $options->first();
+
+        $maxScore = $options->max(function ($option) {
+            return (float) $option->score;
+        });
+
+        if ($maxScore <= 0) {
+            continue;
+        }
+
+        $correctIds = $options
+            ->filter(function ($option) use ($maxScore) {
+                return (float) $option->score === (float) $maxScore;
+            })
+            ->pluck('option_id')
+            ->map(fn ($id) => (string) $id)
+            ->values()
+            ->all();
+
+        $answerKeys[$first->code][(int) $first->question_id] = $correctIds;
+    }
+
+    return $answerKeys;
+}
+
 
     /**
      * Meratakan jawaban dengan format question_id => answer,

@@ -110,10 +110,11 @@ public function kemampuan()
         ],
     ];
 
+    $answerDetails = $this->getKemampuanAnswerDetails($savedResponses);
     return view(
-        'student.assessment.kemampuan',
-        compact('savedResponses', 'subtests')
-    );
+    'student.assessment.kemampuan',
+    compact('savedResponses', 'subtests', 'answerDetails')
+);
 }
 
 
@@ -223,6 +224,42 @@ public function kemampuan()
 
         return is_array($decoded) ? $decoded : [];
     }
+
+        
+/**
+ * Memproses jawaban kemampuan agar ID opsi yang sudah tidak tersedia
+ * tidak ditampilkan sebagai angka mentah.
+ */
+private function getKemampuanAnswerDetails(array $responses): array
+{
+    $details = [];
+
+    foreach (['numerik', 'verbal', 'abstrak'] as $subtest) {
+        $answers = $responses[$subtest] ?? [];
+
+        if (!is_array($answers)) {
+            continue;
+        }
+
+        foreach ($answers as $questionId => $optionId) {
+            $option = DB::table('question_options')
+                ->where('id', $optionId)
+                ->where('question_id', $questionId)
+                ->first();
+
+            $details[$subtest][$questionId] = [
+                'answer' => $option?->option_text,
+                'available' => $option !== null,
+                'status' => $option
+                    ? 'Jawaban tersedia'
+                    : 'Pilihan jawaban tidak tersedia',
+            ];
+        }
+    }
+
+    return $details;
+}
+
 
     /**
      * Simpan atau perbarui jawaban asesmen siswa.
