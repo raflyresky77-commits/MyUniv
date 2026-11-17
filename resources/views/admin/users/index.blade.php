@@ -88,6 +88,61 @@
                 <div id="searchCounter" class="hidden whitespace-nowrap px-3 text-xs font-bold text-gray-400 sm:block"></div>
             </div>
 
+            <!-- Ringkasan jumlah akun berdasarkan role -->
+            <section aria-label="Ringkasan data pengguna" class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="rounded-[20px] border border-[#E2E8F0] bg-white p-5 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Total Pengguna</p>
+                            <p class="mt-2 text-2xl font-extrabold text-[#263D83]">{{ number_format($userStats['total'], 0, ',', '.') }}</p>
+                            <p class="mt-1 text-[11px] font-medium text-gray-400">Seluruh akun terdaftar</p>
+                        </div>
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#EEF2FF] text-[#3650A2]">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m16-13a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-[20px] border border-emerald-100 bg-white p-5 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Student</p>
+                            <p class="mt-2 text-2xl font-extrabold text-emerald-600">{{ number_format($userStats['student'], 0, ',', '.') }}</p>
+                            <p class="mt-1 text-[11px] font-medium text-gray-400">Akun siswa</p>
+                        </div>
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 7a7 7 0 0 1 14 0M19 8h3m-1.5-1.5v3"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-[20px] border border-blue-100 bg-white p-5 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Counselor</p>
+                            <p class="mt-2 text-2xl font-extrabold text-blue-600">{{ number_format($userStats['counselor'], 0, ',', '.') }}</p>
+                            <p class="mt-1 text-[11px] font-medium text-gray-400">Akun Guru BK</p>
+                        </div>
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3 3 8l9 5 9-5-9-5Zm-6 8.5V16l6 3 6-3v-4.5"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-[20px] border border-purple-100 bg-white p-5 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">Admin</p>
+                            <p class="mt-2 text-2xl font-extrabold text-purple-600">{{ number_format($userStats['admin'], 0, ',', '.') }}</p>
+                            <p class="mt-1 text-[11px] font-medium text-gray-400">Administrator</p>
+                        </div>
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-purple-50 text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Zm-3 9 2 2 4-4"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Tabel Data Pengguna -->
             <div class="bg-white rounded-[24px] border border-[#E2E8F0] shadow-sm overflow-hidden custom-card-shape">
                 <div class="overflow-x-auto">
