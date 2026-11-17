@@ -161,6 +161,126 @@
                 </div>
             </div>
 
+
+            {{-- Statistik agregat seluruh modul MyUniv. --}}
+            @php
+                // Cek keberadaan tabel agar dashboard tidak error jika nama tabel opsional berbeda.
+                $tableCount = function (array $tableNames): int {
+                    foreach ($tableNames as $tableName) {
+                        if (\Illuminate\Support\Facades\Schema::hasTable($tableName)) {
+                            return \Illuminate\Support\Facades\DB::table($tableName)->count();
+                        }
+                    }
+                    return 0;
+                };
+
+                // Total data dari setiap modul utama.
+                $totalUsers = $tableCount(['users']);
+                $totalStudents = \Illuminate\Support\Facades\DB::table('users')->where('role_id', 1)->count();
+                $totalCounselors = \Illuminate\Support\Facades\DB::table('users')->where('role_id', 2)->count();
+                $totalAdmins = \Illuminate\Support\Facades\DB::table('users')->where('role_id', 3)->count();
+                $totalQuestions = $tableCount(['questions']);
+                $totalUniversities = $tableCount(['universities']);
+                $totalMajors = $tableCount(['majors']);
+                $totalConsultations = $tableCount(['consultations', 'bk_consultations', 'consultation_requests']);
+
+                // Data grafik pertumbuhan akun selama enam bulan terakhir.
+                $sixMonthsAgo = \Carbon\Carbon::now()->startOfMonth()->subMonths(5);
+                $userRegistrations = \Illuminate\Support\Facades\DB::table('users')
+                    ->where('created_at', '>=', $sixMonthsAgo)
+                    ->whereNotNull('created_at')
+                    ->get(['created_at'])
+                    ->groupBy(fn ($user) => \Carbon\Carbon::parse($user->created_at)->format('Y-m'));
+
+                $registrationLabels = [];
+                $registrationData = [];
+
+                for ($i = 5; $i >= 0; $i--) {
+                    $month = \Carbon\Carbon::now()->startOfMonth()->subMonths($i);
+                    $key = $month->format('Y-m');
+                    $registrationLabels[] = $month->translatedFormat('M Y');
+                    $registrationData[] = $userRegistrations->get($key, collect())->count();
+                }
+
+                // Ringkasan agregat modul untuk grafik.
+                $moduleLabels = ['Bank Soal', 'Perguruan Tinggi', 'Program Studi', 'Pengguna', 'Konsultasi BK'];
+                $moduleData = [$totalQuestions, $totalUniversities, $totalMajors, $totalUsers, $totalConsultations];
+            @endphp
+
+            <section aria-label="Statistik agregat MyUniv" class="space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-[#3650A2] tracking-tight">Statistik & Ringkasan Data</h3>
+                        <p class="text-xs text-gray-500 mt-1">Agregat data dari seluruh modul utama platform MyUniv.</p>
+                    </div>
+                    <span class="text-[11px] font-semibold text-gray-400">Data dihitung langsung dari database</span>
+                </div>
+
+                {{-- Kartu statistik setiap modul. --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    @php
+                        $moduleCards = [
+                            ['label' => 'Bank Soal Asesmen', 'value' => $totalQuestions, 'note' => 'Total pertanyaan tersimpan', 'icon' => 'clipboard', 'color' => 'orange'],
+                            ['label' => 'Perguruan Tinggi', 'value' => $totalUniversities, 'note' => 'Total data universitas', 'icon' => 'building', 'color' => 'blue'],
+                            ['label' => 'Program Studi & Jurusan', 'value' => $totalMajors, 'note' => 'Total program studi', 'icon' => 'academic', 'color' => 'indigo'],
+                            ['label' => 'Total Pengguna', 'value' => $totalUsers, 'note' => $totalStudents . ' siswa · ' . $totalCounselors . ' Guru BK · ' . $totalAdmins . ' admin', 'icon' => 'users', 'color' => 'purple'],
+                            ['label' => 'Konsultasi Guru BK', 'value' => $totalConsultations, 'note' => 'Total pengajuan konsultasi', 'icon' => 'chat', 'color' => 'sky'],
+                        ];
+                    @endphp
+
+                    @foreach ($moduleCards as $card)
+                        <div class="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0
+                                {{ $card['color'] === 'orange' ? 'bg-orange-50 text-[#FF7A59]' : '' }}
+                                {{ $card['color'] === 'blue' ? 'bg-blue-50 text-[#3650A2]' : '' }}
+                                {{ $card['color'] === 'indigo' ? 'bg-indigo-50 text-indigo-600' : '' }}
+                                {{ $card['color'] === 'purple' ? 'bg-purple-50 text-purple-600' : '' }}
+                                {{ $card['color'] === 'sky' ? 'bg-sky-50 text-sky-600' : '' }}">
+                                @if ($card['icon'] === 'clipboard')
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5h6m-6 4h6m-6 4h6m-8 7h10a2 2 0 002-2V5a2 2 0 00-2-2h-2.5a2.5 2.5 0 00-5 0H5a2 2 0 00-2 2v13a2 2 0 002 2z"/></svg>
+                                @elseif ($card['icon'] === 'building')
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21h18M5 21V5a2 2 0 012-2h10a2 2 0 012 2v16M9 7h2m-2 4h2m2-4h2m-2 4h2m-5 10v-5h4v5"/></svg>
+                                @elseif ($card['icon'] === 'academic')
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v7m-6-4.5A11 11 0 0012 20a11 11 0 006-3.5"/></svg>
+                                @elseif ($card['icon'] === 'users')
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5.5-3.7M9 20H2v-2a4 4 0 017-2M16 3.1a4 4 0 010 7.8M8 3.1a4 4 0 000 7.8"/></svg>
+                                @else
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 11.5a8.5 8.5 0 01-12.8 7.3L3 20l1.2-4.2A8.5 8.5 0 1121 11.5z"/></svg>
+                                @endif
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-semibold text-gray-500">{{ $card['label'] }}</p>
+                                <p class="text-2xl font-black text-gray-900">{{ number_format($card['value']) }}</p>
+                                <p class="text-[10px] text-gray-400 mt-0.5">{{ $card['note'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Grafik agregat modul dan tren pendaftaran akun. --}}
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+                    <div class="xl:col-span-2 bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5 sm:p-6">
+                        <div class="mb-5">
+                            <h4 class="font-extrabold text-gray-900">Perbandingan Data Antar Modul</h4>
+                            <p class="text-xs text-gray-500 mt-1">Jumlah data yang tersimpan pada setiap modul MyUniv.</p>
+                        </div>
+                        <div class="relative h-72">
+                            <canvas id="moduleAggregateChart" aria-label="Grafik agregat jumlah data seluruh modul"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5 sm:p-6">
+                        <div class="mb-5">
+                            <h4 class="font-extrabold text-gray-900">Pertumbuhan Pengguna</h4>
+                            <p class="text-xs text-gray-500 mt-1">Akun baru dalam enam bulan terakhir.</p>
+                        </div>
+                        <div class="relative h-72">
+                            <canvas id="userRegistrationChart" aria-label="Grafik pertumbuhan pengguna enam bulan terakhir"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Quick Action Cards dengan Sentuhan Dekoratif Bentuk Lingkaran Glow -->
             <div>
                 <div class="flex items-center justify-between mb-5">
@@ -271,7 +391,73 @@
 
 @endsection
 
+// Script untuk grafik dan interaksi sidebar mobile.
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Grafik memakai jumlah data aktual dari setiap tabel modul.
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof Chart === 'undefined') return;
+
+        const moduleCanvas = document.getElementById('moduleAggregateChart');
+        if (moduleCanvas) {
+            new Chart(moduleCanvas, {
+                type: 'bar',
+                data: {
+                    labels: @json($moduleLabels),
+                    datasets: [{
+                        label: 'Jumlah data',
+                        data: @json($moduleData),
+                        backgroundColor: ['#FF7A59', '#3650A2', '#6366F1', '#A855F7', '#0EA5E9'],
+                        borderRadius: 8,
+                        maxBarThickness: 42
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#EEF2F7' } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        const registrationCanvas = document.getElementById('userRegistrationChart');
+        if (registrationCanvas) {
+            new Chart(registrationCanvas, {
+                type: 'line',
+                data: {
+                    labels: @json($registrationLabels),
+                    datasets: [{
+                        label: 'Pengguna baru',
+                        data: @json($registrationData),
+                        borderColor: '#3650A2',
+                        backgroundColor: 'rgba(54, 80, 162, 0.12)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#3650A2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#EEF2F7' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    });
+</script>
 <script>
         // Membuka/menutup sidebar mobile tanpa mengganggu scroll halaman utama.
         function toggleSidebar() {

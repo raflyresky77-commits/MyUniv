@@ -51,13 +51,17 @@
             </script>
             @endif
 
+
+        <!-- Menampilkan pesan error validasi jika ada -->
             @if ($errors->any())
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Validasi Gagal!',
-                        text: "Mohon periksa kembali form input Anda.",
+                        title: 'Data Tidak Dapat Disimpan',
+                        text: @json($errors->first()),
+                        confirmButtonColor: '#3650A2',
+                        confirmButtonText: 'Mengerti',
                         customClass: { popup: 'rounded-[24px]' }
                     });
                 });
