@@ -53,8 +53,8 @@ class UserController extends Controller
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Alamat email wajib diisi.',
-            'email.email' => 'Format alamat email tidak valid.',
-            'email.unique' => 'Alamat email sudah digunakan.',
+            'email.email' => 'Format email yang dimasukkan belum valid',
+            'email.unique' => 'Email ini sudah terdaftar. Silakan gunakan alamat email lain.',
             'password.min' => 'Kata sandi minimal 8 karakter.',
             'role.in' => 'Role pengguna tidak valid.',
         ]);
