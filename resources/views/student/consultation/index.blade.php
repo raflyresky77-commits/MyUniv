@@ -7,6 +7,8 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -75,13 +77,24 @@
                 </div>
             </section>
 
+            {{-- Notifikasi hasil pengajuan konsultasi --}}
             @if (session('success'))
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-700">{{ session('success') }}</div>
+                <div role="status" aria-live="polite" class="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800 shadow-sm">
+                    <span class="mt-0.5 text-lg" aria-hidden="true">✓</span>
+                    <div>
+                        <p class="font-extrabold">Pengajuan berhasil dikirim</p>
+                        <p class="mt-1 font-medium">{{ session('success') }}</p>
+                    </div>
+                </div>
             @endif
+
+            {{-- Pesan bentrok ditampilkan sebagai popup interaktif di bawah halaman. --}}
+
             @if ($errors->any())
-                <div class="rounded-2xl border border-red-200 bg-red-50 px-5 py-3 text-sm text-red-700">
-                    <p class="font-bold">Pengajuan belum dapat dikirim:</p>
-                    <ul class="mt-1 list-disc pl-5">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+                <div role="alert" aria-live="assertive" class="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800">
+                    <p class="font-extrabold">Ada data yang perlu diperiksa</p>
+                    <p class="mt-1">Pengajuan belum dapat dikirim. Silakan perbaiki bagian berikut:</p>
+                    <ul class="mt-2 list-disc space-y-1 pl-5">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
                 </div>
             @endif
 
@@ -222,6 +235,22 @@
             </form>
         </div>
     </div>
+
+    {{-- Popup konflik jadwal menggunakan SweetAlert2, mengikuti halaman Manajemen Pengguna. --}}
+    @if (session('schedule_conflict'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Jadwal sudah terisi',
+                    text: @json(session('schedule_conflict')),
+                    confirmButtonColor: '#3650A2',
+                    confirmButtonText: 'Mengerti',
+                    customClass: { popup: 'rounded-[24px]' }
+                });
+            });
+        </script>
+    @endif
 
     <script>
         // Sinkron dengan student-sidebar: drawer dibuka menggunakan class is-open,

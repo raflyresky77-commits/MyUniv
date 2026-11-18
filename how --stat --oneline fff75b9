@@ -1,0 +1,20 @@
+[33mc3eb9a4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdocs/readme-main[m[33m, [m[1;31morigin/docs/readme-main[m[33m)[m HEAD@{Tue Nov 17 20:57:19 2026}: cherry-pick: docs: add project README documentation
+[33mfb148af[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{Tue Nov 17 20:57:19 2026}: checkout: moving from main to docs/readme-main
+[33mfb148af[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{Tue Nov 17 20:57:15 2026}: checkout: moving from docs/readme-documentation to main
+[33m7854555[m[33m ([m[1;31morigin/docs/readme-documentation[m[33m, [m[1;32mdocs/readme-documentation[m[33m)[m HEAD@{Tue Nov 17 20:54:21 2026}: checkout: moving from 78545559848518004bd986d51abedd1599a5cd52 to docs/readme-documentation
+[33m7854555[m[33m ([m[1;31morigin/docs/readme-documentation[m[33m, [m[1;32mdocs/readme-documentation[m[33m)[m HEAD@{Tue Nov 17 20:47:28 2026}: commit: docs: add project README documentation
+[33m9c0fed2[m[33m ([m[1;31morigin/hotflix/cr-exam[m[33m)[m HEAD@{Tue Nov 17 20:46:02 2026}: checkout: moving from hotfix/cr-exam to 9c0fed2a8196160564c1dde7712aeba19f5a502e
+[33mfff75b9[m[33m ([m[1;31morigin/hotfix/cr-exam[m[33m, [m[1;32mhotfix/cr-exam[m[33m)[m HEAD@{Tue Nov 17 11:36:29 2026}: commit: feat(cr-skkni5): tampilan kartu statistik agregat dan alert validais di UI
+[33mfb148af[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{Tue Nov 17 09:16:03 2026}: checkout: moving from main to hotfix/cr-exam
+[33mfb148af[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{Mon Nov 16 23:19:04 2026}: commit: fix ketidaksesuaian blade, model dan migration (manajemen jurusan)
+[33mf137be8[m HEAD@{Mon Nov 16 23:11:32 2026}: pull --tags origin main: Fast-forward
+[33m482f9c6[m HEAD@{Mon Nov 16 14:14:36 2026}: commit: fix: update logo on register page
+[33m46d59d4[m[33m ([m[1;33mtag: [m[1;33mv1.0.0-rc[m[33m)[m HEAD@{Mon Nov 16 14:13:19 2026}: checkout: moving from main to main
+[33m46d59d4[m[33m ([m[1;33mtag: [m[1;33mv1.0.0-rc[m[33m)[m HEAD@{Mon Nov 16 08:01:32 2026}: checkout: moving from main to main
+[33m46d59d4[m[33m ([m[1;33mtag: [m[1;33mv1.0.0-rc[m[33m)[m HEAD@{Mon Nov 16 07:38:15 2026}: commit: fix img banner minat-bakat
+[33mff2a8c1[m HEAD@{Sun Nov 15 22:57:31 2026}: pull --tags origin main: Fast-forward
+[33mdaa4f28[m HEAD@{Sun Nov 15 19:03:02 2026}: commit: fix tampilan dan merapihkan struktur file blade
+[33mc566485[m HEAD@{Sat Nov 14 19:30:34 2026}: pull --tags origin main: Fast-forward
+[33mbb1943c[m HEAD@{Sat Nov 14 14:06:02 2026}: commit: nambahin gambar di soal abstrak
+[33m2431aad[m HEAD@{Sat Nov 14 13:04:50 2026}: commit: + blade kepribadian
+[33m8421b51[m HEAD@{Sat Nov 14 06:37:17 2026}: commit: fix blade student (resgis, login, reset pw, asesemen index)
