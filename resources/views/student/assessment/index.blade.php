@@ -226,7 +226,7 @@
                         <div class="flex items-center gap-2 text-[11px] font-bold text-gray-500 pt-1">
                             <span class="flex items-center gap-1 bg-indigo-50/60 text-[#3650A2] px-2.5 py-1 rounded-md border border-indigo-100/50">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                ± 20 Menit
+                                ± 40 Menit
                             </span>
                         </div>
 

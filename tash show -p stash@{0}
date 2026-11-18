@@ -1,0 +1,12 @@
+ app/Exports/UniversityTemplateExport.php           |  27 [31m--[m
+ app/Http/Controllers/Admin/MajorController.php     |  88 [32m++++++[m[31m-[m
+ .../Controllers/Admin/UniversityController.php     | 288 [32m+++++++++++++++++++++[m
+ .../Controllers/Student/ConsultationController.php |  35 [32m+++[m
+ .../views/admin/imports/majors-preview.blade.php   | 132 [32m++++++[m[31m----[m
+ .../admin/imports/universities-preview.blade.php   | 139 [32m++++++[m[31m----[m
+ resources/views/admin/universities/index.blade.php | 279 [32m++++++++++++++++++[m[31m--[m
+ .../views/components/global-loading.blade.php      |  29 [32m++[m[31m-[m
+ resources/views/student/assessment/index.blade.php |   2 [32m+[m[31m-[m
+ .../views/student/consultation/index.blade.php     | 127 [32m++++++++[m[31m-[m
+ routes/web.php                                     |  61 [32m++++[m[31m-[m
+ 11 files changed, 1029 insertions(+), 178 deletions(-)

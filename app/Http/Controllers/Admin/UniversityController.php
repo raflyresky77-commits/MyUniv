@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UniversityTemplateExport;
+use App\Exports\MajorAccreditationTemplateExport;
 
 class UniversityController extends Controller
 {
@@ -127,6 +128,76 @@ class UniversityController extends Controller
         return back()->with(
             'success',
             'Program studi berhasil ditambahkan ke perguruan tinggi.'
+        );
+    }
+
+    /**
+     * Memperbarui akreditasi dan informasi tambahan prodi
+     * pada hubungan prodi dengan universitas yang dipilih.
+     */
+    public function updateMajor(Request $request, $universityId, $majorId)
+    {
+        $validated = $request->validate([
+            'accreditation' => 'nullable|string|max:50',
+            'additional_info' => 'nullable|string',
+        ]);
+
+        $university = University::findOrFail($universityId);
+
+        // Pastikan prodi memang sudah terhubung dengan universitas ini.
+        $isRelated = $university->majors()
+            ->where('majors.id', $majorId)
+            ->exists();
+
+        if (!$isRelated) {
+            return back()->withErrors([
+                'major' => 'Program studi tidak terhubung dengan universitas ini.',
+            ]);
+        }
+
+        // Perbarui data pada tabel pivot, bukan membuat relasi baru.
+        $university->majors()->updateExistingPivot($majorId, [
+            'accreditation' => $validated['accreditation'] ?? null,
+            'additional_info' => $validated['additional_info'] ?? null,
+        ]);
+
+        return back()->with(
+            'success',
+            'Akreditasi dan informasi program studi berhasil diperbarui.'
+        );
+    }
+
+    /**
+     * Memperbarui akreditasi beberapa prodi sekaligus untuk satu universitas.
+     * Hanya relasi prodi yang sudah ada yang dapat diperbarui.
+     */
+    public function updateMajorsBulk(Request $request, University $university)
+    {
+        $validated = $request->validate([
+            'majors' => 'required|array|min:1',
+            'majors.*.accreditation' => 'nullable|string|in:Unggul,Baik Sekali,Baik',
+        ]);
+
+        DB::transaction(function () use ($university, $validated) {
+            foreach ($validated['majors'] as $majorId => $data) {
+                // Pastikan ID prodi benar-benar sudah terhubung dengan universitas ini.
+                $isRelated = $university->majors()
+                    ->where('majors.id', $majorId)
+                    ->exists();
+
+                if (!$isRelated) {
+                    abort(422, 'Terdapat program studi yang tidak terhubung dengan universitas ini.');
+                }
+
+                $university->majors()->updateExistingPivot($majorId, [
+                    'accreditation' => $data['accreditation'] ?? null,
+                ]);
+            }
+        });
+
+        return back()->with(
+            'success',
+            'Akreditasi seluruh program studi berhasil diperbarui.'
         );
     }
 
@@ -314,6 +385,223 @@ class UniversityController extends Controller
         $message = "Import universitas selesai: {$created} ditambahkan, {$updated} diperbarui.";
         if (request()->expectsJson()) return response()->json(['success' => true, 'message' => $message, 'created' => $created, 'updated' => $updated]);
         return redirect()->route('admin.universities.index')->with('success', $message);
+    }
+
+
+    /**
+     * Download template untuk import akreditasi program studi.
+     */
+    public function downloadAccreditationTemplate()
+    {
+        return Excel::download(
+            new MajorAccreditationTemplateExport(),
+            'template-akreditasi-prodi-myuniv.xlsx'
+        );
+    }
+
+    /**
+     * Memvalidasi file akreditasi prodi dan menampilkan preview.
+     * Proses ini tidak mengubah database.
+     */
+    public function previewAccreditationImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        $sheets = Excel::toArray([], $request->file('file'));
+        $sheet = $sheets[0] ?? [];
+
+        if (count($sheet) < 2) {
+            return response()->json([
+                'success' => false,
+                'total_rows' => 0,
+                'valid_rows' => 0,
+                'rows' => [],
+                'errors' => ['File tidak memiliki baris data.'],
+            ], 422);
+        }
+
+        $headers = array_map(
+            fn ($value) => strtolower(trim((string) $value)),
+            $sheet[0]
+        );
+
+        $required = ['university_name', 'major_name', 'accreditation'];
+        $missing = array_diff($required, $headers);
+
+        if ($missing) {
+            return response()->json([
+                'success' => false,
+                'total_rows' => 0,
+                'valid_rows' => 0,
+                'rows' => [],
+                'errors' => [
+                    'Kolom wajib tidak ditemukan: ' . implode(', ', $missing),
+                ],
+            ], 422);
+        }
+
+        $rows = [];
+        $errors = [];
+        $seen = [];
+
+        foreach (array_slice($sheet, 1) as $index => $values) {
+            $values = array_pad($values, count($headers), null);
+            $row = array_combine(
+                $headers,
+                array_slice($values, 0, count($headers))
+            );
+            $rowNumber = $index + 2;
+
+            // Lewati baris yang benar-benar kosong.
+            if (!array_filter($row, fn ($value) => trim((string) $value) !== '')) {
+                continue;
+            }
+
+            $universityName = trim((string) ($row['university_name'] ?? ''));
+            $majorName = trim((string) ($row['major_name'] ?? ''));
+            $accreditation = trim((string) ($row['accreditation'] ?? ''));
+
+            if ($universityName === '') {
+                $errors[] = "Baris {$rowNumber}: university_name wajib diisi.";
+                continue;
+            }
+
+            if ($majorName === '') {
+                $errors[] = "Baris {$rowNumber}: major_name wajib diisi.";
+                continue;
+            }
+
+            if ($accreditation !== '' && !in_array(
+                $accreditation,
+                ['Unggul', 'Baik Sekali', 'Baik'],
+                true
+            )) {
+                $errors[] = "Baris {$rowNumber}: accreditation harus Unggul, Baik Sekali, Baik, atau dikosongkan.";
+                continue;
+            }
+
+            $pairKey = mb_strtolower($universityName) . '|' . mb_strtolower($majorName);
+
+            if (isset($seen[$pairKey])) {
+                $errors[] = "Baris {$rowNumber}: kombinasi universitas dan program studi duplikat di dalam file.";
+                continue;
+            }
+
+            $seen[$pairKey] = true;
+
+            $university = University::whereRaw(
+                'LOWER(name) = ?',
+                [mb_strtolower($universityName)]
+            )->first();
+
+            if (!$university) {
+                $errors[] = "Baris {$rowNumber}: universitas '{$universityName}' tidak ditemukan.";
+                continue;
+            }
+
+            // Program studi harus sudah terhubung dengan universitas tersebut.
+            $major = $university->majors()
+                ->whereRaw('LOWER(majors.name) = ?', [mb_strtolower($majorName)])
+                ->first();
+
+            if (!$major) {
+                $errors[] = "Baris {$rowNumber}: program studi '{$majorName}' tidak ditemukan atau belum terhubung dengan universitas '{$universityName}'.";
+                continue;
+            }
+
+            $rows[] = [
+                'row_number' => $rowNumber,
+                'data' => [
+                    'university_id' => $university->id,
+                    'major_id' => $major->id,
+                    'university_name' => $universityName,
+                    'major_name' => $majorName,
+                    'accreditation' => $accreditation,
+                ],
+            ];
+        }
+
+        if (!$rows && !$errors) {
+            $errors[] = 'Tidak ada baris data yang dapat diproses.';
+        }
+
+        session([
+            'major_accreditation_import_preview' => $rows,
+            'major_accreditation_import_errors' => $errors,
+        ]);
+
+        return response()->json([
+            'success' => empty($errors) && !empty($rows),
+            'total_rows' => count($rows) + count($errors),
+            'valid_rows' => count($rows),
+            'rows' => $rows,
+            'errors' => $errors,
+        ], empty($errors) && !empty($rows) ? 200 : 422);
+    }
+
+    /**
+     * Menyimpan hasil preview import akreditasi ke tabel pivot.
+     * Hanya kolom accreditation yang diperbarui; relasi tidak dibuat/dihapus.
+     */
+    public function confirmAccreditationImport()
+    {
+        $rows = session('major_accreditation_import_preview');
+        $errors = session('major_accreditation_import_errors', []);
+
+        if (!$rows) {
+            return response()->json([
+                'message' => 'Preview import sudah kedaluwarsa. Silakan upload ulang.',
+            ], 422);
+        }
+
+        if (!empty($errors)) {
+            return response()->json([
+                'message' => 'Preview masih memiliki kesalahan. Perbaiki file lalu upload kembali.',
+                'errors' => $errors,
+            ], 422);
+        }
+
+        $updated = 0;
+
+        DB::transaction(function () use ($rows, &$updated) {
+            foreach ($rows as $item) {
+                $data = $item['data'];
+                $university = University::find($data['university_id']);
+
+                if (!$university) {
+                    abort(422, 'Salah satu universitas pada preview sudah tidak ditemukan. Silakan upload ulang.');
+                }
+
+                $isRelated = $university->majors()
+                    ->where('majors.id', $data['major_id'])
+                    ->exists();
+
+                if (!$isRelated) {
+                    abort(422, 'Salah satu program studi pada preview sudah tidak terhubung dengan universitas. Silakan upload ulang.');
+                }
+
+                $university->majors()->updateExistingPivot($data['major_id'], [
+                    'accreditation' => $data['accreditation'] !== ''
+                        ? $data['accreditation']
+                        : null,
+                ]);
+
+                $updated++;
+            }
+        });
+
+        session()->forget([
+            'major_accreditation_import_preview',
+            'major_accreditation_import_errors',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Import akreditasi selesai: {$updated} program studi diperbarui.",
+            'updated' => $updated,
+        ]);
     }
 
 }

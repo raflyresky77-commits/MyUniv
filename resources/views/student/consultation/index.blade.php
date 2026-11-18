@@ -82,9 +82,15 @@
                 <div role="status" aria-live="polite" class="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800 shadow-sm">
                     <span class="mt-0.5 text-lg" aria-hidden="true">✓</span>
                     <div>
-                        <p class="font-extrabold">Pengajuan berhasil dikirim</p>
+                        <p class="font-extrabold">{{ session('consultation_cancelled') ? 'Pengajuan dibatalkan' : 'Pengajuan berhasil dikirim' }}</p>
                         <p class="mt-1 font-medium">{{ session('success') }}</p>
                     </div>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div role="alert" aria-live="assertive" class="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800">
+                    {{ session('error') }}
                 </div>
             @endif
 
@@ -124,6 +130,23 @@
                                 </a>
                             @else
                                 <p class="text-xs text-amber-600">Nomor WhatsApp Guru BK belum tersedia.</p>
+                            @endif
+
+                            {{-- Siswa hanya dapat membatalkan pengajuan yang masih menunggu. --}}
+                            @if ($consultation->status === 'pending')
+                                <form method="POST"
+                                      action="{{ route('student.consultation.destroy', $consultation->id) }}"
+                                      onsubmit="return confirmCancelConsultation(event)"
+                                      class="pt-1">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-extrabold text-red-600 transition hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-300">
+                                        Batalkan Pengajuan
+                                    </button>
+                                </form>
+                            @elseif ($consultation->status === 'approved')
+                                <p class="text-xs text-amber-700">Jadwal sudah disetujui. Hubungi Guru BK jika ingin mengubah jadwal.</p>
                             @endif
 
                             @if ($consultation->message)<p class="rounded-xl bg-gray-50 p-3 text-xs text-gray-600">{{ $consultation->message }}</p>@endif
@@ -174,16 +197,17 @@
             </div>
 
             <!-- Form disesuaikan mengarah ke route store POST -->
-            <form action="{{ route('student.consultation.store') }}" method="POST" class="space-y-4">
+            <form id="consultationForm" action="{{ route('student.consultation.store') }}" method="POST" class="space-y-4" novalidate>
                 @csrf
                 <div>
                     <label class="block text-xs font-extrabold text-gray-700 mb-1.5">Pilih Guru Pembimbing</label>
-                    <select name="teacher_id" class="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required>
+                    <select id="teacher_id" name="teacher_id" class="consultation-field w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required aria-describedby="teacher_id_error">
                         <option value="">-- Pilih Guru BK --</option>
                         @foreach ($teachers as $teacher)
                             <option value="{{ $teacher->id }}" @selected(old('teacher_id') == $teacher->id)>{{ $teacher->user->name }}</option>
                         @endforeach
                     </select>
+                    <p id="teacher_id_error" class="field-error mt-1.5 hidden text-xs font-semibold text-red-600" aria-live="polite">Silakan pilih Guru BK terlebih dahulu.</p>
                 </div>
 
                 <!-- Opsi Metode Konsultasi: Online atau Offline -->
@@ -210,17 +234,20 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-extrabold text-gray-700 mb-1.5">Tanggal Konsultasi</label>
-                        <input type="date" name="consultation_date" class="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required>
+                        <input id="consultation_date" type="date" name="consultation_date" class="consultation-field w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required aria-describedby="consultation_date_error">
+                        <p id="consultation_date_error" class="field-error mt-1.5 hidden text-xs font-semibold text-red-600" aria-live="polite">Silakan pilih tanggal konsultasi.</p>
                     </div>
                     <div>
                         <label class="block text-xs font-extrabold text-gray-700 mb-1.5">Jam Pilihan (Sesuai Jam Kerja Guru)</label>
-                        <input type="time" name="consultation_time" class="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required>
+                        <input id="consultation_time" type="time" name="consultation_time" class="consultation-field w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required aria-describedby="consultation_time_error">
+                        <p id="consultation_time_error" class="field-error mt-1.5 hidden text-xs font-semibold text-red-600" aria-live="polite">Silakan pilih jam konsultasi.</p>
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-xs font-extrabold text-gray-700 mb-1.5">Topik / Permasalahan yang Didiskusikan</label>
-                    <textarea name="topic" rows="3" placeholder="Tuliskan topik atau pertanyaan singkat..." class="w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required></textarea>
+                    <textarea id="topic" name="topic" rows="3" placeholder="Tuliskan topik atau pertanyaan singkat..." class="consultation-field w-full px-4 py-3 rounded-2xl bg-gray-50 border border-indigo-100 text-sm font-semibold text-gray-800 focus:outline-none focus:border-[#3650A2]" required aria-describedby="topic_error"></textarea>
+                    <p id="topic_error" class="field-error mt-1.5 hidden text-xs font-semibold text-red-600" aria-live="polite">Topik konsultasi wajib diisi.</p>
                 </div>
 
                 <div>
@@ -251,6 +278,69 @@
             });
         </script>
     @endif
+
+    <script>
+        // Validasi ditampilkan di bawah kolom, bukan melalui popup bawaan browser.
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('consultationForm');
+            if (!form) return;
+
+            const fields = [
+                { id: 'teacher_id', message: 'Silakan pilih Guru BK terlebih dahulu.' },
+                { id: 'consultation_date', message: 'Silakan pilih tanggal konsultasi.' },
+                { id: 'consultation_time', message: 'Silakan pilih jam konsultasi.' },
+                { id: 'topic', message: 'Topik konsultasi wajib diisi.' }
+            ];
+
+            function showError(field, message) {
+                const error = document.getElementById(field.id + '_error');
+                field.classList.add('border-red-400');
+                field.setAttribute('aria-invalid', 'true');
+                if (error) {
+                    error.textContent = message;
+                    error.classList.remove('hidden');
+                }
+            }
+
+            function clearError(field) {
+                const error = document.getElementById(field.id + '_error');
+                field.classList.remove('border-red-400');
+                field.removeAttribute('aria-invalid');
+                if (error) error.classList.add('hidden');
+            }
+
+            fields.forEach(function (item) {
+                const field = document.getElementById(item.id);
+                if (!field) return;
+                const clearWhenFilled = function () {
+                    if (field.value.trim() !== '') clearError(field);
+                };
+                field.addEventListener('input', clearWhenFilled);
+                field.addEventListener('change', clearWhenFilled);
+            });
+
+            form.addEventListener('submit', function (event) {
+                let firstInvalidField = null;
+
+                fields.forEach(function (item) {
+                    const field = document.getElementById(item.id);
+                    if (!field) return;
+
+                    if (!field.value || field.value.trim() === '') {
+                        showError(field, item.message);
+                        if (!firstInvalidField) firstInvalidField = field;
+                    } else {
+                        clearError(field);
+                    }
+                });
+
+                if (firstInvalidField) {
+                    event.preventDefault();
+                    firstInvalidField.focus();
+                }
+            });
+        });
+    </script>
 
     <script>
         // Sinkron dengan student-sidebar: drawer dibuka menggunakan class is-open,
@@ -311,6 +401,31 @@
             document.addEventListener('DOMContentLoaded', initializeConsultationSidebar, { once: true });
         } else {
             initializeConsultationSidebar();
+        }
+
+        // Tampilkan konfirmasi sebelum pengajuan benar-benar dibatalkan.
+        function confirmCancelConsultation(event) {
+            event.preventDefault();
+            const form = event.currentTarget;
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Batalkan pengajuan?',
+                text: 'Pengajuan yang masih menunggu akan dibatalkan dan dihapus dari daftar konsultasi.',
+                showCancelButton: true,
+                confirmButtonColor: '#DC2626',
+                cancelButtonColor: '#64748B',
+                confirmButtonText: 'Ya, batalkan',
+                cancelButtonText: 'Kembali',
+                reverseButtons: true,
+                customClass: { popup: 'rounded-[24px]' }
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+
+            return false;
         }
 
         function openModal() {

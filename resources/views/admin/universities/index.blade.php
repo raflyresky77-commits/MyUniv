@@ -115,6 +115,45 @@
         }
 
 
+        // Import akreditasi prodi melalui Excel: preview terlebih dahulu sebelum disimpan.
+        const accreditationImportForm = document.getElementById('accreditationImportForm');
+        const accreditationImportPreview = document.getElementById('accreditationImportPreview');
+        let accreditationPreviewReady = false;
+        accreditationImportForm?.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const button = accreditationImportForm.querySelector('button[type="submit"]');
+            const originalText = button.textContent;
+            button.disabled = true; button.textContent = 'Memproses...';
+            accreditationImportPreview.classList.remove('hidden');
+            accreditationImportPreview.innerHTML = '<p class="text-sm text-gray-500">Membaca dan memvalidasi file...</p>';
+            accreditationPreviewReady = false;
+            try {
+                const response = await fetch(accreditationImportForm.action, { method: 'POST', body: new FormData(accreditationImportForm), headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
+                const result = await response.json();
+                renderAccreditationImportPreview(result);
+            } catch (error) {
+                accreditationImportPreview.innerHTML = '<p class="text-sm text-red-600">Gagal memproses file. Periksa koneksi atau log Laravel.</p>';
+            } finally { button.disabled = false; button.textContent = originalText; }
+        });
+        function renderAccreditationImportPreview(result) {
+            const rows = result.rows || []; const errors = result.errors || [];
+            let html = `<div class="flex flex-wrap justify-between gap-2"><div><h3 class="font-extrabold text-sm text-[#3650A2]">Preview Import Akreditasi Prodi</h3><p class="text-xs text-gray-500 mt-1">Total baris terbaca: ${rows.length}</p></div><span class="text-xs font-bold ${result.success ? 'text-emerald-700' : 'text-red-600'}">${result.success ? 'Validasi berhasil' : 'Perlu perbaikan'}</span></div>`;
+            if (errors.length) html += `<div class="mt-3 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700"><b>Kesalahan:</b><ul class="list-disc pl-5 mt-1">${errors.map(e=>`<li>${escapeImportHtml(e)}</li>`).join('')}</ul></div>`;
+            html += '<div class="overflow-x-auto mt-3"><table class="w-full text-xs"><thead><tr class="bg-slate-50 text-left"><th class="p-2">Baris</th><th class="p-2">Universitas</th><th class="p-2">Program Studi</th><th class="p-2">Akreditasi Baru</th></tr></thead><tbody>';
+            rows.forEach(item => { const d=item.data||{}; html += `<tr class="border-b"><td class="p-2">${item.row_number}</td><td class="p-2">${escapeImportHtml(d.university_name)}</td><td class="p-2 font-semibold">${escapeImportHtml(d.major_name)}</td><td class="p-2">${escapeImportHtml(d.accreditation || '(dikosongkan)')}</td></tr>`; });
+            html += '</tbody></table></div><div class="flex gap-2 mt-4"><button type="button" id="confirmAccreditationImport" class="px-4 py-2 rounded-xl bg-indigo-700 text-white text-xs font-bold" '+(result.success?'':'disabled')+'>Konfirmasi & Simpan</button><button type="button" id="cancelAccreditationImport" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Batal</button></div>';
+            accreditationImportPreview.innerHTML=html; accreditationPreviewReady=!!result.success;
+            document.getElementById('confirmAccreditationImport')?.addEventListener('click', confirmAccreditationImport);
+            document.getElementById('cancelAccreditationImport')?.addEventListener('click', ()=>{accreditationImportPreview.classList.add('hidden');accreditationImportPreview.innerHTML='';accreditationImportForm.reset();accreditationPreviewReady=false;});
+        }
+        async function confirmAccreditationImport() {
+            const button=document.getElementById('confirmAccreditationImport'); if(!button || !accreditationPreviewReady) return;
+            const answer=await Swal.fire({title:'Simpan akreditasi prodi?',text:'Hanya akreditasi pada relasi prodi yang sudah ada yang akan diperbarui.',icon:'question',showCancelButton:true,confirmButtonText:'Ya, simpan',cancelButtonText:'Batal'}); if(!answer.isConfirmed)return;
+            button.disabled=true;button.textContent='Menyimpan...';
+            try { const response=await fetch(@json(route('admin.universities.accreditation.import.confirm')),{method:'POST',headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest','X-CSRF-TOKEN':accreditationImportForm.querySelector('input[name="_token"]').value}}); const result=await response.json(); if(!response.ok)throw new Error(result.message||'Import gagal.'); await Swal.fire({icon:'success',title:'Import berhasil',text:result.message}); window.location.reload(); }
+            catch(error){Swal.fire({icon:'error',title:'Import gagal',text:error.message});button.disabled=false;button.textContent='Konfirmasi & Simpan';}
+        }
+
             </script>
 
             {{-- Header halaman admin reusable --}}
@@ -155,7 +194,7 @@
                                     {{ $university->type ?? '-' }}
                                 </span>
                                 <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-extrabold border border-emerald-100">
-                                    Akreditasi PT: {{ $university->accreditation ?? 'Unggul' }}
+                                    Akreditasi PT: {{ $university->accreditation ?: 'Belum diisi' }}
                                 </span>
                             </div>
                             <h2 class="text-xl font-black text-[#3650A2] mt-2">{{ $university->name }}</h2>
@@ -167,6 +206,20 @@
                                 @if(!empty($university->branch_notes))
                                 <p class="text-gray-400 text-[11px] italic pl-4">
                                     Cabang: {{ $university->branch_notes }}
+                                </p>
+                                @endif
+                                @if(!empty($university->description))
+                                <p class="text-xs text-gray-600 mt-2 max-w-3xl leading-relaxed">
+                                    {{ $university->description }}
+                                </p>
+                                @endif
+                                @if(!empty($university->ranking))
+                                <p class="text-[11px] text-indigo-600 font-semibold mt-1">
+                                    Ranking {{ $university->ranking_source ?? 'Internasional' }}:
+                                    #{{ $university->ranking }}
+                                    @if(!empty($university->ranking_year))
+                                        ({{ $university->ranking_year }})
+                                    @endif
                                 </p>
                                 @endif
                             </div>
@@ -202,9 +255,10 @@
                     </div>
 
                     <!-- Tabel Detail Program Studi & Form Tambah -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6 items-start">
+                        {{-- Tabel prodi memakai seluruh lebar card agar informasi tidak berdesakan. --}}
+                        <div class="lg:col-span-2 min-w-0 overflow-x-auto rounded-xl border border-slate-100">
+                            <table class="w-full min-w-[920px] text-left border-collapse">
                                 <thead>
                                     <tr class="bg-[#F9FBFF] border-b border-gray-100 text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">
                                         <th class="py-3 px-3 w-10 text-center">No</th>
@@ -231,11 +285,24 @@
                                             </span>
                                         </td>
                                         <td class="py-3 px-3 text-center">
-                                            <form action="{{ route('admin.majors.destroy.custom', [$university->id, $major->id]) }}" method="POST" onsubmit="handleDeleteMajor(event, 'major-row-{{ $major->id }}')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 font-bold cursor-pointer">Hapus</button>
-                                            </form>
+                                            <div class="flex items-center justify-center gap-3">
+                                                <button
+                                                    type="button"
+                                                    onclick="openEditMajorModal(this)"
+                                                    data-university-id="{{ $university->id }}"
+                                                    data-major-id="{{ $major->id }}"
+                                                    data-major-name="{{ $major->name }}"
+                                                    data-accreditation="{{ $major->pivot->accreditation }}"
+                                                    data-additional-info="{{ $major->pivot->additional_info }}"
+                                                    class="text-amber-600 hover:text-amber-800 font-bold cursor-pointer">
+                                                    Edit
+                                                </button>
+                                                <form action="{{ route('admin.majors.destroy.custom', [$university->id, $major->id]) }}" method="POST" onsubmit="handleDeleteMajor(event, 'major-row-{{ $major->id }}')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-500 hover:text-red-700 font-bold cursor-pointer">Hapus</button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty
@@ -247,14 +314,52 @@
                             </table>
                         </div>
 
+                        {{-- Form untuk memperbarui akreditasi semua prodi yang sudah terhubung. --}}
+                        @if($university->majors->isNotEmpty())
+                            <details class="min-w-0 rounded-2xl border border-amber-200 bg-amber-50/40 overflow-hidden">
+                                <summary class="cursor-pointer list-none px-4 py-3.5 flex items-center justify-between gap-3 hover:bg-amber-50 transition-colors">
+                                    <span class="text-xs font-extrabold text-amber-800">
+                                        <i class="fas fa-edit mr-1"></i> Edit Akreditasi Massal
+                                        <span class="ml-1 font-medium text-amber-700">({{ $university->majors->count() }} prodi)</span>
+                                    </span>
+                                    <span class="text-[10px] font-bold text-amber-700">Klik untuk membuka</span>
+                                </summary>
+                                <form action="{{ route('admin.universities.majors.bulk-update', $university->id) }}" method="POST" class="border-t border-amber-100 p-4 sm:p-5 space-y-4">
+                                    @csrf
+                                    @method('PUT')
+                                    <p class="text-[11px] text-gray-600">Atur akreditasi setiap prodi, lalu tekan Simpan Semua. Data prodi dan hubungan dengan universitas tidak akan ditambah atau dihapus.</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        @foreach($university->majors as $bulkMajor)
+                                            <div class="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_140px] items-center gap-2 rounded-xl border border-slate-100 bg-white p-3">
+                                                <label for="bulk_accreditation_{{ $university->id }}_{{ $bulkMajor->id }}" class="text-xs font-bold text-gray-800">{{ $bulkMajor->name }}</label>
+                                                <select id="bulk_accreditation_{{ $university->id }}_{{ $bulkMajor->id }}" name="majors[{{ $bulkMajor->id }}][accreditation]" class="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20">
+                                                    <option value="" @selected(!$bulkMajor->pivot->accreditation)>Belum diisi</option>
+                                                    <option value="Unggul" @selected($bulkMajor->pivot->accreditation === 'Unggul')>Unggul</option>
+                                                    <option value="Baik Sekali" @selected($bulkMajor->pivot->accreditation === 'Baik Sekali')>Baik Sekali</option>
+                                                    <option value="Baik" @selected($bulkMajor->pivot->accreditation === 'Baik')>Baik</option>
+                                                </select>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-amber-100 pt-4">
+                                        <p class="text-[11px] text-gray-500">Periksa kembali pilihan sebelum menyimpan.</p>
+                                        <button type="submit" class="w-full sm:w-auto rounded-xl bg-gradient-myuniv px-5 py-2.5 text-xs font-extrabold text-white shadow-sm hover:opacity-95 transition">
+                                            Simpan Semua Akreditasi
+                                        </button>
+                                    </div>
+                                </form>
+                            </details>
+                        @endif
+
                         <!-- Form Inline Tambah Prodi -->
-                        <div class="bg-[#F8FBFF] p-4 rounded-2xl border border-indigo-50">
-                            <h4 class="text-xs font-black text-[#3650A2] uppercase tracking-wider mb-3">+ Tambah Prodi ke PT Ini</h4>
+                        <div class="min-w-0 rounded-2xl border border-indigo-100 bg-[#F8FBFF] p-4 sm:p-5 shadow-sm">
+                            <h4 class="mb-1 text-xs font-black text-[#3650A2] uppercase tracking-wider">Tambah Prodi</h4>
+                            <p class="mb-4 text-[11px] leading-relaxed text-slate-500">Hubungkan program studi yang sudah tersedia ke perguruan tinggi ini.</p>
                             <form action="{{ route('admin.universities.majors.store', $university->id) }}" method="POST" class="space-y-3">
                                 @csrf
                                 <div>
                                     <label class="block text-[11px] font-bold text-gray-600 mb-1">Pilih program studi yang sudah terdaftar</label>
-                                    <select name="major_id" required class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20">
+                                    <select name="major_id" required class="w-full min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20">
                                         <option value="">Pilih program studi</option>
                                         @foreach($majors as $availableMajor)
                                             <option value="{{ $availableMajor->id }}">{{ $availableMajor->name }}</option>
@@ -263,7 +368,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-bold text-gray-600 mb-1">Akreditasi prodi di PT ini (opsional)</label>
-                                    <select name="accreditation" class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none">
+                                    <select name="accreditation" class="w-full min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20">
                                         <option value="">Belum diisi</option>
                                         <option value="Unggul">Unggul</option>
                                         <option value="Baik Sekali">Baik Sekali</option>
@@ -272,9 +377,9 @@
                                 </div>
                                 <div>
                                     <label class="block text-[11px] font-bold text-gray-600 mb-1">Informasi tambahan (opsional)</label>
-                                    <textarea name="additional_info" rows="2" placeholder="Catatan khusus prodi di universitas ini" class="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20"></textarea>
+                                    <textarea name="additional_info" rows="2" placeholder="Catatan khusus prodi di universitas ini" class="w-full min-w-0 px-3 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20"></textarea>
                                 </div>
-                                <button type="submit" class="w-full py-2 bg-gradient-myuniv text-white rounded-xl font-extrabold text-xs shadow-md hover:opacity-95 transition cursor-pointer">
+                                <button type="submit" class="w-full py-2.5 bg-gradient-myuniv text-white rounded-xl font-extrabold text-xs shadow-sm hover:opacity-95 transition cursor-pointer">
                                     Simpan Prodi
                                 </button>
                             </form>
@@ -298,17 +403,18 @@
                 <button type="button" onclick="closeAddUniversityModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer">&times;</button>
             </div>
 
-            <form action="{{ route('admin.universities.store') }}" method="POST" class="p-6 space-y-4">
+            <form id="addUniversityForm" action="{{ route('admin.universities.store') }}" method="POST" novalidate onsubmit="return validateAddUniversityForm()" class="p-6 space-y-4">
                 @csrf
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Nama Perguruan Tinggi</label>
-                    <input type="text" name="name" required placeholder="Cth: Universitas Telkom" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
+                    <input type="text" id="add_university_name" name="name" required placeholder="Cth: Universitas Telkom" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
+                    <p id="add_university_name_error" class="hidden mt-1.5 text-xs font-medium text-red-600">Nama perguruan tinggi wajib diisi.</p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Lokasi Pusat (Dataset Kota)</label>
-                        <select name="location" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Lokasi Pusat (Dataset Kota) <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                        <select name="location" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
                             <option value="">Pilih Kota Utama</option>
                             <option value="Bandung">Bandung</option>
                             <option value="Jakarta">Jakarta</option>
@@ -388,6 +494,24 @@
                 <p class="text-[11px] text-gray-400 mt-2">Ranking wajib disertai sumber (QS/THE/Webometrics), tahun, kategori, dan URL sumber. Kosongkan ranking jika belum diverifikasi.</p>
                 <div id="universitiesImportPreview" class="hidden mt-4 rounded-xl border border-gray-200 p-4" aria-live="polite"></div>
             </section>
+
+            {{-- Import akreditasi prodi yang sudah terhubung melalui Excel. --}}
+            <section class="mt-4 bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                    <div>
+                        <h2 class="text-sm font-black text-[#3650A2]">Import Akreditasi Program Studi (Excel)</h2>
+                        <p class="text-xs text-gray-500 mt-1">Perbarui akreditasi banyak prodi sekaligus tanpa membuat relasi baru.</p>
+                    </div>
+                    <a href="{{ route('admin.universities.accreditation.import.template') }}" class="text-center px-4 py-2.5 rounded-xl bg-indigo-50 text-[#3650A2] text-xs font-bold">Download Template Akreditasi</a>
+                </div>
+                <form action="{{ route('admin.universities.accreditation.import.preview') }}" method="POST" enctype="multipart/form-data" id="accreditationImportForm" class="mt-4 flex flex-col sm:flex-row gap-3">
+                    @csrf
+                    <input type="file" name="file" accept=".xlsx,.xls,.csv" required class="min-w-0 flex-1 text-xs border border-gray-200 rounded-xl p-2.5">
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-myuniv text-white text-xs font-extrabold">Upload & Preview</button>
+                </form>
+                <p class="text-[11px] text-gray-400 mt-2">Gunakan nama universitas dan nama prodi yang sama persis dengan data MyUniv. Kolom akreditasi boleh dikosongkan untuk menghapus nilai sebelumnya.</p>
+                <div id="accreditationImportPreview" class="hidden mt-4 rounded-xl border border-gray-200 p-4" aria-live="polite"></div>
+            </section>
             </div>
         </div>
     </div>
@@ -405,12 +529,14 @@
         <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">Nama Perguruan Tinggi</label>
             <input type="text" id="edit_name" name="name" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20 focus:bg-white">
+            <p id="edit_university_name_error" class="hidden mt-1.5 text-xs font-medium text-red-600">Nama perguruan tinggi wajib diisi.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-                <label class="block text-xs font-bold text-gray-700 mb-1">Lokasi Pusat (Dataset Kota)</label>
-                <select id="edit_location" name="location" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
+                <label class="block text-xs font-bold text-gray-700 mb-1">Lokasi Pusat (Dataset Kota) <span class="text-gray-400 font-normal">(Opsional)</span></label>
+                <select id="edit_location" name="location" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-medium bg-gray-50/50 focus:outline-none focus:bg-white">
+                    <option value="">Pilih Kota Utama (Opsional)</option>
                     <option value="Bandung">Bandung</option>
                     <option value="Jakarta">Jakarta</option>
                     <option value="Yogyakarta">Yogyakarta</option>
@@ -479,8 +605,70 @@
         confirm-text="Ya, Hapus!"
     />
 
+    {{-- Modal untuk mengubah akreditasi pada relasi prodi-universitas yang sudah ada. --}}
+    <div id="editMajorModal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+            <div class="flex items-center justify-between border-b border-gray-100 p-5">
+                <div>
+                    <h3 class="text-sm font-black text-[#3650A2]">Edit Akreditasi Program Studi</h3>
+                    <p id="editMajorUniversityName" class="mt-1 text-xs text-gray-500"></p>
+                </div>
+                <button type="button" onclick="closeEditMajorModal()" class="text-xl font-bold text-gray-400 hover:text-gray-700">&times;</button>
+            </div>
+
+            <form id="editMajorForm" method="POST" class="space-y-4 p-5">
+                @csrf
+                @method('PUT')
+                <div>
+                    <label for="edit_major_name" class="mb-1 block text-xs font-bold text-gray-700">Program Studi</label>
+                    <input id="edit_major_name" type="text" readonly class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-xs font-semibold text-gray-600">
+                </div>
+                <div>
+                    <label for="edit_major_accreditation" class="mb-1 block text-xs font-bold text-gray-700">Akreditasi Prodi</label>
+                    <select id="edit_major_accreditation" name="accreditation" class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20">
+                        <option value="">Belum diisi</option>
+                        <option value="Unggul">Unggul</option>
+                        <option value="Baik Sekali">Baik Sekali</option>
+                        <option value="Baik">Baik</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_major_additional_info" class="mb-1 block text-xs font-bold text-gray-700">Informasi Tambahan</label>
+                    <textarea id="edit_major_additional_info" name="additional_info" rows="3" placeholder="Catatan khusus prodi di universitas ini" class="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#3650A2]/20"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 border-t border-gray-100 pt-4">
+                    <button type="button" onclick="closeEditMajorModal()" class="rounded-xl px-4 py-2.5 text-xs font-bold text-gray-500 hover:bg-gray-100">Batal</button>
+                    <button type="submit" class="rounded-xl bg-gradient-myuniv px-5 py-2.5 text-xs font-extrabold text-white hover:opacity-95">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- JavaScript Scripting -->
     <script>
+        // Membuka modal edit dan mengisi data dari baris prodi yang dipilih.
+        function openEditMajorModal(button) {
+            const data = button.dataset;
+            const modal = document.getElementById('editMajorModal');
+            const form = document.getElementById('editMajorForm');
+
+            form.action = `/admin/universities/${data.universityId}/majors/${data.majorId}`;
+            document.getElementById('edit_major_name').value = data.majorName || '';
+            document.getElementById('edit_major_accreditation').value = data.accreditation || '';
+            document.getElementById('edit_major_additional_info').value = data.additionalInfo || '';
+            document.getElementById('editMajorUniversityName').textContent =
+                button.closest('[id^="university-card-"]')?.querySelector('h2')?.textContent || '';
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeEditMajorModal() {
+            const modal = document.getElementById('editMajorModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('mobileSidebar');
             const backdrop = document.getElementById('sidebarBackdrop');
@@ -490,7 +678,30 @@
 
         function openAddUniversityModal() {
             document.getElementById('addUniversityModal').classList.remove('hidden');
+            document.getElementById('add_university_name_error').classList.add('hidden');
+            document.getElementById('add_university_name').classList.remove('border-red-500');
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const addName = document.getElementById('add_university_name');
+            const editName = document.getElementById('edit_name');
+
+            addName?.addEventListener('input', () => {
+                if (addName.value.trim()) {
+                    document.getElementById('add_university_name_error').classList.add('hidden');
+                    addName.classList.remove('border-red-500');
+                    addName.setAttribute('aria-invalid', 'false');
+                }
+            });
+
+            editName?.addEventListener('input', () => {
+                if (editName.value.trim()) {
+                    document.getElementById('edit_university_name_error').classList.add('hidden');
+                    editName.classList.remove('border-red-500');
+                    editName.setAttribute('aria-invalid', 'false');
+                }
+            });
+        });
         function closeAddUniversityModal() {
             document.getElementById('addUniversityModal').classList.add('hidden');
         }
@@ -498,7 +709,11 @@
         function openEditUniversityModal(button) {
             const university = button.dataset;
             const modal = document.getElementById('editUniversityModal');
+            // Gunakan validasi inline agar tidak muncul pop-up bawaan browser.
             const form = document.getElementById('editUniversityForm');
+            form.setAttribute('novalidate', 'novalidate');
+            document.getElementById('edit_university_name_error').classList.add('hidden');
+            document.getElementById('edit_name').classList.remove('border-red-500');
 
             form.action = `/admin/universities/${university.id}`;
             document.getElementById('edit_name').value = university.name || '';
@@ -541,9 +756,31 @@
             }
         }
 
+        // Validasi nama dilakukan di dalam form, bukan melalui pop-up browser.
+        function showUniversityNameError(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            const isEmpty = !input.value.trim();
+
+            error.classList.toggle('hidden', !isEmpty);
+            input.classList.toggle('border-red-500', isEmpty);
+            input.setAttribute('aria-invalid', isEmpty ? 'true' : 'false');
+
+            if (isEmpty) input.focus();
+            return !isEmpty;
+        }
+
+        function validateAddUniversityForm() {
+            return showUniversityNameError('add_university_name', 'add_university_name_error');
+        }
+
         function confirmEditUniversity(event) {
             event.preventDefault();
             const form = document.getElementById('editUniversityForm');
+
+            if (!showUniversityNameError('edit_name', 'edit_university_name_error')) {
+                return;
+            }
 
             Swal.fire({
                 title: 'Perbarui Data Perguruan Tinggi?',

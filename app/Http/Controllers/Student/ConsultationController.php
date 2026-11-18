@@ -159,4 +159,39 @@ class ConsultationController extends Controller
             ->route('student.consultation.index')
             ->with('success', 'Pengajuan konsultasi berhasil dikirim.');
     }
+
+    /**
+     * Membatalkan pengajuan yang masih menunggu persetujuan Guru BK.
+     * Siswa hanya dapat membatalkan pengajuan miliknya sendiri.
+     */
+    public function destroy($id)
+    {
+        $student = Student::where('user_id', Auth::id())->first();
+
+        if (! $student) {
+            return redirect()
+                ->route('student.consultation.index')
+                ->with('error', 'Data siswa tidak ditemukan.');
+        }
+
+        $consultation = Consultation::query()
+            ->where('id', $id)
+            ->where('student_id', $student->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if (! $consultation) {
+            return redirect()
+                ->route('student.consultation.index')
+                ->with('error', 'Pengajuan tidak ditemukan atau sudah diproses Guru BK sehingga tidak dapat dibatalkan.');
+        }
+
+        // Pengajuan yang masih menunggu dihapus agar slot jadwal dapat dipilih kembali.
+        $consultation->delete();
+
+        return redirect()
+            ->route('student.consultation.index')
+            ->with('success', 'Pengajuan konsultasi berhasil dibatalkan.')
+            ->with('consultation_cancelled', true);
+    }
 }

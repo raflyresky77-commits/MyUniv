@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
@@ -82,6 +83,7 @@ Route::get('/reset-password/{token}', [ResetPasswordController::class, 'show'])
 Route::post('/reset-password', [ResetPasswordController::class, 'store'])
     ->middleware('guest')
     ->name('password.update');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -198,7 +200,13 @@ Route::middleware(['auth', 'role:student'])
 
         Route::post('/consultation', [ConsultationController::class, 'store'])
             ->name('consultation.store');
+
+        // Membatalkan pengajuan konsultasi yang masih menunggu.
+        Route::delete('/consultation/{id}', [ConsultationController::class, 'destroy'])
+            ->whereNumber('id')
+            ->name('consultation.destroy');
     });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -259,13 +267,29 @@ Route::middleware(['auth', 'role:admin'])
         )->name('assessments.questions.import.confirm');
 
 
+        // ========================================
+        // MANAJEMEN PERGURUAN TINGGI
+        // ========================================
+
         // Import Excel Universitas
         Route::get('universities/import/template', [UniversityController::class, 'downloadImportTemplate'])
             ->name('universities.import.template');
+
         Route::post('universities/import/preview', [UniversityController::class, 'previewImport'])
             ->name('universities.import.preview');
+
         Route::post('universities/import/confirm', [UniversityController::class, 'confirmImport'])
             ->name('universities.import.confirm');
+
+        // Import Excel akreditasi program studi yang sudah terhubung.
+        Route::get('universities/accreditation/import/template', [UniversityController::class, 'downloadAccreditationTemplate'])
+            ->name('universities.accreditation.import.template');
+
+        Route::post('universities/accreditation/import/preview', [UniversityController::class, 'previewAccreditationImport'])
+            ->name('universities.accreditation.import.preview');
+
+        Route::post('universities/accreditation/import/confirm', [UniversityController::class, 'confirmAccreditationImport'])
+            ->name('universities.accreditation.import.confirm');
 
         // Data Perguruan Tinggi
         Route::resource('universities', UniversityController::class);
@@ -276,18 +300,43 @@ Route::middleware(['auth', 'role:admin'])
             [UniversityController::class, 'storeMajor']
         )->name('universities.majors.store');
 
-        // Hapus relasi prodi dari perguruan tinggi tertentu
+        /*
+         * PENTING:
+         * Route bulk harus diletakkan sebelum route {major}.
+         * Dengan begitu, kata "bulk" tidak dibaca sebagai ID program studi.
+         */
+
+        // Perbarui akreditasi beberapa prodi sekaligus.
+        Route::put(
+            'universities/{university}/majors/bulk',
+            [UniversityController::class, 'updateMajorsBulk']
+        )->whereNumber('university')
+         ->name('universities.majors.bulk-update');
+
+        // Perbarui akreditasi dan informasi satu prodi.
+        Route::put(
+            'universities/{university}/majors/{major}',
+            [UniversityController::class, 'updateMajor']
+        )->whereNumber('university')
+         ->whereNumber('major')
+         ->name('universities.majors.update');
+
+        // Hapus relasi prodi dari perguruan tinggi tertentu.
         Route::delete(
             'universities/{university}/majors/{major}',
             [UniversityController::class, 'destroyMajor']
-        )->name('majors.destroy.custom');
+        )->whereNumber('university')
+         ->whereNumber('major')
+         ->name('majors.destroy.custom');
 
 
         // Import Excel Program Studi
         Route::get('majors/import/template', [MajorController::class, 'downloadImportTemplate'])
             ->name('majors.import.template');
+
         Route::post('majors/import/preview', [MajorController::class, 'previewImport'])
             ->name('majors.import.preview');
+
         Route::post('majors/import/confirm', [MajorController::class, 'confirmImport'])
             ->name('majors.import.confirm');
 
@@ -299,9 +348,13 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('users', UserController::class);
 
         // Monitoring konsultasi BK
-        Route::get('/consultations', [AdminConsultationController::class, 'index'])->name('consultations.index');
-        Route::put('/consultations/{consultation}', [AdminConsultationController::class, 'update'])->name('consultations.update');
+        Route::get('/consultations', [AdminConsultationController::class, 'index'])
+            ->name('consultations.index');
+
+        Route::put('/consultations/{consultation}', [AdminConsultationController::class, 'update'])
+            ->name('consultations.update');
     });
+
 
 /*
 |--------------------------------------------------------------------------

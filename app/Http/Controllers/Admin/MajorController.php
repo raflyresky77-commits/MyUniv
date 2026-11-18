@@ -60,7 +60,10 @@ class MajorController extends Controller
      */
     public function downloadImportTemplate()
     {
-        return Excel::download(new MajorTemplateExport(), 'template-prodi-myuniv.xlsx');
+        return Excel::download(
+            new MajorTemplateExport(),
+            'template-prodi-myuniv.xlsx'
+            );
     }
 
     /**
@@ -92,8 +95,7 @@ class MajorController extends Controller
         $errors = [];
         $seen = [];
 
-        // Ambil referensi sekali saja. Hindari query database berulang
-        // untuk setiap baris Excel, terutama saat database berada di Supabase.
+        // Ambil referensi sekali agar preview tidak melakukan query berulang per baris.
         $universitiesByName = University::query()
             ->get(['id', 'name'])
             ->keyBy(fn ($university) => mb_strtolower(trim($university->name)));
@@ -103,21 +105,33 @@ class MajorController extends Controller
             ->map(fn ($id) => (string) $id)
             ->flip();
 
+        $existingMajors = Major::query()
+            ->get(['id', 'name', 'description', 'category_id'])
+            ->keyBy(fn ($major) => mb_strtolower(trim($major->name)));
+
+        $existingPivots = DB::table('university_majors')
+            ->get(['university_id', 'major_id', 'accreditation', 'additional_info'])
+            ->keyBy(fn ($pivot) => $pivot->university_id . ':' . $pivot->major_id);
+
         foreach (array_slice($sheet, 1) as $index => $values) {
             $values = array_pad($values, count($headers), null);
             $row = array_combine($headers, array_slice($values, 0, count($headers)));
             $rowNumber = $index + 2;
 
-            if (!array_filter($row, fn ($v) => trim((string) $v) !== '')) continue;
+            if (!array_filter($row, fn ($v) => trim((string) $v) !== '')) {
+                continue;
+            }
 
             $name = trim((string) ($row['name'] ?? ''));
             $universityName = trim((string) ($row['university_name'] ?? ''));
+
             if ($name === '') $errors[] = "Baris {$rowNumber}: nama prodi wajib diisi.";
             if ($universityName === '') $errors[] = "Baris {$rowNumber}: university_name wajib diisi.";
 
             $university = $universityName !== ''
                 ? $universitiesByName->get(mb_strtolower($universityName))
                 : null;
+
             if ($universityName !== '' && !$university) {
                 $errors[] = "Baris {$rowNumber}: universitas '{$universityName}' tidak ditemukan. Tambahkan/import universitas lebih dahulu.";
             }
@@ -127,41 +141,89 @@ class MajorController extends Controller
                 $errors[] = "Baris {$rowNumber}: category_id {$categoryId} tidak ditemukan pada interest_categories.";
             }
 
-            $key = mb_strtolower($name . '|' . $universityName);
-            if ($name !== '' && $universityName !== '' && isset($seen[$key])) {
+            // Identitas prodi bersifat global pada tabel majors; universitas disimpan di tabel pivot.
+            $majorKey = mb_strtolower($name);
+            $pivotKey = $university && $existingMajors->has($majorKey)
+                ? $university->id . ':' . $existingMajors->get($majorKey)->id
+                : null;
+
+            $duplicateKey = mb_strtolower($name . '|' . $universityName);
+            if ($name !== '' && $universityName !== '' && isset($seen[$duplicateKey])) {
                 $errors[] = "Baris {$rowNumber}: kombinasi prodi dan universitas duplikat di dalam file.";
             }
-            $seen[$key] = true;
+            $seen[$duplicateKey] = true;
+
+            $description = trim((string) ($row['description'] ?? '')) ?: null;
+            $accreditation = trim((string) ($row['accreditation'] ?? '')) ?: null;
+            $additionalInfo = trim((string) ($row['additional_info'] ?? '')) ?: null;
+            $major = $existingMajors->get($majorKey);
+            $pivot = $pivotKey ? $existingPivots->get($pivotKey) : null;
+            $changes = [];
+
+            if (!$major) {
+                $status = 'BARU';
+                $changes[] = 'Program studi akan ditambahkan';
+            } else {
+                if ($description !== null && $description !== $major->description) {
+                    $changes[] = 'Deskripsi akan diperbarui';
+                }
+                if ($categoryId !== '' && (int) $categoryId !== (int) $major->category_id) {
+                    $changes[] = 'Kategori akan diperbarui';
+                }
+                if (!$pivot) {
+                    $changes[] = 'Relasi dengan universitas akan ditambahkan';
+                } else {
+                    if ($accreditation !== null && $accreditation !== $pivot->accreditation) {
+                        $changes[] = 'Akreditasi prodi akan diperbarui';
+                    }
+                    if ($additionalInfo !== null && $additionalInfo !== $pivot->additional_info) {
+                        $changes[] = 'Informasi tambahan akan diperbarui';
+                    }
+                }
+                $status = count($changes) ? 'UPDATE' : 'TIDAK BERUBAH';
+            }
 
             $rows[] = [
                 'row_number' => $rowNumber,
                 'university_id' => $university?->id,
+                'status' => $status,
+                'changes' => $changes,
                 'data' => [
                     'name' => $name,
-                    'description' => trim((string) ($row['description'] ?? '')) ?: null,
+                    'description' => $description,
                     'category_id' => $categoryId === '' ? null : (int) $categoryId,
                     'university_name' => $universityName,
-                    'accreditation' => trim((string) ($row['accreditation'] ?? '')) ?: null,
-                    'additional_info' => trim((string) ($row['additional_info'] ?? '')) ?: null,
+                    'accreditation' => $accreditation,
+                    'additional_info' => $additionalInfo,
                 ],
             ];
         }
 
         if (!$rows) $errors[] = 'Tidak ada baris data yang dapat diproses.';
 
-        session(['major_import_preview' => $rows, 'major_import_errors' => $errors]);
+        $summary = [
+            'baru' => count(array_filter($rows, fn ($row) => $row['status'] === 'BARU')),
+            'update' => count(array_filter($rows, fn ($row) => $row['status'] === 'UPDATE')),
+            'unchanged' => count(array_filter($rows, fn ($row) => $row['status'] === 'TIDAK BERUBAH')),
+            'error' => count($errors),
+        ];
+
+        session([
+            'major_import_preview' => $rows,
+            'major_import_errors' => $errors,
+        ]);
 
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => empty($errors),
                 'total_rows' => count($rows),
-                'valid_rows' => count($rows) - count(array_filter($errors)),
+                'summary' => $summary,
                 'errors' => $errors,
                 'rows' => $rows,
             ], empty($errors) ? 200 : 422);
         }
 
-        return view('admin.imports.majors-preview', compact('rows', 'errors'));
+        return view('admin.imports.majors-preview', compact('rows', 'errors', 'summary'));
     }
 
     /**
