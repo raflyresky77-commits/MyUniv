@@ -9,6 +9,7 @@ use App\Models\TeacherBk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ConsultationController extends Controller
 {
@@ -114,15 +115,45 @@ class ConsultationController extends Controller
             $validated['consultation_date'] . ' ' . $validated['consultation_time']
         );
 
-        Consultation::create([
-            'student_id' => $student->id,
-            'teacher_id' => $validated['teacher_id'],
-            'method' => $validated['consultation_method'],
-            'topic' => $validated['topic'],
-            'message' => $validated['message'] ?? null,
-            'scheduled_at' => $scheduledAt,
-            'status' => 'pending',
-        ]);
+        // Kunci data Guru BK selama proses pengecekan dan penyimpanan.
+        // Ini membantu mencegah dua pengajuan masuk pada slot yang sama secara bersamaan.
+        $isAvailable = DB::transaction(function () use ($validated, $student, $scheduledAt) {
+            TeacherBk::query()
+                ->whereKey($validated['teacher_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // Slot dianggap terpakai jika masih menunggu atau sudah disetujui.
+            $hasConflict = Consultation::query()
+                ->where('teacher_id', $validated['teacher_id'])
+                ->where('scheduled_at', $scheduledAt)
+                ->whereIn('status', ['pending', 'approved'])
+                ->exists();
+
+            if ($hasConflict) {
+                return false;
+            }
+
+            Consultation::create([
+                'student_id' => $student->id,
+                'teacher_id' => $validated['teacher_id'],
+                'method' => $validated['consultation_method'],
+                'topic' => $validated['topic'],
+                'message' => $validated['message'] ?? null,
+                'scheduled_at' => $scheduledAt,
+                'status' => 'pending',
+            ]);
+
+            return true;
+        });
+
+        // Kembali ke form dengan notifikasi khusus jika slot sudah digunakan.
+        if (! $isAvailable) {
+            return redirect()
+                ->route('student.consultation.index')
+                ->withInput()
+                ->with('schedule_conflict', 'Jadwal Guru BK tersebut sudah digunakan. Silakan pilih waktu lain.');
+        }
 
         return redirect()
             ->route('student.consultation.index')

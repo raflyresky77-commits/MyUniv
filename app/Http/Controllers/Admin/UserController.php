@@ -35,7 +35,21 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('role')->latest()->get();
-        return view('admin.users.index', compact('users'));
+
+        // Hitung jumlah akun berdasarkan role_id agar statistik selalu mengikuti database.
+        $roleCounts = User::query()
+            ->selectRaw('role_id, COUNT(*) as total')
+            ->groupBy('role_id')
+            ->pluck('total', 'role_id');
+
+        $userStats = [
+            'total' => $users->count(),
+            'student' => (int) ($roleCounts[1] ?? 0),
+            'counselor' => (int) ($roleCounts[2] ?? 0),
+            'admin' => (int) ($roleCounts[3] ?? 0),
+        ];
+
+        return view('admin.users.index', compact('users', 'userStats'));
     }
 
     public function create()
@@ -53,8 +67,8 @@ class UserController extends Controller
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Alamat email wajib diisi.',
-            'email.email' => 'Format alamat email tidak valid.',
-            'email.unique' => 'Alamat email sudah digunakan.',
+            'email.email' => 'Format email yang dimasukkan belum valid',
+            'email.unique' => 'Email ini sudah terdaftar. Silakan gunakan alamat email lain.',
             'password.min' => 'Kata sandi minimal 8 karakter.',
             'role.in' => 'Role pengguna tidak valid.',
         ]);
