@@ -264,37 +264,130 @@ private function getKemampuanAnswerDetails(array $responses): array
     /**
      * Simpan atau perbarui jawaban asesmen siswa.
      */
-    private function saveAssessmentSubmission(string $assessmentType, array $responses): void
-    {
-        $now = now();
+    
+private function saveAssessmentSubmission(string $assessmentType, array $responses): void
+{
+    $now = now();
 
-        $values = [
-            'responses' => json_encode($responses, JSON_UNESCAPED_UNICODE),
-            'submitted_at' => $now,
-            'updated_at' => $now,
-        ];
+    $values = [
+        'responses' => json_encode($responses, JSON_UNESCAPED_UNICODE),
+        'submitted_at' => $now,
+        'updated_at' => $now,
+    ];
 
-        // Perbarui submission terbaru milik siswa untuk jenis asesmen ini.
-        // Jika belum ada, buat record baru.
-        $submission = DB::table('assessment_submissions')
-            ->where('user_id', Auth::id())
-            ->where('assessment_type', $assessmentType)
-            ->orderByDesc('updated_at')
-            ->orderByDesc('id')
-            ->first();
+    // Cari submission terbaru milik siswa.
+    $submission = DB::table('assessment_submissions')
+        ->where('user_id', Auth::id())
+        ->where('assessment_type', $assessmentType)
+        ->orderByDesc('updated_at')
+        ->orderByDesc('id')
+        ->first();
 
-        if ($submission) {
-            DB::table('assessment_submissions')
-                ->where('id', $submission->id)
-                ->update($values);
-        } else {
-            DB::table('assessment_submissions')->insert(array_merge($values, [
-                'user_id' => Auth::id(),
-                'assessment_type' => $assessmentType,
-                'created_at' => $now,
-            ]));
-        }
+    if ($submission) {
+        DB::table('assessment_submissions')
+            ->where('id', $submission->id)
+            ->update($values);
+    } else {
+        DB::table('assessment_submissions')->insert(array_merge($values, [
+            'user_id' => Auth::id(),
+            'assessment_type' => $assessmentType,
+            'created_at' => $now,
+        ]));
     }
+
+    // Simpan jawaban Numerik ke student_answers.
+    if ($assessmentType === 'kemampuan') {
+        $this->syncNumerikStudentAnswers($responses);
+    }
+}
+
+
+/**
+ * Sinkronisasi jawaban Numerik ke student_answers.
+ */
+private function syncNumerikStudentAnswers(array $responses): void
+{
+    // Ambil jawaban pada subtes Numerik.
+    $numerikAnswers = $responses['numerik'] ?? [];
+
+    if (!is_array($numerikAnswers) || empty($numerikAnswers)) {
+        return;
+    }
+
+    // Cari data siswa berdasarkan akun yang sedang login.
+    $studentId = DB::table('students')
+        ->where('user_id', Auth::id())
+        ->value('id');
+
+    if (!$studentId) {
+        return;
+    }
+
+    $questionIds = collect(array_keys($numerikAnswers))
+        ->filter(fn ($id) => is_numeric($id))
+        ->map(fn ($id) => (int) $id)
+        ->unique()
+        ->values();
+
+    $optionIds = collect($numerikAnswers)
+        ->filter(fn ($id) => is_numeric($id))
+        ->map(fn ($id) => (int) $id)
+        ->unique()
+        ->values();
+
+    if ($questionIds->isEmpty() || $optionIds->isEmpty()) {
+        return;
+    }
+
+    // Hanya gunakan pertanyaan dari assessment Numerik ID 7.
+    $questions = DB::table('questions')
+        ->where('assessment_id', 7)
+        ->whereIn('id', $questionIds)
+        ->get(['id', 'assessment_id'])
+        ->keyBy('id');
+
+    // Ambil pilihan jawaban beserta skor.
+    $options = DB::table('question_options')
+        ->whereIn('id', $optionIds)
+        ->get(['id', 'question_id', 'score'])
+        ->keyBy('id');
+
+    foreach ($numerikAnswers as $questionId => $optionId) {
+        if (!is_numeric($questionId) || !is_numeric($optionId)) {
+            continue;
+        }
+
+        $questionId = (int) $questionId;
+        $optionId = (int) $optionId;
+
+        $question = $questions->get($questionId);
+        $option = $options->get($optionId);
+
+        // Pastikan soal dan pilihan jawaban benar-benar cocok.
+        if (!$question || !$option) {
+            continue;
+        }
+
+        if ((int) $option->question_id !== $questionId) {
+            continue;
+        }
+
+        DB::table('student_answers')->updateOrInsert(
+            [
+                'student_id' => $studentId,
+                'assessment_id' => $question->assessment_id,
+                'question_id' => $questionId,
+            ],
+            [
+                'question_option_id' => $optionId,
+                'score' => (int) $option->score,
+                'answered_at' => now(),
+            ]
+        );
+    }
+}
+
+
 
     public function result()
     {

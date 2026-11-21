@@ -32,8 +32,8 @@
             <section class="glass-card rounded-2xl p-4 sm:p-5">
                 <form method="GET" action="{{ route('counselor.assessment-results.index') }}" class="grid grid-cols-1 gap-3 md:grid-cols-[1fr_240px_auto_auto]">
                     <input type="text" name="search" value="{{ $search }}"
-                           placeholder="Cari nama, email, NISN, atau kelas..."
-                           class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100">
+                        placeholder="Cari nama, email, NISN, atau kelas..."
+                        class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100">
                     <select name="class" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-400">
                         <option value="">Semua Kelas</option>
                         @foreach($classes as $class)
