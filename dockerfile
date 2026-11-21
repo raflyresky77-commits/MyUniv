@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
-    && docker-php-ext-install -j"$(nproc)" \
+        docker-php-ext-install -j1 \
         pdo_pgsql \
         mbstring \
         exif \
@@ -48,9 +48,7 @@ RUN apt-get update && apt-get install -y \
         simplexml \
         xml \
         xmlreader \
-        xmlwriter \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+        xmlwriter
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
