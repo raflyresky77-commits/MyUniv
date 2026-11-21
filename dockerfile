@@ -35,7 +35,8 @@ RUN apt-get update && apt-get install -y \
         && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
-    && docker-php-ext-install -j1 \
+        && docker-php-ext-install -j1 dom \
+        && docker-php-ext-install -j1 \
         pdo_pgsql \
         mbstring \
         exif \
@@ -44,7 +45,6 @@ RUN apt-get update && apt-get install -y \
         gd \
         zip \
         intl \
-        dom \
         simplexml \
         xml \
         xmlreader \
