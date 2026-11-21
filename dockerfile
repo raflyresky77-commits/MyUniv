@@ -32,11 +32,10 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libicu-dev \
-        && docker-php-ext-configure gd \
+    && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
-        && docker-php-ext-install -j1 dom \
-        && docker-php-ext-install -j1 \
+    && docker-php-ext-install -j1 \
         pdo_pgsql \
         mbstring \
         exif \
@@ -45,10 +44,7 @@ RUN apt-get update && apt-get install -y \
         gd \
         zip \
         intl \
-        simplexml \
-        xml \
-        xmlreader \
-        xmlwriter
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
