@@ -87,7 +87,7 @@ RUN chown -R www-data:www-data \
     && chmod -R 775 storage bootstrap/cache
 
 # Render web service port
-EXPOSE 10000
+EXPOSE 1006
 
 # Start Apache on Render PORT
-CMD ["sh", "-c", "PORT=${PORT:-10000}; sed -i \"s/Listen 80/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/:80>/:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; exec apache2-foreground"]
+CMD ["sh", "-c", "PORT=${PORT:-1006}; sed -i \"s/Listen 80/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/:80>/:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; exec apache2-foreground"]

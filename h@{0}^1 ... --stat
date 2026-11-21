@@ -1,0 +1,10 @@
+*   [33m16c2794[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mrecovery/restore-dashboard-statistics[m[33m)[m Merge remote-tracking branch 'origin/main' into recovery/restore-dashboard-statistics # Please enter a commit message to explain why this merge is necessary, # especially if it merges an updated upstream into a topic branch. # # Lines starting with '#' will be ignored, and an empty message aborts # the commit.
+[31m|[m[32m\[m  
+[31m|[m * [33m2273b3e[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m buat coba numerik
+* [32m|[m [33m1eeaa94[m[33m ([m[1;31morigin/recovery/restore-dashboard-statistics[m[33m)[m feat(university): improve university and major management
+* [32m|[m [33m08e99d6[m fix(consultation): improve schedule conflict notification
+* [32m|[m [33mcfcadec[m feat(cr-skkni5): tampilan kartu statistik agregat dan alert validais di UI
+* [32m|[m [33ma8c6895[m feat(cr-skkni4): buat query rekap agregat count dan sum per kategori
+* [32m|[m [33mc3eb9a4[m[33m ([m[1;31morigin/docs/readme-main[m[33m, [m[1;32mdocs/readme-main[m[33m)[m docs: add project README documentation
+[32m|[m[32m/[m  
+* [33mfb148af[m[33m ([m[1;32mmain[m[33m)[m fix ketidaksesuaian blade, model dan migration (manajemen jurusan)
